@@ -1,11 +1,34 @@
 import { useState } from "react";
-export default function Tester() {
-  const [number, setNumber] = useState<number>(0);
+
+const STATUS = {
+  HOVERED: "hovered",
+  NORMAL: "normal",
+};
+
+interface LinkProps {
+  children: React.ReactNode;
+  page: string;
+}
+
+export default function Link({ page, children }: LinkProps) {
+  const [status, setStatus] = useState(STATUS.NORMAL);
+
+  const onMouseEnter = () => {
+    setStatus(STATUS.HOVERED);
+  };
+
+  const onMouseLeave = () => {
+    setStatus(STATUS.NORMAL);
+  };
+
   return (
-    <>
-      <div>TESTING HMR</div>
-      <div>{number}</div>
-      <button onClick={() => setNumber(number + 1)}>add number</button>
-    </>
+    <a
+      className={status}
+      href={page || "#"}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      {children}
+    </a>
   );
 }
