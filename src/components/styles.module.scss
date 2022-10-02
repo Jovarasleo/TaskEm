@@ -1,0 +1,13 @@
+.linkItem {
+  font-weight: 800;
+}
+.hovered {
+  color: green;
+}
+.normal {
+  color: grey;
+  text-decoration: none;
+  &:focus {
+    color: yellow;
+  }
+}

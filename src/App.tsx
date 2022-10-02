@@ -1,9 +1,9 @@
-import Tester from "./components/Test";
+import Test from "./components/Test";
 function App() {
   console.log("doesnt work");
   return (
     <div>
-      <Tester />
+      <Test page="https://google.com">{<div>Hello</div>}</Test>
     </div>
   );
 }
