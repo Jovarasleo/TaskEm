@@ -5,13 +5,14 @@ import styles from "./styles.module.scss";
 interface LinkProps {
   children: React.ReactNode;
   page: string;
+  dataTestId?: string;
 }
 
-export default function Test({ page, children }: LinkProps) {
+export default function Test({ page, children, dataTestId }: LinkProps) {
   const [status, setStatus] = useState(false);
   return (
     <a
-      id="linkItem"
+      data-testid={dataTestId}
       className={clsx(status ? styles.hovered : styles.normal)}
       href={page || "#"}
       onMouseEnter={() => {
