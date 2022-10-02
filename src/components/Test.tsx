@@ -1,32 +1,25 @@
 import { useState } from "react";
-
-const STATUS = {
-  HOVERED: "hovered",
-  NORMAL: "normal",
-};
+import clsx from "clsx";
+import styles from "./styles.module.scss";
 
 interface LinkProps {
   children: React.ReactNode;
   page: string;
 }
 
-export default function Link({ page, children }: LinkProps) {
-  const [status, setStatus] = useState(STATUS.NORMAL);
-
-  const onMouseEnter = () => {
-    setStatus(STATUS.HOVERED);
-  };
-
-  const onMouseLeave = () => {
-    setStatus(STATUS.NORMAL);
-  };
-
+export default function Test({ page, children }: LinkProps) {
+  const [status, setStatus] = useState(false);
   return (
     <a
-      className={status}
+      id="linkItem"
+      className={clsx(status ? styles.hovered : styles.normal)}
       href={page || "#"}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+      onMouseEnter={() => {
+        setStatus(true);
+      }}
+      onMouseLeave={() => {
+        setStatus(false);
+      }}
     >
       {children}
     </a>
