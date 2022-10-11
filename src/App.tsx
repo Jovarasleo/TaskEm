@@ -1,9 +1,11 @@
-import Test from "./components/Test";
+import "./styles/global.scss";
+import Task from "./views/task-manager/components/task/task";
+
 function App() {
   console.log("doesnt work");
   return (
     <div>
-      <Test page="https://google.com">{<div>Hello</div>}</Test>
+      <Task />
     </div>
   );
 }
