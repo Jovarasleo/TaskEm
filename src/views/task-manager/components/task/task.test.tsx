@@ -6,7 +6,8 @@ afterEach(() => {
   cleanup(); // Resets the DOM after each test suite
 });
 
-const inputValue = "Hello, this is test value";
+const taskNameInput = "This is task name";
+const taskDescriptionInput = "This is task description";
 
 describe("Test if task container renders and it's functionality works", () => {
   test("task container renders", () => {
@@ -15,10 +16,25 @@ describe("Test if task container renders and it's functionality works", () => {
     expect(taskContainer).toBeInTheDocument();
   });
 
-  test("Testing interactions with task container buttons and input fields", () => {
+  test("Testing task name inputs", () => {
     render(<Task dataTestId="Task" />);
-    const taskButton = screen.getByRole("button");
-    fireEvent.click(taskButton);
+    const taskNameButton = screen.getAllByRole("button")[0];
+    fireEvent.click(taskNameButton);
+    const taskName = screen.getByRole("textbox");
+    expect(taskName).toBeInTheDocument();
+    expect(taskName).toBe(document.activeElement);
+    fireEvent.click(taskName);
+    expect(taskName).toBeInTheDocument();
+    fireEvent.keyDown(taskName, {
+      key: "Enter",
+    });
+    expect(taskName).not.toBeInTheDocument();
+  });
+
+  test("Testing task description inputs", () => {
+    render(<Task dataTestId="Task" />);
+    const taskDescriptionButton = screen.getAllByRole("button")[1];
+    fireEvent.click(taskDescriptionButton);
     const taskItem = screen.getByRole("textbox");
     expect(taskItem).toBeInTheDocument();
     expect(taskItem).toBe(document.activeElement);
@@ -30,16 +46,31 @@ describe("Test if task container renders and it's functionality works", () => {
     expect(taskItem).not.toBeInTheDocument();
   });
 
-  test("Testing writing inside fields", () => {
+  test("Testing writing inside task fields", () => {
+    //testing name field
     render(<Task dataTestId="Task" />);
-    const taskButton = screen.getByRole("button");
-    fireEvent.click(taskButton);
-    const taskItem = screen.getByRole("textbox");
-    fireEvent.change(taskItem, { target: { value: inputValue } });
-    expect(taskItem.textContent).toBe(inputValue);
-    fireEvent.keyDown(taskItem, {
+    const taskNameButton = screen.getAllByRole("button")[0];
+    fireEvent.click(taskNameButton);
+    const taskNameTextBox = screen.getByRole("textbox");
+    fireEvent.change(taskNameTextBox, { target: { value: taskNameInput } });
+    expect(taskNameTextBox.textContent).toBe(taskNameInput);
+    fireEvent.keyDown(taskNameTextBox, {
       key: "Enter",
     });
-    expect(screen.getByRole("button").textContent).toBe(inputValue);
+    expect(screen.getAllByRole("button")[0].textContent).toBe(taskNameInput);
+    //testing description field
+    const taskDescriptionButton = screen.getAllByRole("button")[1];
+    fireEvent.click(taskDescriptionButton);
+    const taskDescriptionTextBox = screen.getByRole("textbox");
+    fireEvent.change(taskDescriptionTextBox, {
+      target: { value: taskDescriptionInput },
+    });
+    expect(taskDescriptionTextBox.textContent).toBe(taskDescriptionInput);
+    fireEvent.keyDown(taskDescriptionTextBox, {
+      key: "Enter",
+    });
+    expect(screen.getAllByRole("button")[1].textContent).toBe(
+      taskDescriptionInput
+    );
   });
 });
