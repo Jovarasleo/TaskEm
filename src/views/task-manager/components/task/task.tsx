@@ -1,6 +1,6 @@
+import { clsx } from "clsx";
 import { useState } from "react";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
-import clsx from "clsx";
 import styles from "./styles.module.scss";
 
 interface TaskProps {
