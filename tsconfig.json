@@ -17,6 +17,7 @@
     "jsx": "react-jsx",
     "baseUrl": "./src"
   },
+  "exclude": ["node_modules"],
   "include": ["./src", "./src/declaration.d.ts"],
   "types": ["node", "jest", "@testing-library/jest-dom"]
 }
