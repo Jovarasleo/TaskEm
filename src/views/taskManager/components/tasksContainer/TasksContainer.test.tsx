@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import TasksContainer from "./TasksContainer";
 
@@ -9,19 +9,19 @@ afterEach(() => {
 const tasks = [
   {
     name: "test1",
-    description: "test1",
+    description: "description1",
   },
   {
     name: "test2",
-    description: "test2",
+    description: "description2",
   },
   {
     name: "test3",
-    description: "test3",
+    description: "description3",
   },
 ];
 
-describe("Test if task container renders and ", () => {
+describe("Test if task container renders and it's functionallity", () => {
   test("task container renders", () => {
     render(<TasksContainer dataTestId={"tasksContainer"} tasks={tasks} />);
     const taskContainer = screen.getByTestId("tasksContainer");
@@ -32,5 +32,9 @@ describe("Test if task container renders and ", () => {
     render(<TasksContainer tasks={tasks} />);
     const getAllTasks = await screen.findAllByRole("taskItem");
     expect(getAllTasks.length).toBe(tasks.length);
+    tasks.forEach((task) => {
+      screen.getAllByText(task.name);
+      screen.getAllByText(task.description);
+    });
   });
 });

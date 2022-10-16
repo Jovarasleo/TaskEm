@@ -1,3 +1,4 @@
+import { useState } from "react";
 import TasksContainer from "./components/tasksContainer/TasksContainer";
 import styles from "./styles.module.scss";
 
@@ -11,7 +12,7 @@ interface TaskContainers {
   done: Task[];
 }
 function TaskManger() {
-  const tasks: TaskContainers = {
+  const initialState: TaskContainers = {
     todo: [
       { name: "todo", description: "todo" },
       { name: "todo1", description: "todo1" },
@@ -20,11 +21,27 @@ function TaskManger() {
     progress: [{ name: "progress", description: "progress" }],
     done: [{ name: "done", description: "done" }],
   };
+  const [tasks, setTasks] = useState(initialState);
+
+  const addNewTask = () => {
+    setTasks((prevState) => {
+      return {
+        ...prevState,
+        todo: [...prevState.todo, { name: "", description: "" }],
+      };
+    });
+  };
+
   return (
     <div className={styles.managerContainer}>
       {Object.keys(tasks).map((container) => {
         return (
-          <TasksContainer tasks={tasks[container as keyof TaskContainers]} />
+          <TasksContainer
+            key={container}
+            tasks={tasks[container as keyof TaskContainers]}
+            todo={container === "todo" ? true : false}
+            addNewTask={addNewTask}
+          />
         );
       })}
     </div>
