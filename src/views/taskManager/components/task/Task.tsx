@@ -1,19 +1,23 @@
+import { clsx } from "clsx";
 import { useState } from "react";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
-import clsx from "clsx";
 import styles from "./styles.module.scss";
 
 interface TaskProps {
   dataTestId?: string;
+<<<<<<< HEAD:src/views/task-manager/components/task/task.tsx
   name: string;
+=======
+  name?: string;
+>>>>>>> main:src/views/taskManager/components/task/Task.tsx
   description?: string;
 }
 function Task({ dataTestId, name, description }: TaskProps) {
   const [nameField, setNameField] = useState(false);
   const [descriptionField, setDescriptionField] = useState(false);
 
-  const [nameInput, setNameInput] = useState("");
-  const [descriptionInput, setDescriptionInput] = useState("");
+  const [nameInput, setNameInput] = useState(name);
+  const [descriptionInput, setDescriptionInput] = useState(description);
 
   const closeTextBoxes = () => {
     setDescriptionField((prevState) => (prevState = false));
@@ -48,7 +52,11 @@ function Task({ dataTestId, name, description }: TaskProps) {
   };
 
   return (
-    <div className={styles.taskWrapper} data-testid={dataTestId}>
+    <div
+      role="taskItem"
+      className={styles.taskWrapper}
+      data-testid={dataTestId}
+    >
       {nameField ? (
         <textarea
           autoFocus
@@ -65,7 +73,7 @@ function Task({ dataTestId, name, description }: TaskProps) {
           className={clsx(styles.button, styles.taskName)}
           onClick={(e) => handleNameClick(e)}
         >
-          {nameInput.length ? nameInput : "Task name"}
+          {nameInput ? nameInput : "Task name"}
         </button>
       )}
       {descriptionField ? (
@@ -84,7 +92,7 @@ function Task({ dataTestId, name, description }: TaskProps) {
           className={clsx(styles.button, styles.taskDescription)}
           onClick={(e) => handleDescriptionClick(e)}
         >
-          {descriptionInput.length ? descriptionInput : "Task description:"}
+          {descriptionInput ? descriptionInput : "Task description:"}
         </button>
       )}
     </div>
