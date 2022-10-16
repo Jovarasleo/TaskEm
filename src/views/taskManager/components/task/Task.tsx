@@ -1,10 +1,12 @@
+import { clsx } from "clsx";
 import { useState } from "react";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
-import clsx from "clsx";
 import styles from "./styles.module.scss";
 
 interface TaskProps {
   dataTestId?: string;
+  name?: string;
+  description?: string;
 }
 function Task({ dataTestId }: TaskProps) {
   const [nameField, setNameField] = useState(false);
@@ -42,7 +44,11 @@ function Task({ dataTestId }: TaskProps) {
   };
 
   return (
-    <div className={styles.taskWrapper} data-testid={dataTestId}>
+    <div
+      role="taskItem"
+      className={styles.taskWrapper}
+      data-testid={dataTestId}
+    >
       {nameField ? (
         <textarea
           autoFocus
