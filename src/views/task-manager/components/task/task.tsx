@@ -5,8 +5,10 @@ import styles from "./styles.module.scss";
 
 interface TaskProps {
   dataTestId?: string;
+  name: string;
+  description?: string;
 }
-function Task({ dataTestId }: TaskProps) {
+function Task({ dataTestId, name, description }: TaskProps) {
   const [nameField, setNameField] = useState(false);
   const [descriptionField, setDescriptionField] = useState(false);
 
@@ -17,6 +19,8 @@ function Task({ dataTestId }: TaskProps) {
     setDescriptionField((prevState) => (prevState = false));
     setNameField((prevState) => (prevState = false));
   };
+
+  const tasks = JSON.parse(window.localStorage.getItem("Tasks") || "[]");
 
   const ref = useOutsideClick(closeTextBoxes);
 
@@ -33,6 +37,8 @@ function Task({ dataTestId }: TaskProps) {
   const handleNameKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
     if (e.key === "Enter" || e.key === "Escape") {
       setNameField((prevState) => (prevState = false));
+      tasks.push({ name: nameInput });
+      localStorage.setItem("Tasks", JSON.stringify(tasks));
     }
   };
   const handleDescriptionKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
@@ -51,7 +57,7 @@ function Task({ dataTestId }: TaskProps) {
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => handleNameKeypress(e)}
           placeholder="Task name.."
-          value={nameInput}
+          value={name ? name : nameInput}
           ref={ref}
         />
       ) : (
@@ -70,7 +76,7 @@ function Task({ dataTestId }: TaskProps) {
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => handleDescriptionKeypress(e)}
           placeholder="Describe task here..."
-          value={descriptionInput}
+          value={description ? description : descriptionInput}
           ref={ref}
         />
       ) : (
