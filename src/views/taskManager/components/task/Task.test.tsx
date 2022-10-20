@@ -8,16 +8,35 @@ afterEach(() => {
 
 const taskNameInput = "This is task name";
 const taskDescriptionInput = "This is task description";
+const saveTask = () => {};
 
 describe("Test if task container renders and it's functionality works", () => {
   test("task container renders", () => {
-    render(<Task dataTestId="Task" />);
+    render(
+      <Task
+        dataTestId="Task"
+        name={""}
+        description={""}
+        id="1"
+        container={"todo"}
+        saveTask={saveTask}
+      />
+    );
     const taskContainer = screen.getByTestId("Task");
     expect(taskContainer).toBeInTheDocument();
   });
 
   test("Testing task name inputs", () => {
-    render(<Task dataTestId="Task" />);
+    render(
+      <Task
+        dataTestId="Task"
+        name={""}
+        description={""}
+        id="1"
+        container={"todo"}
+        saveTask={saveTask}
+      />
+    );
     const taskNameButton = screen.getAllByRole("button")[0];
     fireEvent.click(taskNameButton);
     const taskName = screen.getByRole("textbox");
@@ -32,7 +51,16 @@ describe("Test if task container renders and it's functionality works", () => {
   });
 
   test("Testing task description inputs", () => {
-    render(<Task dataTestId="Task" />);
+    render(
+      <Task
+        dataTestId="Task"
+        name={""}
+        description={""}
+        id="1"
+        container={"todo"}
+        saveTask={saveTask}
+      />
+    );
     const taskDescriptionButton = screen.getAllByRole("button")[1];
     fireEvent.click(taskDescriptionButton);
     const taskItem = screen.getByRole("textbox");
@@ -48,7 +76,16 @@ describe("Test if task container renders and it's functionality works", () => {
 
   test("Testing writing inside task fields", () => {
     //testing name field
-    render(<Task dataTestId="Task" />);
+    render(
+      <Task
+        dataTestId="Task"
+        name={""}
+        description={""}
+        id="1"
+        container={"todo"}
+        saveTask={saveTask}
+      />
+    );
     const taskNameButton = screen.getAllByRole("button")[0];
     fireEvent.click(taskNameButton);
     const taskNameTextBox = screen.getByRole("textbox");

@@ -7,13 +7,28 @@ interface TaskProps {
   dataTestId?: string;
   name?: string;
   description?: string;
+  id: string;
+  container: string;
+  saveTask: (
+    container: string,
+    id: string,
+    name: string,
+    description: string
+  ) => void;
 }
-function Task({ dataTestId, name, description }: TaskProps) {
+function Task({
+  dataTestId,
+  name,
+  description,
+  id,
+  container,
+  saveTask,
+}: TaskProps) {
   const [nameField, setNameField] = useState(false);
   const [descriptionField, setDescriptionField] = useState(false);
 
-  const [nameInput, setNameInput] = useState(name);
-  const [descriptionInput, setDescriptionInput] = useState(description);
+  const [nameInput, setNameInput] = useState(name || "");
+  const [descriptionInput, setDescriptionInput] = useState(description || "");
 
   const closeTextBoxes = () => {
     setDescriptionField((prevState) => (prevState = false));
@@ -35,11 +50,17 @@ function Task({ dataTestId, name, description }: TaskProps) {
   const handleNameKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
     if (e.key === "Enter" || e.key === "Escape") {
       setNameField((prevState) => (prevState = false));
+      if (nameInput.length || descriptionInput.length) {
+        saveTask(container, id, nameInput, descriptionInput);
+      }
     }
   };
   const handleDescriptionKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
     if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
       setDescriptionField((prevState) => (prevState = false));
+      if (nameInput.length || descriptionInput.length) {
+        saveTask(container, id, nameInput, descriptionInput);
+      }
     }
   };
 
