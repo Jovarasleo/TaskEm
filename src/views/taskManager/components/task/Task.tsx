@@ -5,26 +5,35 @@ import styles from "./styles.module.scss";
 
 interface TaskProps {
   dataTestId?: string;
-<<<<<<< HEAD:src/views/task-manager/components/task/task.tsx
-  name: string;
-=======
   name?: string;
->>>>>>> main:src/views/taskManager/components/task/Task.tsx
   description?: string;
+  id: string;
+  container: string;
+  saveTask: (
+    container: string,
+    id: string,
+    name: string,
+    description: string
+  ) => void;
 }
-function Task({ dataTestId, name, description }: TaskProps) {
+function Task({
+  dataTestId,
+  name,
+  description,
+  id,
+  container,
+  saveTask,
+}: TaskProps) {
   const [nameField, setNameField] = useState(false);
   const [descriptionField, setDescriptionField] = useState(false);
 
-  const [nameInput, setNameInput] = useState(name);
-  const [descriptionInput, setDescriptionInput] = useState(description);
+  const [nameInput, setNameInput] = useState(name || "");
+  const [descriptionInput, setDescriptionInput] = useState(description || "");
 
   const closeTextBoxes = () => {
     setDescriptionField((prevState) => (prevState = false));
     setNameField((prevState) => (prevState = false));
   };
-
-  const tasks = JSON.parse(window.localStorage.getItem("Tasks") || "[]");
 
   const ref = useOutsideClick(closeTextBoxes);
 
@@ -41,13 +50,17 @@ function Task({ dataTestId, name, description }: TaskProps) {
   const handleNameKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
     if (e.key === "Enter" || e.key === "Escape") {
       setNameField((prevState) => (prevState = false));
-      tasks.push({ name: nameInput });
-      localStorage.setItem("Tasks", JSON.stringify(tasks));
+      if (nameInput.length || descriptionInput.length) {
+        saveTask(container, id, nameInput, descriptionInput);
+      }
     }
   };
   const handleDescriptionKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
     if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
       setDescriptionField((prevState) => (prevState = false));
+      if (nameInput.length || descriptionInput.length) {
+        saveTask(container, id, nameInput, descriptionInput);
+      }
     }
   };
 
@@ -65,7 +78,7 @@ function Task({ dataTestId, name, description }: TaskProps) {
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => handleNameKeypress(e)}
           placeholder="Task name.."
-          value={name ? name : nameInput}
+          value={nameInput}
           ref={ref}
         />
       ) : (
@@ -84,7 +97,7 @@ function Task({ dataTestId, name, description }: TaskProps) {
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => handleDescriptionKeypress(e)}
           placeholder="Describe task here..."
-          value={description ? description : descriptionInput}
+          value={descriptionInput}
           ref={ref}
         />
       ) : (
