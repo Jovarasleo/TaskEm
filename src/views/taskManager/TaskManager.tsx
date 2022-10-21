@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { TaskContainers, Task } from "./model/task";
 import TasksContainer from "./components/tasksContainer/TasksContainer";
 import useLocalStorage from "./hooks/useLocalStorage";
@@ -50,6 +50,70 @@ function TaskManger() {
       };
     });
   };
+  const dragItem = useRef();
+  const dragItemNode = useRef();
+  const [dragging, setDragging] = useState(false);
+
+  const handleDragStart = (e: any, task: any) => {
+    console.log("TASKITEM", tasks);
+    dragItemNode.current = e.target;
+    dragItem.current = task;
+    setDragging(true);
+  };
+
+  const handleDragEnter = (e: any, targetItem: any) => {
+    e.stopPropagation();
+    if (dragItemNode.current !== e.target) {
+      console.log("passed if drag enter");
+      console.log(
+        dragItem.current.container,
+        targetItem.container,
+        dragItem.current?.index,
+        targetItem.index
+      );
+      moveTask(
+        dragItem.current?.container,
+        targetItem.container,
+        dragItem.current?.index,
+        targetItem.index
+      );
+      dragItem.current.index = targetItem.index;
+      dragItem.current.container = targetItem.container;
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDragging(false);
+    dragItem.current = null;
+    dragItemNode.current = null;
+    setTasksToLocal((prevState: TaskContainers) => {
+      return {
+        ...prevState,
+        ...tasks,
+      };
+    });
+  };
+
+  const moveTask = (
+    fromContainer: string,
+    toContainer: string,
+    fromIndex: number,
+    toIndex: number
+  ) => {
+    let tasksClone = { ...tasks };
+    if (!tasksClone[fromContainer] || !tasksClone[fromContainer].length) return;
+    const getTask = tasksClone[fromContainer].splice(fromIndex, 1)[0];
+    tasksClone[toContainer].splice(toIndex, 0, getTask);
+
+    // tasksClone.splice(fromIndex + 1, 0, tasksClone.splice(toIndex, 1)[0]);
+
+    setTasks((prevState: TaskContainers) => {
+      return {
+        ...prevState,
+        ...tasksClone,
+      };
+    });
+  };
 
   return (
     <div className={styles.managerContainer}>
@@ -59,9 +123,13 @@ function TaskManger() {
             key={container}
             tasks={tasks[container as keyof TaskContainers]}
             container={container}
-            todo={container === "todo" ? true : false}
+            todo={container === "todo"}
             addNewTask={addNewTask}
             saveTask={saveTask}
+            handleDragStart={handleDragStart}
+            handleDragEnter={handleDragEnter}
+            dragging={dragging}
+            handleDragEnd={handleDragEnd}
           />
         );
       })}

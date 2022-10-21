@@ -1,29 +1,36 @@
 import { clsx } from "clsx";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
 import styles from "./styles.module.scss";
 
 interface TaskProps {
+  task: { name?: string; description?: string; id: string };
   dataTestId?: string;
-  name?: string;
-  description?: string;
-  id: string;
+  index: number;
   container: string;
+  dragging: boolean;
   saveTask: (
     container: string,
     id: string,
     name: string,
     description: string
   ) => void;
+  handleDragStart: (e: any, task: any) => void;
+  handleDragEnter: (e: any, task: any) => void;
+  handleDragEnd: () => void;
 }
 function Task({
+  task,
   dataTestId,
-  name,
-  description,
-  id,
+  index,
   container,
+  dragging,
   saveTask,
+  handleDragStart,
+  handleDragEnter,
+  handleDragEnd,
 }: TaskProps) {
+  const { name, description, id } = task;
   const [nameField, setNameField] = useState(false);
   const [descriptionField, setDescriptionField] = useState(false);
 
@@ -69,6 +76,12 @@ function Task({
       role="taskItem"
       className={styles.taskWrapper}
       data-testid={dataTestId}
+      draggable
+      onDragStart={(e) => handleDragStart(e, { container, index })}
+      onDragEnter={
+        dragging ? (e) => handleDragEnter(e, { container, index }) : () => {}
+      }
+      onDragEnd={() => handleDragEnd()}
     >
       {nameField ? (
         <textarea
