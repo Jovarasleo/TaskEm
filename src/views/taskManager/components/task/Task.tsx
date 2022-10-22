@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
 import styles from "./styles.module.scss";
 
@@ -17,7 +17,7 @@ interface TaskProps {
   ) => void;
   handleDragStart: (e: any, task: any) => void;
   handleDragEnter: (e: any, task: any) => void;
-  handleDragEnd: () => void;
+  getStyles: (item: {}) => string;
 }
 function Task({
   task,
@@ -28,7 +28,7 @@ function Task({
   saveTask,
   handleDragStart,
   handleDragEnter,
-  handleDragEnd,
+  getStyles,
 }: TaskProps) {
   const { name, description, id } = task;
   const [nameField, setNameField] = useState(false);
@@ -70,18 +70,17 @@ function Task({
       }
     }
   };
-
+  const currentTask = dragging ? getStyles({ container, index }) : "dndItem";
   return (
     <div
       role="taskItem"
-      className={styles.taskWrapper}
+      className={clsx(styles.taskWrapper, styles[currentTask])}
       data-testid={dataTestId}
       draggable
       onDragStart={(e) => handleDragStart(e, { container, index })}
       onDragEnter={
         dragging ? (e) => handleDragEnter(e, { container, index }) : () => {}
       }
-      onDragEnd={() => handleDragEnd()}
     >
       {nameField ? (
         <textarea

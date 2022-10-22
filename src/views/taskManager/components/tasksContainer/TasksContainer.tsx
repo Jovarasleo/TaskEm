@@ -1,4 +1,3 @@
-import { useRef, useState } from "react";
 import { Task as TaskModel } from "views/taskManager/model/task";
 import Task from "../task/Task";
 import styles from "./styles.module.scss";
@@ -18,7 +17,7 @@ interface TaskContainer {
   dragging: boolean;
   handleDragStart: (e: any, task: any) => void;
   handleDragEnter: (e: any, task: any) => void;
-  handleDragEnd: () => void;
+  getStyles: (item: {}) => string;
 }
 
 function TasksContainer({
@@ -31,10 +30,8 @@ function TasksContainer({
   saveTask,
   handleDragEnter,
   handleDragStart,
-  handleDragEnd,
+  getStyles,
 }: TaskContainer) {
-  const setIndex = !tasks.length ? 0 : tasks.length - 1;
-  console.log(container, setIndex);
   return (
     <section
       key={container}
@@ -43,7 +40,7 @@ function TasksContainer({
       role={container}
       onDragEnter={
         dragging && !tasks.length
-          ? (e: any) => handleDragEnter(e, { container, index: setIndex })
+          ? (e: any) => handleDragEnter(e, { container, index: 0 })
           : () => {}
       }
     >
@@ -68,7 +65,7 @@ function TasksContainer({
             saveTask={saveTask}
             handleDragStart={handleDragStart}
             handleDragEnter={handleDragEnter}
-            handleDragEnd={handleDragEnd}
+            getStyles={getStyles}
           />
         );
       })}

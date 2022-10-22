@@ -13,6 +13,26 @@ function TaskManger() {
 
   const [tasksToLocal, setTasksToLocal] = useLocalStorage(initialState);
   const [tasks, setTasks] = useState(tasksToLocal);
+  const [dragging, setDragging] = useState(false);
+  const dragItem = useRef();
+  const dragItemNode = useRef();
+
+  const getStyles = ({
+    container,
+    index,
+  }: {
+    container: string;
+    index: number;
+  }) => {
+    if (
+      dragItem.current.container === container &&
+      dragItem.current.index === index
+    ) {
+      return "current";
+    }
+    return "dnd-item";
+  };
+
   const uid = () => {
     return Date.now().toString(36) + Math.random().toString(36).slice(2);
   };
@@ -50,27 +70,16 @@ function TaskManger() {
       };
     });
   };
-  const dragItem = useRef();
-  const dragItemNode = useRef();
-  const [dragging, setDragging] = useState(false);
 
   const handleDragStart = (e: any, task: any) => {
-    console.log("TASKITEM", tasks);
     dragItemNode.current = e.target;
     dragItem.current = task;
-    setDragging(true);
+    setDragging((prevValue) => (prevValue = true));
+    dragItemNode?.current?.addEventListener("dragend", handleDragEnd);
   };
 
   const handleDragEnter = (e: any, targetItem: any) => {
-    e.stopPropagation();
     if (dragItemNode.current !== e.target) {
-      console.log("passed if drag enter");
-      console.log(
-        dragItem.current.container,
-        targetItem.container,
-        dragItem.current?.index,
-        targetItem.index
-      );
       moveTask(
         dragItem.current?.container,
         targetItem.container,
@@ -83,15 +92,12 @@ function TaskManger() {
   };
 
   const handleDragEnd = () => {
-    setDragging(false);
+    console.log("drag end fired");
+    setDragging((prevValue) => (prevValue = false));
+    console.log(dragging);
     dragItem.current = null;
+    dragItemNode?.current?.removeEventListener("dragend", handleDragEnd);
     dragItemNode.current = null;
-    setTasksToLocal((prevState: TaskContainers) => {
-      return {
-        ...prevState,
-        ...tasks,
-      };
-    });
   };
 
   const moveTask = (
@@ -105,9 +111,7 @@ function TaskManger() {
     const getTask = tasksClone[fromContainer].splice(fromIndex, 1)[0];
     tasksClone[toContainer].splice(toIndex, 0, getTask);
 
-    // tasksClone.splice(fromIndex + 1, 0, tasksClone.splice(toIndex, 1)[0]);
-
-    setTasks((prevState: TaskContainers) => {
+    setTasksToLocal((prevState: TaskContainers) => {
       return {
         ...prevState,
         ...tasksClone,
@@ -130,6 +134,7 @@ function TaskManger() {
             handleDragEnter={handleDragEnter}
             dragging={dragging}
             handleDragEnd={handleDragEnd}
+            getStyles={getStyles}
           />
         );
       })}
