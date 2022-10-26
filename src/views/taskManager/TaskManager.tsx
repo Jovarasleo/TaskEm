@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { TaskContainers, Task } from "./model/task";
 import TasksContainer from "./components/tasksContainer/TasksContainer";
 import useLocalStorage from "./hooks/useLocalStorage";
+import { useDragAndDrop } from "./hooks/useDragAndDrop";
 import styles from "./styles.module.scss";
 
 function TaskManger() {
@@ -13,25 +14,11 @@ function TaskManger() {
 
   const [tasksToLocal, setTasksToLocal] = useLocalStorage(initialState);
   const [tasks, setTasks] = useState(tasksToLocal);
-  const [dragging, setDragging] = useState(false);
-  const dragItem = useRef();
-  const dragItemNode = useRef();
-
-  const getStyles = ({
-    container,
-    index,
-  }: {
-    container: string;
-    index: number;
-  }) => {
-    if (
-      dragItem.current.container === container &&
-      dragItem.current.index === index
-    ) {
-      return "current";
-    }
-    return "dnd-item";
-  };
+  // const [dragging, setDragging] = useState(false);
+  // const dragItem = useRef<DragItem | null>(null);
+  // const dragItemNode = useRef<HTMLDivElement | null>(null);
+  // const dragtoIndex = useRef(0);
+  // const dragtoContainer = useRef("done");
 
   const uid = () => {
     return Date.now().toString(36) + Math.random().toString(36).slice(2);
@@ -71,70 +58,41 @@ function TaskManger() {
     });
   };
 
-  const handleDragStart = (e: any, task: any) => {
-    dragItemNode.current = e.target;
-    dragItem.current = task;
-    setDragging((prevValue) => (prevValue = true));
-    dragItemNode?.current?.addEventListener("dragend", handleDragEnd);
-  };
-
-  const handleDragEnter = (e: any, targetItem: any) => {
-    if (dragItemNode.current !== e.target) {
-      moveTask(
-        dragItem.current?.container,
-        targetItem.container,
-        dragItem.current?.index,
-        targetItem.index
-      );
-      dragItem.current.index = targetItem.index;
-      dragItem.current.container = targetItem.container;
-    }
-  };
-
-  const handleDragEnd = () => {
-    console.log("drag end fired");
-    setDragging((prevValue) => (prevValue = false));
-    console.log(dragging);
-    dragItem.current = null;
-    dragItemNode?.current?.removeEventListener("dragend", handleDragEnd);
-    dragItemNode.current = null;
-  };
-
   const moveTask = (
-    fromContainer: string,
+    fromContainer: string | undefined,
     toContainer: string,
-    fromIndex: number,
+    fromIndex: number | undefined,
     toIndex: number
   ) => {
-    let tasksClone = { ...tasks };
-    if (!tasksClone[fromContainer] || !tasksClone[fromContainer].length) return;
-    const getTask = tasksClone[fromContainer].splice(fromIndex, 1)[0];
-    tasksClone[toContainer].splice(toIndex, 0, getTask);
+    if (!fromContainer) return;
+    const getTask = tasks[fromContainer].splice(fromIndex, 1)[0];
+    tasks[toContainer].splice(toIndex, 0, getTask);
 
     setTasksToLocal((prevState: TaskContainers) => {
       return {
         ...prevState,
-        ...tasksClone,
+        ...tasks,
       };
     });
   };
+  const { handleDragStart, handleDragOver, dragging, dragItem } =
+    useDragAndDrop(moveTask);
 
   return (
     <div className={styles.managerContainer}>
-      {Object.keys(tasks).map((container) => {
+      {Object.keys(tasks)?.map((container) => {
         return (
           <TasksContainer
             key={container}
             tasks={tasks[container as keyof TaskContainers]}
             container={container}
+            selectedContainer={dragItem?.current?.container}
             todo={container === "todo"}
             addNewTask={addNewTask}
             saveTask={saveTask}
             handleDragStart={handleDragStart}
-            handleDragEnter={handleDragEnter}
+            handleDragOver={handleDragOver}
             dragging={dragging}
-            handleDragEnd={handleDragEnd}
-            getStyles={getStyles}
           />
         );
       })}

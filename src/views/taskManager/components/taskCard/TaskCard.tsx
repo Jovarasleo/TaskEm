@@ -8,7 +8,6 @@ interface TaskProps {
   dataTestId?: string;
   index: number;
   container: string;
-  dragging: boolean;
   saveTask: (
     container: string,
     id: string,
@@ -16,19 +15,14 @@ interface TaskProps {
     description: string
   ) => void;
   handleDragStart: (e: any, task: any) => void;
-  handleDragEnter: (e: any, task: any) => void;
-  getStyles: (item: {}) => string;
 }
-function Task({
+function TaskCard({
   task,
   dataTestId,
   index,
   container,
-  dragging,
   saveTask,
   handleDragStart,
-  handleDragEnter,
-  getStyles,
 }: TaskProps) {
   const { name, description, id } = task;
   const [nameField, setNameField] = useState(false);
@@ -70,18 +64,16 @@ function Task({
       }
     }
   };
-  const currentTask = dragging ? getStyles({ container, index }) : "dndItem";
+
   return (
     <div
       role="taskItem"
-      className={clsx(styles.taskWrapper, styles[currentTask])}
+      className={clsx(styles.taskWrapper, styles[""])}
       data-testid={dataTestId}
       draggable
       onDragStart={(e) => handleDragStart(e, { container, index })}
-      onDragEnter={
-        dragging ? (e) => handleDragEnter(e, { container, index }) : () => {}
-      }
     >
+      {index}
       {nameField ? (
         <textarea
           autoFocus
@@ -123,4 +115,4 @@ function Task({
     </div>
   );
 }
-export default Task;
+export default TaskCard;

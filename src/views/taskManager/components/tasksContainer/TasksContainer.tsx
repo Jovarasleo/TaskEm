@@ -1,5 +1,6 @@
+import { useRef, RefObject } from "react";
 import { Task as TaskModel } from "views/taskManager/model/task";
-import Task from "../task/Task";
+import TaskCard from "../taskCard/TaskCard";
 import styles from "./styles.module.scss";
 
 interface TaskContainer {
@@ -15,9 +16,9 @@ interface TaskContainer {
     description: string
   ) => void;
   dragging: boolean;
+  selectedContainer: string | undefined;
   handleDragStart: (e: any, task: any) => void;
-  handleDragEnter: (e: any, task: any) => void;
-  getStyles: (item: {}) => string;
+  handleDragOver: (e: any, task: any) => void;
 }
 
 function TasksContainer({
@@ -25,24 +26,53 @@ function TasksContainer({
   tasks,
   todo,
   container,
+  selectedContainer,
   dragging,
   addNewTask,
   saveTask,
-  handleDragEnter,
+  handleDragOver,
   handleDragStart,
-  getStyles,
 }: TaskContainer) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const handleDragPosition = (
+    e: any,
+    ref: RefObject<HTMLDivElement>,
+    container: string
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const target = ref.current || e.target;
+    const draggableElements = target.querySelectorAll("[draggable]");
+    const rect = target.getBoundingClientRect();
+    const mouseY = e.clientY - rect.top;
+
+    const getIndex = [...draggableElements].reduce((acc, item, index) => {
+      if (
+        item.offsetTop + item.offsetHeight - mouseY < item.offsetHeight / 2 &&
+        selectedContainer !== container
+      ) {
+        return (acc = tasks.length);
+      }
+      if (item.offsetTop - mouseY < item.offsetHeight / 2) {
+        return (acc = index);
+      }
+      return acc;
+    }, 0);
+    handleDragOver(e, { container, index: getIndex });
+  };
+
   return (
     <section
       key={container}
       data-testid={dataTestId}
       className={styles.container}
       role={container}
-      onDragEnter={
-        dragging && !tasks.length
-          ? (e: any) => handleDragEnter(e, { container, index: 0 })
+      onDragOver={
+        dragging
+          ? (e: any) => handleDragPosition(e, containerRef, container)
           : () => {}
       }
+      ref={containerRef}
     >
       {todo && (
         <button
@@ -56,16 +86,13 @@ function TasksContainer({
       <h3>{container}</h3>
       {tasks?.map((task, index) => {
         return (
-          <Task
-            key={task.id}
+          <TaskCard
+            key={task?.id}
             index={index}
             task={task}
             container={container}
-            dragging={dragging}
             saveTask={saveTask}
             handleDragStart={handleDragStart}
-            handleDragEnter={handleDragEnter}
-            getStyles={getStyles}
           />
         );
       })}

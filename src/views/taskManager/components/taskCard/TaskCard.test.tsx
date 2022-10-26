@@ -1,6 +1,6 @@
 import { cleanup, render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import Task from "./Task";
+import TaskCard from "./TaskCard";
 
 afterEach(() => {
   cleanup(); // Resets the DOM after each test suite
@@ -8,18 +8,19 @@ afterEach(() => {
 
 const taskNameInput = "This is task name";
 const taskDescriptionInput = "This is task description";
+const defaultTask = { name: "", description: "", id: "1" };
 const saveTask = () => {};
 
 describe("Test if task container renders and it's functionality works", () => {
   test("task container renders", () => {
     render(
-      <Task
+      <TaskCard
         dataTestId="Task"
-        name={""}
-        description={""}
-        id="1"
+        task={defaultTask}
+        index={1}
         container={"todo"}
         saveTask={saveTask}
+        handleDragStart={() => {}}
       />
     );
     const taskContainer = screen.getByTestId("Task");
@@ -28,13 +29,13 @@ describe("Test if task container renders and it's functionality works", () => {
 
   test("Testing task name inputs", () => {
     render(
-      <Task
+      <TaskCard
         dataTestId="Task"
-        name={""}
-        description={""}
-        id="1"
+        task={defaultTask}
+        index={1}
         container={"todo"}
         saveTask={saveTask}
+        handleDragStart={() => {}}
       />
     );
     const taskNameButton = screen.getAllByRole("button")[0];
@@ -52,13 +53,13 @@ describe("Test if task container renders and it's functionality works", () => {
 
   test("Testing task description inputs", () => {
     render(
-      <Task
+      <TaskCard
         dataTestId="Task"
-        name={""}
-        description={""}
-        id="1"
+        task={defaultTask}
+        index={1}
         container={"todo"}
         saveTask={saveTask}
+        handleDragStart={() => {}}
       />
     );
     const taskDescriptionButton = screen.getAllByRole("button")[1];
@@ -77,13 +78,13 @@ describe("Test if task container renders and it's functionality works", () => {
   test("Testing writing inside task fields", () => {
     //testing name field
     render(
-      <Task
+      <TaskCard
         dataTestId="Task"
-        name={""}
-        description={""}
-        id="1"
+        task={defaultTask}
+        index={1}
         container={"todo"}
         saveTask={saveTask}
+        handleDragStart={() => {}}
       />
     );
     const taskNameButton = screen.getAllByRole("button")[0];
