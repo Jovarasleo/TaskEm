@@ -33,6 +33,10 @@ describe("Test if task container renders and it's functionallity", () => {
         saveTask={saveTask}
         tasks={testArray}
         container={"todo"}
+        dragging
+        selectedContainer="todo"
+        handleDragStart={() => {}}
+        handleDragOver={() => {}}
       />
     );
     const taskContainer = screen.getByTestId("tasksContainer");
@@ -47,6 +51,10 @@ describe("Test if task container renders and it's functionallity", () => {
         saveTask={saveTask}
         tasks={testArray}
         container={"todo"}
+        dragging
+        selectedContainer="todo"
+        handleDragStart={() => {}}
+        handleDragOver={() => {}}
       />
     );
     const getAllTasks = await screen.findAllByRole("taskItem");

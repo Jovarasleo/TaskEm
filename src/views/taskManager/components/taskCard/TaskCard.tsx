@@ -4,10 +4,9 @@ import useOutsideClick from "../../../../hooks/useOutsideClick";
 import styles from "./styles.module.scss";
 
 interface TaskProps {
+  task: { name?: string; description?: string; id: string };
   dataTestId?: string;
-  name?: string;
-  description?: string;
-  id: string;
+  index: number;
   container: string;
   saveTask: (
     container: string,
@@ -15,15 +14,21 @@ interface TaskProps {
     name: string,
     description: string
   ) => void;
+  handleDragStart: (
+    e: React.DragEvent<HTMLElement>,
+    container: string,
+    index: number
+  ) => void;
 }
-function Task({
+function TaskCard({
+  task,
   dataTestId,
-  name,
-  description,
-  id,
+  index,
   container,
   saveTask,
+  handleDragStart,
 }: TaskProps) {
+  const { name, description, id } = task;
   const [nameField, setNameField] = useState(false);
   const [descriptionField, setDescriptionField] = useState(false);
 
@@ -69,6 +74,10 @@ function Task({
       role="taskItem"
       className={styles.taskWrapper}
       data-testid={dataTestId}
+      draggable
+      onDragStart={(e: React.DragEvent<HTMLElement>) =>
+        handleDragStart(e, container, index)
+      }
     >
       {nameField ? (
         <textarea
@@ -111,4 +120,4 @@ function Task({
     </div>
   );
 }
-export default Task;
+export default TaskCard;

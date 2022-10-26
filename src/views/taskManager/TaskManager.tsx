@@ -2,6 +2,7 @@ import { useState } from "react";
 import { TaskContainers, Task } from "./model/task";
 import TasksContainer from "./components/tasksContainer/TasksContainer";
 import useLocalStorage from "./hooks/useLocalStorage";
+import { useDragAndDrop } from "./hooks/useDragAndDrop";
 import styles from "./styles.module.scss";
 
 function TaskManger() {
@@ -13,6 +14,7 @@ function TaskManger() {
 
   const [tasksToLocal, setTasksToLocal] = useLocalStorage(initialState);
   const [tasks, setTasks] = useState(tasksToLocal);
+
   const uid = () => {
     return Date.now().toString(36) + Math.random().toString(36).slice(2);
   };
@@ -51,17 +53,41 @@ function TaskManger() {
     });
   };
 
+  const moveTask = (
+    fromContainer: string | undefined,
+    toContainer: string,
+    fromIndex: number | undefined,
+    toIndex: number
+  ) => {
+    if (!fromContainer) return;
+    const getTask = tasks[fromContainer].splice(fromIndex, 1)[0];
+    tasks[toContainer].splice(toIndex, 0, getTask);
+
+    setTasksToLocal((prevState: TaskContainers) => {
+      return {
+        ...prevState,
+        ...tasks,
+      };
+    });
+  };
+  const { handleDragStart, handleDragOver, dragging, dragItem } =
+    useDragAndDrop(moveTask);
+
   return (
     <div className={styles.managerContainer}>
-      {Object.keys(tasks).map((container) => {
+      {Object.keys(tasks)?.map((container) => {
         return (
           <TasksContainer
             key={container}
             tasks={tasks[container as keyof TaskContainers]}
             container={container}
-            todo={container === "todo" ? true : false}
+            selectedContainer={dragItem?.current?.container}
+            todo={container === "todo"}
             addNewTask={addNewTask}
             saveTask={saveTask}
+            handleDragStart={handleDragStart}
+            handleDragOver={handleDragOver}
+            dragging={dragging}
           />
         );
       })}
