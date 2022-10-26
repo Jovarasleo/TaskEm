@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { TaskContainers, Task } from "./model/task";
 import TasksContainer from "./components/tasksContainer/TasksContainer";
 import useLocalStorage from "./hooks/useLocalStorage";
@@ -14,11 +14,6 @@ function TaskManger() {
 
   const [tasksToLocal, setTasksToLocal] = useLocalStorage(initialState);
   const [tasks, setTasks] = useState(tasksToLocal);
-  // const [dragging, setDragging] = useState(false);
-  // const dragItem = useRef<DragItem | null>(null);
-  // const dragItemNode = useRef<HTMLDivElement | null>(null);
-  // const dragtoIndex = useRef(0);
-  // const dragtoContainer = useRef("done");
 
   const uid = () => {
     return Date.now().toString(36) + Math.random().toString(36).slice(2);

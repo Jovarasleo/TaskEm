@@ -14,7 +14,11 @@ interface TaskProps {
     name: string,
     description: string
   ) => void;
-  handleDragStart: (e: any, task: any) => void;
+  handleDragStart: (
+    e: React.DragEvent<HTMLElement>,
+    container: string,
+    index: number
+  ) => void;
 }
 function TaskCard({
   task,
@@ -68,12 +72,13 @@ function TaskCard({
   return (
     <div
       role="taskItem"
-      className={clsx(styles.taskWrapper, styles[""])}
+      className={styles.taskWrapper}
       data-testid={dataTestId}
       draggable
-      onDragStart={(e) => handleDragStart(e, { container, index })}
+      onDragStart={(e: React.DragEvent<HTMLElement>) =>
+        handleDragStart(e, container, index)
+      }
     >
-      {index}
       {nameField ? (
         <textarea
           autoFocus

@@ -16,19 +16,19 @@ export const useDragAndDrop = (
   const dragItem = useRef<DragItem | null>(null);
   const dragItemNode = useRef<HTMLDivElement | null>(null);
   const dragtoIndex = useRef(0);
-  const dragtoContainer = useRef("done");
+  const dragtoContainer = useRef("todo");
 
-  const handleDragStart = (e: any, task: any) => {
+  const handleDragStart = (e: any, container: string, index: number) => {
     dragItemNode.current = e.target;
-    dragItem.current = task;
+    dragItem.current = { container, index };
     setDragging((prevValue) => (prevValue = true));
   };
 
-  const handleDragOver = (e: any, targetItem: any) => {
+  const handleDragOver = (e: any, container: string, index: number) => {
     e.stopPropagation();
     e.preventDefault();
-    dragtoIndex.current = targetItem.index;
-    dragtoContainer.current = targetItem.container;
+    dragtoContainer.current = container;
+    dragtoIndex.current = index;
     dragItemNode?.current?.addEventListener("dragend", handleDragEnd);
   };
 

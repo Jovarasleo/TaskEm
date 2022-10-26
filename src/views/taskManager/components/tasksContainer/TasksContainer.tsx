@@ -17,8 +17,16 @@ interface TaskContainer {
   ) => void;
   dragging: boolean;
   selectedContainer: string | undefined;
-  handleDragStart: (e: any, task: any) => void;
-  handleDragOver: (e: any, task: any) => void;
+  handleDragStart: (
+    e: React.DragEvent<HTMLElement>,
+    container: string,
+    index: number
+  ) => void;
+  handleDragOver: (
+    e: React.DragEvent<HTMLElement>,
+    container: string,
+    index: number
+  ) => void;
 }
 
 function TasksContainer({
@@ -35,14 +43,16 @@ function TasksContainer({
 }: TaskContainer) {
   const containerRef = useRef<HTMLDivElement>(null);
   const handleDragPosition = (
-    e: any,
+    e: React.DragEvent<HTMLElement>,
     ref: RefObject<HTMLDivElement>,
     container: string
   ) => {
     e.preventDefault();
     e.stopPropagation();
-    const target = ref.current || e.target;
-    const draggableElements = target.querySelectorAll("[draggable]");
+
+    const target = ref.current || (e.target as any);
+    const draggableElements: HTMLElement[] =
+      target.querySelectorAll("[draggable]");
     const rect = target.getBoundingClientRect();
     const mouseY = e.clientY - rect.top;
 
@@ -58,7 +68,7 @@ function TasksContainer({
       }
       return acc;
     }, 0);
-    handleDragOver(e, { container, index: getIndex });
+    handleDragOver(e, container, getIndex);
   };
 
   return (
@@ -69,7 +79,7 @@ function TasksContainer({
       role={container}
       onDragOver={
         dragging
-          ? (e: any) => handleDragPosition(e, containerRef, container)
+          ? (e) => handleDragPosition(e, containerRef, container)
           : () => {}
       }
       ref={containerRef}
