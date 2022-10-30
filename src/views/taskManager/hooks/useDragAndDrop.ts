@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, RefObject } from "react";
 interface DragItem {
   container: string;
   index: number;
@@ -17,10 +17,12 @@ export const useDragAndDrop = (
   const dragItemNode = useRef<HTMLDivElement | null>(null);
   const dragtoIndex = useRef(0);
   const dragtoContainer = useRef("todo");
+  const cursorStartPosition = useRef(0);
 
   const handleDragStart = (e: any, container: string, index: number) => {
     dragItemNode.current = e.target;
     dragItem.current = { container, index };
+    cursorStartPosition.current = e.clientY;
     setDragging((prevValue) => (prevValue = true));
   };
 
@@ -44,5 +46,46 @@ export const useDragAndDrop = (
     dragItem.current = null;
     dragItemNode.current = null;
   };
-  return { handleDragStart, handleDragOver, dragging, dragItem };
+  const handleDrag = (
+    e: React.DragEvent<HTMLElement>,
+    ref: RefObject<HTMLDivElement>,
+    container: string
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const target = ref.current || (e.target as any);
+    const draggableElements: HTMLElement[] =
+      target.querySelectorAll("[draggable]");
+
+    const mappedPositions = [...draggableElements]
+      .filter((_, index) => {
+        if (container === dragItem.current?.container) {
+          return index !== dragItem.current?.index;
+        } else {
+          return index + 1;
+        }
+      })
+      .map((element) => {
+        var rect = element.getBoundingClientRect();
+        const position = Math.round(e.clientY - rect.top - rect.height / 2);
+        return position;
+      });
+
+    const getIndex = mappedPositions.reduce((acc, item, index) => {
+      if (item > 0) {
+        return (acc = index + 1);
+      }
+      return acc;
+    }, 0);
+
+    handleDragOver(e, container, getIndex);
+  };
+  return {
+    handleDragStart,
+    handleDragOver,
+    handleDrag,
+    dragging,
+    dragItem,
+  };
 };

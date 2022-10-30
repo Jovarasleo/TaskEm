@@ -27,6 +27,11 @@ interface TaskContainer {
     container: string,
     index: number
   ) => void;
+  handleDrag: (
+    e: React.DragEvent<HTMLElement>,
+    ref: RefObject<HTMLDivElement>,
+    container: string
+  ) => void;
 }
 
 function TasksContainer({
@@ -34,42 +39,14 @@ function TasksContainer({
   tasks,
   todo,
   container,
-  selectedContainer,
+  // selectedContainer,
   dragging,
   addNewTask,
   saveTask,
-  handleDragOver,
+  handleDrag,
   handleDragStart,
 }: TaskContainer) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const handleDragPosition = (
-    e: React.DragEvent<HTMLElement>,
-    ref: RefObject<HTMLDivElement>,
-    container: string
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const target = ref.current || (e.target as any);
-    const draggableElements: HTMLElement[] =
-      target.querySelectorAll("[draggable]");
-    const rect = target.getBoundingClientRect();
-    const mouseY = e.clientY - rect.top;
-
-    const getIndex = [...draggableElements].reduce((acc, item, index) => {
-      if (
-        item.offsetTop + item.offsetHeight - mouseY < item.offsetHeight / 2 &&
-        selectedContainer !== container
-      ) {
-        return (acc = tasks.length);
-      }
-      if (item.offsetTop - mouseY < item.offsetHeight / 2) {
-        return (acc = index);
-      }
-      return acc;
-    }, 0);
-    handleDragOver(e, container, getIndex);
-  };
 
   return (
     <section
@@ -78,9 +55,7 @@ function TasksContainer({
       className={styles.container}
       role={container}
       onDragOver={
-        dragging
-          ? (e) => handleDragPosition(e, containerRef, container)
-          : () => {}
+        dragging ? (e) => handleDrag(e, containerRef, container) : () => {}
       }
       ref={containerRef}
     >
@@ -100,6 +75,7 @@ function TasksContainer({
             key={task?.id}
             index={index}
             task={task}
+            dragging={dragging}
             container={container}
             saveTask={saveTask}
             handleDragStart={handleDragStart}

@@ -8,6 +8,7 @@ interface TaskProps {
   dataTestId?: string;
   index: number;
   container: string;
+  dragging: boolean;
   saveTask: (
     container: string,
     id: string,
@@ -25,6 +26,7 @@ function TaskCard({
   dataTestId,
   index,
   container,
+  dragging,
   saveTask,
   handleDragStart,
 }: TaskProps) {
@@ -78,6 +80,7 @@ function TaskCard({
       onDragStart={(e: React.DragEvent<HTMLElement>) =>
         handleDragStart(e, container, index)
       }
+      id={dragging ? "dragging" : ""}
     >
       {nameField ? (
         <textarea

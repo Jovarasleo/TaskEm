@@ -70,7 +70,7 @@ function TaskManger() {
       };
     });
   };
-  const { handleDragStart, handleDragOver, dragging, dragItem } =
+  const { handleDragStart, handleDragOver, handleDrag, dragging, dragItem } =
     useDragAndDrop(moveTask);
 
   return (
@@ -87,6 +87,7 @@ function TaskManger() {
             saveTask={saveTask}
             handleDragStart={handleDragStart}
             handleDragOver={handleDragOver}
+            handleDrag={handleDrag}
             dragging={dragging}
           />
         );
