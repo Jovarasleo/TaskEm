@@ -9,6 +9,9 @@ interface TaskProps {
   index: number;
   container: string;
   dragging: boolean;
+  currentPosition: number;
+  arrayLength: number;
+  toContainer: string;
   saveTask: (
     container: string,
     id: string,
@@ -27,6 +30,9 @@ function TaskCard({
   index,
   container,
   dragging,
+  currentPosition,
+  arrayLength,
+  toContainer,
   saveTask,
   handleDragStart,
 }: TaskProps) {
@@ -71,56 +77,69 @@ function TaskCard({
     }
   };
 
-  return (
-    <div
-      role="taskItem"
-      className={styles.taskWrapper}
-      data-testid={dataTestId}
-      draggable
-      onDragStart={(e: React.DragEvent<HTMLElement>) =>
-        handleDragStart(e, container, index)
+  const pointer = () => {
+    if (dragging && toContainer === container) {
+      if (currentPosition === index) {
+        return "before";
       }
-      id={dragging ? "dragging" : ""}
-    >
-      {nameField ? (
-        <textarea
-          autoFocus
-          className={clsx(styles.textarea, styles.taskName)}
-          onChange={(e) => setNameInput(e.target.value)}
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={(e) => handleNameKeypress(e)}
-          placeholder="Task name.."
-          value={nameInput}
-          ref={ref}
-        />
-      ) : (
-        <button
-          className={clsx(styles.button, styles.taskName)}
-          onClick={(e) => handleNameClick(e)}
-        >
-          {nameInput ? nameInput : "Task name"}
-        </button>
-      )}
-      {descriptionField ? (
-        <textarea
-          autoFocus
-          className={clsx(styles.textarea, styles.taskDescription)}
-          onChange={(e) => setDescriptionInput(e.target.value)}
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={(e) => handleDescriptionKeypress(e)}
-          placeholder="Describe task here..."
-          value={descriptionInput}
-          ref={ref}
-        />
-      ) : (
-        <button
-          className={clsx(styles.button, styles.taskDescription)}
-          onClick={(e) => handleDescriptionClick(e)}
-        >
-          {descriptionInput ? descriptionInput : "Task description:"}
-        </button>
-      )}
-    </div>
+      if (currentPosition === index + 1 && currentPosition >= arrayLength) {
+        return "after";
+      } else return "";
+    } else return "";
+  };
+  const getClass = pointer();
+
+  return (
+    <>
+      <div
+        role="taskItem"
+        className={clsx(styles.taskWrapper, styles[getClass])}
+        data-testid={dataTestId}
+        draggable
+        onDragStart={(e: React.DragEvent<HTMLElement>) =>
+          handleDragStart(e, container, index)
+        }
+      >
+        {nameField ? (
+          <textarea
+            autoFocus
+            className={clsx(styles.textarea, styles.taskName)}
+            onChange={(e) => setNameInput(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => handleNameKeypress(e)}
+            placeholder="Task name.."
+            value={nameInput}
+            ref={ref}
+          />
+        ) : (
+          <button
+            className={clsx(styles.button, styles.taskName)}
+            onClick={(e) => handleNameClick(e)}
+          >
+            {nameInput ? nameInput : "Task name"}
+          </button>
+        )}
+        {descriptionField ? (
+          <textarea
+            autoFocus
+            className={clsx(styles.textarea, styles.taskDescription)}
+            onChange={(e) => setDescriptionInput(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => handleDescriptionKeypress(e)}
+            placeholder="Describe task here..."
+            value={descriptionInput}
+            ref={ref}
+          />
+        ) : (
+          <button
+            className={clsx(styles.button, styles.taskDescription)}
+            onClick={(e) => handleDescriptionClick(e)}
+          >
+            {descriptionInput ? descriptionInput : "Task description:"}
+          </button>
+        )}
+      </div>
+    </>
   );
 }
 export default TaskCard;

@@ -70,9 +70,15 @@ function TaskManger() {
       };
     });
   };
-  const { handleDragStart, handleDragOver, handleDrag, dragging, dragItem } =
-    useDragAndDrop(moveTask);
-
+  const {
+    handleDragStart,
+    handleDragOver,
+    handleDrag,
+    dragging,
+    dragItem,
+    currentPosition,
+    toContainer,
+  } = useDragAndDrop(moveTask);
   return (
     <div className={styles.managerContainer}>
       {Object.keys(tasks)?.map((container) => {
@@ -81,7 +87,6 @@ function TaskManger() {
             key={container}
             tasks={tasks[container as keyof TaskContainers]}
             container={container}
-            selectedContainer={dragItem?.current?.container}
             todo={container === "todo"}
             addNewTask={addNewTask}
             saveTask={saveTask}
@@ -89,6 +94,8 @@ function TaskManger() {
             handleDragOver={handleDragOver}
             handleDrag={handleDrag}
             dragging={dragging}
+            currentPosition={currentPosition}
+            toContainer={toContainer}
           />
         );
       })}

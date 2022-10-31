@@ -17,18 +17,21 @@ export const useDragAndDrop = (
   const dragItemNode = useRef<HTMLDivElement | null>(null);
   const dragtoIndex = useRef(0);
   const dragtoContainer = useRef("todo");
-  const cursorStartPosition = useRef(0);
+  const [toContainer, setToContainer] = useState("");
+  const [currentPosition, setCurrentPosition] = useState(0);
 
   const handleDragStart = (e: any, container: string, index: number) => {
     dragItemNode.current = e.target;
     dragItem.current = { container, index };
-    cursorStartPosition.current = e.clientY;
+    setToContainer(container);
+    dragtoContainer.current = container;
+    setCurrentPosition(index);
     setDragging((prevValue) => (prevValue = true));
   };
 
   const handleDragOver = (e: any, container: string, index: number) => {
     e.stopPropagation();
-    e.preventDefault();
+    setToContainer(container);
     dragtoContainer.current = container;
     dragtoIndex.current = index;
     dragItemNode?.current?.addEventListener("dragend", handleDragEnd);
@@ -57,7 +60,6 @@ export const useDragAndDrop = (
     const target = ref.current || (e.target as any);
     const draggableElements: HTMLElement[] =
       target.querySelectorAll("[draggable]");
-
     const mappedPositions = [...draggableElements]
       .filter((_, index) => {
         if (container === dragItem.current?.container) {
@@ -78,14 +80,30 @@ export const useDragAndDrop = (
       }
       return acc;
     }, 0);
+    const pointerPosition = [...draggableElements].map((element) => {
+      var rect = element.getBoundingClientRect();
+      const position = Math.round(e.clientY - rect.top - rect.height / 2);
+      return position;
+    });
+
+    const pointerIndex = pointerPosition.reduce((acc, item, index) => {
+      if (item > 0) {
+        return (acc = index + 1);
+      }
+      return acc;
+    }, 0);
+    setCurrentPosition(pointerIndex);
 
     handleDragOver(e, container, getIndex);
   };
+
   return {
     handleDragStart,
     handleDragOver,
     handleDrag,
     dragging,
     dragItem,
+    toContainer,
+    currentPosition,
   };
 };

@@ -9,6 +9,7 @@
   padding: 10px;
   justify-content: center;
   opacity: 1;
+  position: relative;
   .textarea {
     resize: none;
     font-size: 14px;
@@ -42,7 +43,34 @@
 }
 .current {
   background-color: black;
+  height: 3px;
+  position: relative;
 }
-.position {
-  border-top: 5px solid black;
+.before {
+  position: relative;
+}
+.before::before {
+  content: "";
+  display: block;
+  left: 0;
+  height: 4px;
+  top: -10px;
+  background-color: rgb(237, 140, 13);
+  width: 100%;
+  position: absolute;
+}
+
+.after {
+  position: relative;
+}
+
+.after:after {
+  content: "";
+  display: block;
+  left: 0;
+  height: 4px;
+  bottom: -10px;
+  background-color: rgb(237, 140, 13);
+  width: 100%;
+  position: absolute;
 }

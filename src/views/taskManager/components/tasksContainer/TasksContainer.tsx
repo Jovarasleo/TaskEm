@@ -16,7 +16,8 @@ interface TaskContainer {
     description: string
   ) => void;
   dragging: boolean;
-  selectedContainer: string | undefined;
+  toContainer: string;
+  currentPosition: number;
   handleDragStart: (
     e: React.DragEvent<HTMLElement>,
     container: string,
@@ -39,7 +40,8 @@ function TasksContainer({
   tasks,
   todo,
   container,
-  // selectedContainer,
+  toContainer,
+  currentPosition,
   dragging,
   addNewTask,
   saveTask,
@@ -75,10 +77,13 @@ function TasksContainer({
             key={task?.id}
             index={index}
             task={task}
+            arrayLength={tasks.length}
             dragging={dragging}
             container={container}
             saveTask={saveTask}
             handleDragStart={handleDragStart}
+            currentPosition={currentPosition}
+            toContainer={toContainer}
           />
         );
       })}
