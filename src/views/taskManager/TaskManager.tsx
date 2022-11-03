@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { TaskContainers, Task } from "./model/task";
-import TasksContainer from "./components/tasksContainer/TasksContainer";
-import useLocalStorage from "./hooks/useLocalStorage";
+import { TaskContainers, Task, MoveTask, SaveTask } from "./model/task";
 import { useDragAndDrop } from "./hooks/useDragAndDrop";
+import useLocalStorage from "./hooks/useLocalStorage";
+import TasksContainer from "./components/tasksContainer/TasksContainer";
 import styles from "./styles.module.scss";
 
 function TaskManger() {
@@ -19,7 +19,7 @@ function TaskManger() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2);
   };
 
-  const addNewTask = () => {
+  const newTask = () => {
     setTasks((prevState: TaskContainers) => {
       return {
         ...prevState,
@@ -28,12 +28,7 @@ function TaskManger() {
     });
   };
 
-  const saveTask = (
-    container: string,
-    id: string,
-    name: string,
-    description: string
-  ) => {
+  const saveTask: SaveTask = (container, id, name, description) => {
     const taskClone = [...tasks[container]];
     const newTasks = taskClone
       .map((task: Task) => {
@@ -53,11 +48,11 @@ function TaskManger() {
     });
   };
 
-  const moveTask = (
-    fromContainer: string | undefined,
-    toContainer: string,
-    fromIndex: number | undefined,
-    toIndex: number
+  const moveTask: MoveTask = (
+    fromContainer,
+    toContainer,
+    fromIndex,
+    toIndex
   ) => {
     if (!fromContainer) return;
     const getTask = tasks[fromContainer].splice(fromIndex, 1)[0];
@@ -70,15 +65,17 @@ function TaskManger() {
       };
     });
   };
+
   const {
     handleDragStart,
     handleDragOver,
     handleDrag,
     dragging,
-    dragItem,
-    currentPosition,
+    nextPosition,
     toContainer,
+    dragItem,
   } = useDragAndDrop(moveTask);
+
   return (
     <div className={styles.managerContainer}>
       {Object.keys(tasks)?.map((container) => {
@@ -87,15 +84,15 @@ function TaskManger() {
             key={container}
             tasks={tasks[container as keyof TaskContainers]}
             container={container}
-            todo={container === "todo"}
-            addNewTask={addNewTask}
+            newTask={newTask}
             saveTask={saveTask}
             handleDragStart={handleDragStart}
             handleDragOver={handleDragOver}
             handleDrag={handleDrag}
             dragging={dragging}
-            currentPosition={currentPosition}
+            nextPosition={nextPosition}
             toContainer={toContainer}
+            dragItem={dragItem.current}
           />
         );
       })}

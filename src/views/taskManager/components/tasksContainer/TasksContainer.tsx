@@ -1,55 +1,44 @@
-import { useRef, RefObject } from "react";
-import { Task as TaskModel } from "views/taskManager/model/task";
+import { useRef } from "react";
+import {
+  SaveTask,
+  handleDragStart,
+  handleDragOver,
+  handleDrag,
+  DragItem,
+  Task as TaskModel,
+} from "../../model/task";
 import TaskCard from "../taskCard/TaskCard";
 import styles from "./styles.module.scss";
 
 interface TaskContainer {
   dataTestId?: string;
   tasks: TaskModel[];
-  todo?: boolean;
   container: string;
-  addNewTask?: (container: string) => void;
-  saveTask: (
-    container: string,
-    id: string,
-    name: string,
-    description: string
-  ) => void;
   dragging: boolean;
   toContainer: string;
-  currentPosition: number;
-  handleDragStart: (
-    e: React.DragEvent<HTMLElement>,
-    container: string,
-    index: number
-  ) => void;
-  handleDragOver: (
-    e: React.DragEvent<HTMLElement>,
-    container: string,
-    index: number
-  ) => void;
-  handleDrag: (
-    e: React.DragEvent<HTMLElement>,
-    ref: RefObject<HTMLDivElement>,
-    container: string
-  ) => void;
+  nextPosition: null | number;
+  dragItem: DragItem | null;
+  newTask?: (container: string) => void;
+  saveTask: SaveTask;
+  handleDragStart: handleDragStart;
+  handleDragOver: handleDragOver;
+  handleDrag: handleDrag;
 }
 
 function TasksContainer({
   dataTestId,
   tasks,
-  todo,
   container,
   toContainer,
-  currentPosition,
+  nextPosition,
   dragging,
-  addNewTask,
+  dragItem,
+  newTask,
   saveTask,
   handleDrag,
   handleDragStart,
 }: TaskContainer) {
   const containerRef = useRef<HTMLDivElement>(null);
-
   return (
     <section
       key={container}
@@ -61,10 +50,10 @@ function TasksContainer({
       }
       ref={containerRef}
     >
-      {todo && (
+      {container === "todo" && (
         <button
           role={"newTask"}
-          onClick={addNewTask ? () => addNewTask(container) : () => {}}
+          onClick={newTask ? () => newTask(container) : () => {}}
           className={styles.addTaskButton}
         >
           +
@@ -75,15 +64,16 @@ function TasksContainer({
         return (
           <TaskCard
             key={task?.id}
-            index={index}
             task={task}
+            index={index}
             arrayLength={tasks.length}
             dragging={dragging}
             container={container}
+            nextPosition={nextPosition}
+            toContainer={toContainer}
+            dragItem={dragItem}
             saveTask={saveTask}
             handleDragStart={handleDragStart}
-            currentPosition={currentPosition}
-            toContainer={toContainer}
           />
         );
       })}
