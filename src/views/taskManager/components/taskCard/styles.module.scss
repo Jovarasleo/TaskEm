@@ -1,14 +1,14 @@
 .taskWrapper {
   border-radius: 10px;
-  border: 3px solid rgb(102, 102, 102);
+  box-shadow: 0px 0px 3px 1px rgb(22, 22, 22);
   display: flex;
   flex-direction: column;
   max-height: 140px;
-  max-width: 250px;
   width: 100%;
   padding: 10px;
   justify-content: center;
   opacity: 1;
+  position: relative;
   .textarea {
     resize: none;
     font-size: 14px;
@@ -38,11 +38,42 @@
   }
 }
 .taskWrapper + .taskWrapper {
-  margin-top: 10px;
+  margin-top: 20px;
 }
 .current {
-  background-color: black;
+  box-shadow: 0px 0px 4px 2px rgb(22, 22, 22);
 }
-.position {
-  border-top: 5px solid black;
+.before {
+  position: relative;
+  &:before {
+    content: "";
+    display: block;
+    left: 0;
+    height: 4px;
+    border-radius: 10px;
+    top: -12px;
+    background-color: rgb(237, 140, 13);
+    width: 100%;
+    position: absolute;
+    pointer-events: none;
+  }
+}
+
+.after {
+  position: relative;
+  &:after {
+    content: "";
+    display: block;
+    left: 0;
+    height: 4px;
+    border-radius: 10px;
+    bottom: -12px;
+    background-color: rgb(237, 140, 13);
+    width: 100%;
+    position: absolute;
+    pointer-events: none;
+  }
+}
+.removePointer > * {
+  pointer-events: none;
 }

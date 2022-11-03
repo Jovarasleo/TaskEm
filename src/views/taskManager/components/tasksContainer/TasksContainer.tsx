@@ -1,76 +1,44 @@
-import { useRef, RefObject } from "react";
-import { Task as TaskModel } from "views/taskManager/model/task";
+import { useRef } from "react";
+import {
+  SaveTask,
+  handleDragStart,
+  handleDragOver,
+  handleDrag,
+  DragItem,
+  Task as TaskModel,
+} from "../../model/task";
 import TaskCard from "../taskCard/TaskCard";
 import styles from "./styles.module.scss";
 
 interface TaskContainer {
   dataTestId?: string;
   tasks: TaskModel[];
-  todo?: boolean;
   container: string;
-  addNewTask?: (container: string) => void;
-  saveTask: (
-    container: string,
-    id: string,
-    name: string,
-    description: string
-  ) => void;
   dragging: boolean;
-  selectedContainer: string | undefined;
-  handleDragStart: (
-    e: React.DragEvent<HTMLElement>,
-    container: string,
-    index: number
-  ) => void;
-  handleDragOver: (
-    e: React.DragEvent<HTMLElement>,
-    container: string,
-    index: number
-  ) => void;
+  toContainer: string;
+  nextPosition: null | number;
+  dragItem: DragItem | null;
+  newTask?: (container: string) => void;
+  saveTask: SaveTask;
+  handleDragStart: handleDragStart;
+  handleDragOver: handleDragOver;
+  handleDrag: handleDrag;
 }
 
 function TasksContainer({
   dataTestId,
   tasks,
-  todo,
   container,
-  selectedContainer,
+  toContainer,
+  nextPosition,
   dragging,
-  addNewTask,
+  dragItem,
+  newTask,
   saveTask,
-  handleDragOver,
+  handleDrag,
   handleDragStart,
 }: TaskContainer) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const handleDragPosition = (
-    e: React.DragEvent<HTMLElement>,
-    ref: RefObject<HTMLDivElement>,
-    container: string
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const target = ref.current || (e.target as any);
-    const draggableElements: HTMLElement[] =
-      target.querySelectorAll("[draggable]");
-    const rect = target.getBoundingClientRect();
-    const mouseY = e.clientY - rect.top;
-
-    const getIndex = [...draggableElements].reduce((acc, item, index) => {
-      if (
-        item.offsetTop + item.offsetHeight - mouseY < item.offsetHeight / 2 &&
-        selectedContainer !== container
-      ) {
-        return (acc = tasks.length);
-      }
-      if (item.offsetTop - mouseY < item.offsetHeight / 2) {
-        return (acc = index);
-      }
-      return acc;
-    }, 0);
-    handleDragOver(e, container, getIndex);
-  };
-
   return (
     <section
       key={container}
@@ -78,16 +46,14 @@ function TasksContainer({
       className={styles.container}
       role={container}
       onDragOver={
-        dragging
-          ? (e) => handleDragPosition(e, containerRef, container)
-          : () => {}
+        dragging ? (e) => handleDrag(e, containerRef, container) : () => {}
       }
       ref={containerRef}
     >
-      {todo && (
+      {container === "todo" && (
         <button
           role={"newTask"}
-          onClick={addNewTask ? () => addNewTask(container) : () => {}}
+          onClick={newTask ? () => newTask(container) : () => {}}
           className={styles.addTaskButton}
         >
           +
@@ -98,9 +64,14 @@ function TasksContainer({
         return (
           <TaskCard
             key={task?.id}
-            index={index}
             task={task}
+            index={index}
+            arrayLength={tasks.length}
+            dragging={dragging}
             container={container}
+            nextPosition={nextPosition}
+            toContainer={toContainer}
+            dragItem={dragItem}
             saveTask={saveTask}
             handleDragStart={handleDragStart}
           />

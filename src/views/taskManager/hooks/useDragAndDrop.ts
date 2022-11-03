@@ -1,41 +1,45 @@
+import {
+  DragItem,
+  MoveTask,
+  handleDrag,
+  handleDragOver,
+  handleDragStart,
+} from "../model/task";
 import { useRef, useState } from "react";
-interface DragItem {
-  container: string;
-  index: number;
-}
 
-export const useDragAndDrop = (
-  callback: (
-    fromContainer: string | undefined,
-    toContainer: string,
-    fromIndex: number | undefined,
-    toIndex: number
-  ) => void
-) => {
+export const useDragAndDrop = (moveTask: MoveTask) => {
   const [dragging, setDragging] = useState(false);
+  const [toContainer, setToContainer] = useState("");
+  const [nextPosition, setNextPosition] = useState<null | number>(0);
+
   const dragItem = useRef<DragItem | null>(null);
   const dragItemNode = useRef<HTMLDivElement | null>(null);
   const dragtoIndex = useRef(0);
-  const dragtoContainer = useRef("todo");
+  const dragtoContainer = useRef("");
 
-  const handleDragStart = (e: any, container: string, index: number) => {
+  const handleDragStart: handleDragStart = (e: any, container, index) => {
     dragItemNode.current = e.target;
     dragItem.current = { container, index };
-    setDragging((prevValue) => (prevValue = true));
+    dragtoContainer.current = container;
+
+    setTimeout(() => {
+      setDragging((prevValue) => (prevValue = true));
+    }, 0);
   };
 
-  const handleDragOver = (e: any, container: string, index: number) => {
+  const handleDragOver: handleDragOver = (e, container, index) => {
     e.stopPropagation();
-    e.preventDefault();
+    setToContainer(container);
     dragtoContainer.current = container;
     dragtoIndex.current = index;
     dragItemNode?.current?.addEventListener("dragend", handleDragEnd);
   };
 
   const handleDragEnd = () => {
+    setNextPosition((prevState) => (prevState = null));
     setDragging((prevValue) => (prevValue = false));
     dragItemNode?.current?.removeEventListener("dragend", handleDragEnd);
-    callback(
+    moveTask(
       dragItem.current?.container,
       dragtoContainer.current,
       dragItem.current?.index,
@@ -44,5 +48,59 @@ export const useDragAndDrop = (
     dragItem.current = null;
     dragItemNode.current = null;
   };
-  return { handleDragStart, handleDragOver, dragging, dragItem };
+  const handleDrag: handleDrag = (e, ref, container) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const target = ref.current || (e.target as any);
+    const draggableElements: HTMLElement[] =
+      target.querySelectorAll("[draggable]");
+
+    const mappedPositions = [...draggableElements]
+      .filter((_, index) => {
+        if (container === dragItem.current?.container) {
+          return index !== dragItem.current?.index;
+        } else {
+          return index + 1;
+        }
+      })
+      .map((element) => {
+        let rect = element.getBoundingClientRect();
+        const position = Math.round(e.clientY - rect.top - rect.height / 2);
+        return position;
+      });
+
+    const getIndex = mappedPositions.reduce((acc, item, index) => {
+      if (item > 0) {
+        return (acc = index + 1);
+      }
+      return acc;
+    }, 0);
+
+    const pointerPosition = [...draggableElements].map((element) => {
+      let rect = element.getBoundingClientRect();
+      const position = Math.round(e.clientY - rect.top - rect.height / 2);
+      return position;
+    });
+
+    const pointerIndex = pointerPosition.reduce((acc, item, index) => {
+      if (item > 0) {
+        return (acc = index + 1);
+      }
+      return acc;
+    }, 0);
+
+    setNextPosition((prevState) => (prevState = pointerIndex));
+    handleDragOver(e, container, getIndex);
+  };
+
+  return {
+    handleDragStart,
+    handleDragOver,
+    handleDrag,
+    dragging,
+    toContainer,
+    nextPosition,
+    dragItem,
+  };
 };

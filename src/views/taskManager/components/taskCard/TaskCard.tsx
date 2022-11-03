@@ -1,30 +1,38 @@
-import { clsx } from "clsx";
 import { useState } from "react";
+import { clsx } from "clsx";
+import {
+  DragItem,
+  SaveTask,
+  handleDragStart,
+  Task,
+} from "views/taskManager/model/task";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
 import styles from "./styles.module.scss";
 
 interface TaskProps {
-  task: { name?: string; description?: string; id: string };
   dataTestId?: string;
+  task: Task;
   index: number;
   container: string;
-  saveTask: (
-    container: string,
-    id: string,
-    name: string,
-    description: string
-  ) => void;
-  handleDragStart: (
-    e: React.DragEvent<HTMLElement>,
-    container: string,
-    index: number
-  ) => void;
+  dragging: boolean;
+  nextPosition: null | number;
+  arrayLength: number;
+  toContainer: string;
+  dragItem: DragItem | null;
+  saveTask: SaveTask;
+  handleDragStart: handleDragStart;
 }
+
 function TaskCard({
   task,
   dataTestId,
   index,
   container,
+  dragging,
+  nextPosition,
+  arrayLength,
+  toContainer,
+  dragItem,
   saveTask,
   handleDragStart,
 }: TaskProps) {
@@ -69,15 +77,35 @@ function TaskCard({
     }
   };
 
+  const pointer = () => {
+    if (dragging && toContainer === container) {
+      if (nextPosition === index) {
+        return "before";
+      }
+      if (nextPosition === index + 1 && nextPosition >= arrayLength) {
+        return "after";
+      } else return "";
+    } else return "";
+  };
+
+  const getClass = pointer();
+
   return (
     <div
       role="taskItem"
-      className={styles.taskWrapper}
+      className={clsx(
+        styles.taskWrapper,
+        styles[getClass],
+        dragging && styles.removePointer,
+        dragItem?.index === index &&
+          dragItem?.container === container &&
+          styles.current
+      )}
       data-testid={dataTestId}
-      draggable
-      onDragStart={(e: React.DragEvent<HTMLElement>) =>
-        handleDragStart(e, container, index)
-      }
+      draggable={!descriptionField && !nameField}
+      onDragStart={(e: React.DragEvent<HTMLElement>) => {
+        handleDragStart(e, container, index);
+      }}
     >
       {nameField ? (
         <textarea
