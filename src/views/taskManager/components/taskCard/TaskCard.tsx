@@ -53,12 +53,12 @@ function TaskCard({
   const handleNameClick = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setNameField((prevState) => (prevState = true));
+    setNameField(true);
   };
   const handleDescriptionClick = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setDescriptionField((prevState) => (prevState = true));
+    setDescriptionField(true);
   };
   const handleNameKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
     if (e.key === "Enter" || e.key === "Escape") {
