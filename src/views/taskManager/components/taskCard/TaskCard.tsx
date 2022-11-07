@@ -47,8 +47,8 @@ function TaskCard({
   const [descriptionInput, setDescriptionInput] = useState(description || "");
 
   const closeTextBoxes = () => {
-    setDescriptionField((prevState) => (prevState = false));
-    setNameField((prevState) => (prevState = false));
+    setDescriptionField(false);
+    setNameField(false);
   };
 
   const ref = useOutsideClick(closeTextBoxes);
@@ -56,16 +56,16 @@ function TaskCard({
   const handleNameClick = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setNameField((prevState) => (prevState = true));
+    setNameField(true);
   };
   const handleDescriptionClick = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setDescriptionField((prevState) => (prevState = true));
+    setDescriptionField(true);
   };
   const handleNameKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
     if (e.key === "Enter" || e.key === "Escape") {
-      setNameField((prevState) => (prevState = false));
+      setNameField(false);
       if (nameInput.length || descriptionInput.length) {
         saveTask(container, id, nameInput, descriptionInput);
       }
@@ -73,7 +73,7 @@ function TaskCard({
   };
   const handleDescriptionKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
     if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
-      setDescriptionField((prevState) => (prevState = false));
+      setDescriptionField(false);
       if (nameInput.length || descriptionInput.length) {
         saveTask(container, id, nameInput, descriptionInput);
       }

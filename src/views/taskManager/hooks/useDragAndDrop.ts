@@ -23,7 +23,7 @@ export const useDragAndDrop = (moveTask: MoveTask) => {
     dragtoContainer.current = container;
 
     setTimeout(() => {
-      setDragging((prevValue) => (prevValue = true));
+      setDragging(true);
     }, 0);
   };
 
@@ -36,8 +36,8 @@ export const useDragAndDrop = (moveTask: MoveTask) => {
   };
 
   const handleDragEnd = () => {
-    setNextPosition((prevState) => (prevState = null));
-    setDragging((prevValue) => (prevValue = false));
+    setNextPosition(null);
+    setDragging(false);
     dragItemNode?.current?.removeEventListener("dragend", handleDragEnd);
     moveTask(
       dragItem.current?.container,
@@ -72,7 +72,7 @@ export const useDragAndDrop = (moveTask: MoveTask) => {
 
     const getIndex = mappedPositions.reduce((acc, item, index) => {
       if (item > 0) {
-        return (acc = index + 1);
+        return index + 1;
       }
       return acc;
     }, 0);
@@ -85,12 +85,12 @@ export const useDragAndDrop = (moveTask: MoveTask) => {
 
     const pointerIndex = pointerPosition.reduce((acc, item, index) => {
       if (item > 0) {
-        return (acc = index + 1);
+        return index + 1;
       }
       return acc;
     }, 0);
 
-    setNextPosition((prevState) => (prevState = pointerIndex));
+    setNextPosition(pointerIndex);
     handleDragOver(e, container, getIndex);
   };
 
