@@ -3,6 +3,7 @@ import { clsx } from "clsx";
 import {
   DragItem,
   SaveTask,
+  DeleteTask,
   handleDragStart,
   Task,
 } from "views/taskManager/model/task";
@@ -20,6 +21,7 @@ interface TaskProps {
   toContainer: string;
   dragItem: DragItem | null;
   saveTask: SaveTask;
+  deleteTask: DeleteTask;
   handleDragStart: handleDragStart;
 }
 
@@ -34,6 +36,7 @@ function TaskCard({
   toContainer,
   dragItem,
   saveTask,
+  deleteTask,
   handleDragStart,
 }: TaskProps) {
   const { name, description, id } = task;
@@ -107,6 +110,7 @@ function TaskCard({
         handleDragStart(e, container, index);
       }}
     >
+      <button onClick={() => deleteTask(task.id, container)}>-</button>
       {nameField ? (
         <textarea
           autoFocus

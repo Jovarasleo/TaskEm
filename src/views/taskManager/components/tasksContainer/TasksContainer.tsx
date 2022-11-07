@@ -5,6 +5,7 @@ import {
   handleDragOver,
   handleDrag,
   DragItem,
+  DeleteTask,
   Task as TaskModel,
 } from "../../model/task";
 import TaskCard from "../taskCard/TaskCard";
@@ -20,6 +21,7 @@ interface TaskContainer {
   dragItem: DragItem | null;
   newTask?: (container: string) => void;
   saveTask: SaveTask;
+  deleteTask: DeleteTask;
   handleDragStart: handleDragStart;
   handleDragOver: handleDragOver;
   handleDrag: handleDrag;
@@ -35,6 +37,7 @@ function TasksContainer({
   dragItem,
   newTask,
   saveTask,
+  deleteTask,
   handleDrag,
   handleDragStart,
 }: TaskContainer) {
@@ -73,6 +76,7 @@ function TasksContainer({
             toContainer={toContainer}
             dragItem={dragItem}
             saveTask={saveTask}
+            deleteTask={deleteTask}
             handleDragStart={handleDragStart}
           />
         );

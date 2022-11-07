@@ -29,6 +29,8 @@ export type SaveTask = (
   description: string
 ) => void;
 
+export type DeleteTask = (id: string, container: string) => void;
+
 export type handleDragStart = (
   e: React.DragEvent<HTMLElement>,
   container: string,
