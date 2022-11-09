@@ -1,9 +1,9 @@
 .taskWrapper {
+  cursor: grab;
   border-radius: 10px;
   box-shadow: 0px 0px 2px 1px rgb(22, 22, 22);
   display: flex;
   flex-direction: column;
-  max-height: 140px;
   width: 100%;
   padding: 10px;
   justify-content: center;
@@ -12,27 +12,36 @@
   .textarea {
     resize: none;
     font-size: 14px;
+    overflow-wrap: break-word;
+    border: 0;
+    word-break: break-all;
+    cursor: text;
   }
   .button {
     text-align: left;
-    max-height: 300px;
-    overflow: auto;
+    max-height: 120px;
     display: flex;
     border: none;
     font-size: 14px;
-  }
-  .taskName {
-    padding-left: 5px;
-    min-height: 20px;
-    height: 20px;
-    width: 50%;
+    overflow-wrap: break-word;
+    background-color: #e2e2e2;
+    word-break: break-all;
+    cursor: text;
   }
   .taskDescription {
-    padding: 5px;
-    height: 40px;
-  }
-  .taskName + .taskDescription {
     margin-top: 10px;
+    padding: 5px;
+    overflow: hidden;
+  }
+  .deleteButton {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: none;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    cursor: pointer;
   }
 }
 .taskWrapper + .taskWrapper {

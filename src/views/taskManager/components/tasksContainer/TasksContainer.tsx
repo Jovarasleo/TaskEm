@@ -1,13 +1,12 @@
-import { useRef } from "react";
+import { useState, useRef } from "react";
 import {
-  SaveTask,
   handleDragStart,
   handleDragOver,
   handleDrag,
   DragItem,
-  DeleteTask,
   Task as TaskModel,
 } from "../../model/task";
+import useOutsideClick from "../../../../hooks/useOutsideClick";
 import TaskCard from "../taskCard/TaskCard";
 import styles from "./styles.module.scss";
 
@@ -19,9 +18,7 @@ interface TaskContainer {
   toContainer: string;
   nextPosition: null | number;
   dragItem: DragItem | null;
-  newTask?: (container: string) => void;
-  saveTask: SaveTask;
-  deleteTask: DeleteTask;
+  dispatch: (action: {}) => void;
   handleDragStart: handleDragStart;
   handleDragOver: handleDragOver;
   handleDrag: handleDrag;
@@ -35,13 +32,30 @@ function TasksContainer({
   nextPosition,
   dragging,
   dragItem,
-  newTask,
-  saveTask,
-  deleteTask,
+  dispatch,
   handleDrag,
   handleDragStart,
 }: TaskContainer) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const outsideClickRef = useRef<HTMLTextAreaElement>(null);
+  const [addTask, setAddTask] = useState(false);
+  const [input, setInput] = useState("");
+
+  const createTask = () => {
+    setAddTask(false);
+    setInput("");
+    if (input.length) {
+      dispatch({ type: "ADD_TASK", value: input });
+    }
+  };
+  const handleKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
+    if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
+      createTask();
+    }
+  };
+
+  useOutsideClick(createTask, outsideClickRef);
+
   return (
     <section
       key={container}
@@ -56,13 +70,23 @@ function TasksContainer({
       {container === "todo" && (
         <button
           role={"newTask"}
-          onClick={newTask ? () => newTask(container) : () => {}}
+          onClick={() => setAddTask(true)}
           className={styles.addTaskButton}
         >
           +
         </button>
       )}
       <h3>{container}</h3>
+      {addTask ? (
+        <textarea
+          autoFocus
+          className={styles.input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => handleKeypress(e)}
+          ref={outsideClickRef}
+        />
+      ) : null}
+
       {tasks?.map((task, index) => {
         return (
           <TaskCard
@@ -75,8 +99,7 @@ function TasksContainer({
             nextPosition={nextPosition}
             toContainer={toContainer}
             dragItem={dragItem}
-            saveTask={saveTask}
-            deleteTask={deleteTask}
+            dispatch={dispatch}
             handleDragStart={handleDragStart}
           />
         );

@@ -1,12 +1,6 @@
-import { useState } from "react";
+import { FocusEvent, useState, useRef, useEffect, RefObject } from "react";
 import { clsx } from "clsx";
-import {
-  DragItem,
-  SaveTask,
-  DeleteTask,
-  handleDragStart,
-  Task,
-} from "views/taskManager/model/task";
+import { DragItem, handleDragStart, Task } from "views/taskManager/model/task";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
 import styles from "./styles.module.scss";
 
@@ -20,8 +14,7 @@ interface TaskProps {
   arrayLength: number;
   toContainer: string;
   dragItem: DragItem | null;
-  saveTask: SaveTask;
-  deleteTask: DeleteTask;
+  dispatch: (action: {}) => void;
   handleDragStart: handleDragStart;
 }
 
@@ -35,51 +28,59 @@ function TaskCard({
   arrayLength,
   toContainer,
   dragItem,
-  saveTask,
-  deleteTask,
+  dispatch,
   handleDragStart,
 }: TaskProps) {
-  const { name, description, id } = task;
-  const [nameField, setNameField] = useState(false);
-  const [descriptionField, setDescriptionField] = useState(false);
-
-  const [nameInput, setNameInput] = useState(name || "");
-  const [descriptionInput, setDescriptionInput] = useState(description || "");
+  const { value, id } = task;
+  const [inputField, setInputField] = useState(false);
+  const [input, setInput] = useState(value || "");
+  const textAreaRef = useRef<HTMLElement | null>(null);
+  const outsideClickRef = useRef<HTMLElement | null>(null);
 
   const closeTextBoxes = () => {
-    setDescriptionField(false);
-    setNameField(false);
+    if (input.length) {
+      dispatch({
+        type: "SAVE_TASK",
+        container,
+        id,
+        value: input,
+      });
+    }
+    setInputField(false);
   };
 
-  const ref = useOutsideClick(closeTextBoxes);
+  useOutsideClick(closeTextBoxes, outsideClickRef);
 
-  const handleNameClick = (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setNameField(true);
-  };
   const handleDescriptionClick = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setDescriptionField(true);
+    setInputField(true);
   };
-  const handleNameKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
-    if (e.key === "Enter" || e.key === "Escape") {
-      setNameField(false);
-      if (nameInput.length || descriptionInput.length) {
-        saveTask(container, id, nameInput, descriptionInput);
-      }
+  useEffect(() => {
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = "0px";
+      const scrollHeight = textAreaRef.current.scrollHeight;
+      textAreaRef.current.style.height = scrollHeight + "px";
     }
-  };
-  const handleDescriptionKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
-    if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
-      setDescriptionField(false);
-      if (nameInput.length || descriptionInput.length) {
-        saveTask(container, id, nameInput, descriptionInput);
-      }
-    }
-  };
+  }, [textAreaRef, input, inputField]);
 
+  const handleKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
+    if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
+      if (input.length) {
+        dispatch({
+          type: "SAVE_TASK",
+          container,
+          id,
+          value: input,
+        });
+      }
+      setInputField(false);
+    }
+  };
+  function moveCursorToEnd(e: FocusEvent) {
+    const target = e.target as HTMLTextAreaElement;
+    target.selectionStart = target.value.length;
+  }
   const pointer = () => {
     if (dragging && toContainer === container) {
       if (nextPosition === index) {
@@ -105,49 +106,43 @@ function TaskCard({
           styles.current
       )}
       data-testid={dataTestId}
-      draggable={!descriptionField && !nameField}
+      draggable={!inputField}
       onDragStart={(e: React.DragEvent<HTMLElement>) => {
         handleDragStart(e, container, index);
       }}
     >
-      <button onClick={() => deleteTask(task.id, container)}>-</button>
-      {nameField ? (
-        <textarea
-          autoFocus
-          className={clsx(styles.textarea, styles.taskName)}
-          onChange={(e) => setNameInput(e.target.value)}
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={(e) => handleNameKeypress(e)}
-          placeholder="Task name.."
-          value={nameInput}
-          ref={ref}
-        />
-      ) : (
-        <button
-          className={clsx(styles.button, styles.taskName)}
-          onClick={(e) => handleNameClick(e)}
-        >
-          {nameInput ? nameInput : "Task name"}
-        </button>
-      )}
-      {descriptionField ? (
+      <div>{`# ${index}`}</div>
+      <button
+        className={styles.deleteButton}
+        onClick={() =>
+          dispatch({ type: "DELETE_TASK", id: task.id, container: container })
+        }
+      >
+        -
+      </button>
+      {inputField ? (
         <textarea
           autoFocus
           className={clsx(styles.textarea, styles.taskDescription)}
-          onChange={(e) => setDescriptionInput(e.target.value)}
+          rows={1}
+          onChange={(e) => setInput(e.target.value)}
           onClick={(e) => e.stopPropagation()}
-          onKeyDown={(e) => handleDescriptionKeypress(e)}
+          onKeyDown={(e) => handleKeypress(e)}
           placeholder="Describe task here..."
-          value={descriptionInput}
-          ref={ref}
+          onFocus={(e) => moveCursorToEnd(e)}
+          value={input}
+          ref={(el) => {
+            textAreaRef.current = el;
+            outsideClickRef.current = el;
+          }}
         />
       ) : (
-        <button
+        <div
           className={clsx(styles.button, styles.taskDescription)}
           onClick={(e) => handleDescriptionClick(e)}
         >
-          {descriptionInput ? descriptionInput : "Task description:"}
-        </button>
+          {input ? input : "Task description:"}
+        </div>
       )}
     </div>
   );

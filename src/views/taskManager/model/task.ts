@@ -1,7 +1,6 @@
 import { RefObject } from "react";
 export interface Task {
-  name: string;
-  description: string;
+  value: string;
   id: string;
 }
 export interface TaskContainers {
