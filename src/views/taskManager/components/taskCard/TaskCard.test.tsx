@@ -7,7 +7,7 @@ afterEach(() => {
 });
 
 const taskTextValue = "This is task name";
-const defaultTask = { value: "", id: "1" };
+const defaultTask = { value: "test Value", id: "1" };
 const dispatch = jest.fn();
 
 describe("Test if task container renders and it's functionality works", () => {

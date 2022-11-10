@@ -27,7 +27,6 @@ interface TaskContainer {
 }
 
 function TasksContainer({
-  dataTestId,
   tasks,
   container,
   toContainer,
@@ -44,13 +43,12 @@ function TasksContainer({
   const [input, setInput] = useState("");
 
   const createTask = () => {
-    setAddTask(false);
-    setInput("");
-
     if (input.length) {
       const id = uid();
       dispatch({ type: "ADD_TASK", value: input, id: id });
     }
+    setAddTask(false);
+    setInput("");
   };
   const handleKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
     if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
@@ -63,7 +61,6 @@ function TasksContainer({
   return (
     <section
       key={container}
-      data-testid={dataTestId}
       className={styles.container}
       role={container}
       onDragOver={
@@ -73,7 +70,7 @@ function TasksContainer({
     >
       {container === "todo" && (
         <button
-          role={"newTask"}
+          role={"create_task"}
           onClick={() => setAddTask(true)}
           className={styles.addTaskButton}
         >
@@ -87,6 +84,7 @@ function TasksContainer({
           className={styles.input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => handleKeypress(e)}
+          value={input}
           ref={outsideClickRef}
         />
       ) : null}

@@ -132,6 +132,7 @@ function TaskCard({
     >
       <div>{`# ${index + 1}`}</div>
       <button
+        role={"delete_task"}
         className={styles.deleteButton}
         onClick={() =>
           dispatch({ type: "DELETE_TASK", id: task.id, container: container })

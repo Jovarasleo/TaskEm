@@ -5,14 +5,51 @@ import TaskManager from "./TaskManager";
 afterEach(() => {
   cleanup(); // Resets the DOM after each test suite
 });
-
+const taskText = "testing test";
 describe("Test if taskManager renders and it's functionality works", () => {
   test("clicking add button creates new task", () => {
     render(<TaskManager />);
     const tasksCountBeforeAdding = screen.queryAllByRole("taskItem").length;
-    const getButton = screen.getByRole("newTask");
-    fireEvent.click(getButton);
+    const createTaskButton = screen.getByRole("create_task");
+    fireEvent.click(createTaskButton);
+    const textbox = screen.getByRole("textbox");
+    fireEvent.change(textbox, { target: { value: taskText } });
+    expect(textbox.textContent).toBe(taskText);
+
+    fireEvent.keyDown(textbox, {
+      key: "Enter",
+    });
+
+    expect(screen.getByText(taskText));
+
     const tasksCountAfterAdding = screen.getAllByRole("taskItem").length;
     expect(tasksCountBeforeAdding).not.toBe(tasksCountAfterAdding);
+  });
+
+  test("clicking delete button deletes a task", () => {
+    render(<TaskManager />);
+    //task creation
+    const tasksCountBeforeAdding = screen.queryAllByRole("taskItem").length;
+    const createTaskButton = screen.getByRole("create_task");
+
+    fireEvent.click(createTaskButton);
+    const textbox = screen.getByRole("textbox");
+    fireEvent.change(textbox, { target: { value: taskText } });
+    expect(textbox.textContent).toBe(taskText);
+
+    fireEvent.keyDown(textbox, {
+      key: "Enter",
+    });
+    expect(screen.getByText(taskText));
+
+    const tasksCountAfterAdding = screen.getAllByRole("taskItem").length;
+    expect(tasksCountBeforeAdding).not.toBe(tasksCountAfterAdding);
+
+    //Task Deletion
+    const deleteTaskButton = screen.getByRole("delete_task");
+    fireEvent.click(deleteTaskButton);
+
+    const tasksCountAfterDeletion = screen.queryAllByRole("taskItem").length;
+    expect(tasksCountBeforeAdding).toBe(tasksCountAfterDeletion);
   });
 });
