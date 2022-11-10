@@ -1,29 +1,20 @@
-const uid = () => {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2);
-};
-const initialState = {
-  todo: [],
-  progress: [],
-  done: [],
-};
-const localStorage = window.localStorage.getItem("tasks");
-const DEFAULT_STATE = localStorage ? JSON.parse(localStorage) : initialState;
+import { Actions, TaskContainers } from "../model/task";
 
-export const taskReducer = (state = DEFAULT_STATE, action: any) => {
+export const taskReducer = (state: TaskContainers, action: Actions) => {
   switch (action.type) {
     case "ADD_TASK":
       return {
         ...state,
-        todo: [...state.todo, { value: action.value, id: uid() }],
+        todo: [...state.todo, { value: action.value, id: action.id }],
       };
 
     case "DELETE_TASK":
-      const newArray = [...state[action.container]].filter(
-        (task) => task.id !== action.id
-      );
+      const newArray = [
+        ...state[action.container as keyof TaskContainers],
+      ].filter((task) => task.id !== action.id);
       return {
         ...state,
-        [action.container]: [...newArray],
+        [action.container as keyof TaskContainers]: [...newArray],
       };
 
     case "MOVE_TASK":
@@ -35,28 +26,14 @@ export const taskReducer = (state = DEFAULT_STATE, action: any) => {
 
       const getTask = tasksCopy[fromContainer].splice(fromIndex, 1)[0];
       tasksCopy[toContainer].splice(toIndex, 0, getTask);
-
-      //   const insert = (arr: any, index: any, newItem: any) => [
-      //     ...arr.slice(0, index),
-      //     newItem,
-      //     ...arr.slice(index),
-      //   ];
-
-      //   const fromArray = [...state[fromContainer]];
-      //   const selectedTask = fromArray.splice(fromIndex, 1)[0];
-      //   const toArray = [...state[toContainer]];
-      //   const modifiedToArray = insert(toArray, toIndex, selectedTask);
-
       return {
         ...state,
         ...tasksCopy,
-        // [toContainer]: modifiedToArray,
-        // [fromContainer]: fromArray,
       };
 
     case "SAVE_TASK": {
       const tasksCopy = JSON.parse(JSON.stringify(state));
-      tasksCopy[action.container]
+      tasksCopy[action.container as keyof TaskContainers]
         .map((task: any) => {
           if (task.id === action.id) {
             task.value = action.value;
@@ -71,7 +48,6 @@ export const taskReducer = (state = DEFAULT_STATE, action: any) => {
     }
 
     default:
-      console.log("error");
       return state;
   }
 };

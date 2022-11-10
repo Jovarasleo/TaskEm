@@ -5,8 +5,10 @@ import {
   handleDrag,
   DragItem,
   Task as TaskModel,
+  Actions,
 } from "../../model/task";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
+import { uid } from "../../hooks/useGenerateId";
 import TaskCard from "../taskCard/TaskCard";
 import styles from "./styles.module.scss";
 
@@ -18,7 +20,7 @@ interface TaskContainer {
   toContainer: string;
   nextPosition: null | number;
   dragItem: DragItem | null;
-  dispatch: (action: {}) => void;
+  dispatch: (action: Actions) => void;
   handleDragStart: handleDragStart;
   handleDragOver: handleDragOver;
   handleDrag: handleDrag;
@@ -44,8 +46,10 @@ function TasksContainer({
   const createTask = () => {
     setAddTask(false);
     setInput("");
+
     if (input.length) {
-      dispatch({ type: "ADD_TASK", value: input });
+      const id = uid();
+      dispatch({ type: "ADD_TASK", value: input, id: id });
     }
   };
   const handleKeypress = (e: React.KeyboardEvent<HTMLElement>) => {

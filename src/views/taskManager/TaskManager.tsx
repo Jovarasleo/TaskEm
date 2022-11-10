@@ -1,6 +1,6 @@
 import { useReducer } from "react";
-import { taskReducer } from "./reducers/taskReducer";
 import { TaskContainers } from "./model/task";
+import { taskReducer } from "./reducers/taskReducer";
 import { useDragAndDrop } from "./hooks/useDragAndDrop";
 import useLocalStorage from "./hooks/useLocalStorage";
 import TasksContainer from "./components/tasksContainer/TasksContainer";
@@ -11,11 +11,12 @@ const initialState: TaskContainers = {
   progress: [],
   done: [],
 };
+const localStorage = window.localStorage.getItem("tasks");
+const DEFAULT_STATE = localStorage ? JSON.parse(localStorage) : initialState;
 
 function TaskManger() {
-  const [state, dispatch] = useReducer(taskReducer, initialState);
-  const [localTasks] = useLocalStorage(state);
-  // const [tasks, setTasks] = useState<TaskContainers>(initialState);
+  const [state, dispatch] = useReducer(taskReducer, DEFAULT_STATE);
+  useLocalStorage(state);
 
   const {
     handleDragStart,

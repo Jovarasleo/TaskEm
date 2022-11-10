@@ -13,6 +13,7 @@ module.exports = {
   resolve: {
     extensions: [".tsx", ".ts", ".js", ".jsx"],
   },
+
   plugins: [
     new HTMLWebpackPlugin({
       template: "./src/index.html",

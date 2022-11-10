@@ -1,6 +1,11 @@
-import { FocusEvent, useState, useRef, useEffect, RefObject } from "react";
+import { FocusEvent, useState, useRef, useEffect } from "react";
 import { clsx } from "clsx";
-import { DragItem, handleDragStart, Task } from "views/taskManager/model/task";
+import {
+  DragItem,
+  handleDragStart,
+  Task,
+  Actions,
+} from "views/taskManager/model/task";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
 import styles from "./styles.module.scss";
 
@@ -14,7 +19,7 @@ interface TaskProps {
   arrayLength: number;
   toContainer: string;
   dragItem: DragItem | null;
-  dispatch: (action: {}) => void;
+  dispatch: (action: Actions) => void;
   handleDragStart: handleDragStart;
 }
 
@@ -111,7 +116,7 @@ function TaskCard({
         handleDragStart(e, container, index);
       }}
     >
-      <div>{`# ${index}`}</div>
+      <div>{`# ${index + 1}`}</div>
       <button
         className={styles.deleteButton}
         onClick={() =>
