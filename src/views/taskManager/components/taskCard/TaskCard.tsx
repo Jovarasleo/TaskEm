@@ -80,16 +80,6 @@ function TaskCard({
     const target = e.target as HTMLTextAreaElement;
     target.selectionStart = target.value.length;
   }
-  const calcPointerPosition = () => {
-    if (dragging && toContainer === container) {
-      if (nextPosition === index) {
-        return "before";
-      }
-      if (nextPosition === index + 1 && nextPosition >= arrayLength) {
-        return "after";
-      } else return "";
-    } else return "";
-  };
 
   useEffect(() => {
     if (toContainer === container) {
