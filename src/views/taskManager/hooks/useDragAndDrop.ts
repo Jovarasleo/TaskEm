@@ -7,7 +7,7 @@ import {
 } from "../model/task";
 import { useRef, useState } from "react";
 
-export const useDragAndDrop = (moveTask: MoveTask) => {
+export const useDragAndDrop = (dispatch: any) => {
   const [dragging, setDragging] = useState(false);
   const [toContainer, setToContainer] = useState("");
   const [nextPosition, setNextPosition] = useState<null | number>(0);
@@ -39,12 +39,13 @@ export const useDragAndDrop = (moveTask: MoveTask) => {
     setNextPosition(null);
     setDragging(false);
     dragItemNode?.current?.removeEventListener("dragend", handleDragEnd);
-    moveTask(
-      dragItem.current?.container,
-      dragtoContainer.current,
-      dragItem.current?.index,
-      dragtoIndex.current
-    );
+    dispatch({
+      type: "MOVE_TASK",
+      fromContainer: dragItem.current?.container,
+      toContainer: dragtoContainer.current,
+      fromIndex: dragItem.current?.index,
+      toIndex: dragtoIndex.current,
+    });
     dragItem.current = null;
     dragItemNode.current = null;
   };
