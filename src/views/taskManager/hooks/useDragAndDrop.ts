@@ -1,6 +1,5 @@
 import {
   DragItem,
-  MoveTask,
   handleDrag,
   handleDragOver,
   handleDragStart,
