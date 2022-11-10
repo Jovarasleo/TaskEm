@@ -39,6 +39,7 @@ function TaskCard({
   const { value, id } = task;
   const [inputField, setInputField] = useState(false);
   const [input, setInput] = useState(value || "");
+  const [pointer, setPointer] = useState("");
   const textAreaRef = useRef<HTMLElement | null>(null);
   const outsideClickRef = useRef<HTMLElement | null>(null);
 
@@ -61,13 +62,6 @@ function TaskCard({
     e.stopPropagation();
     setInputField(true);
   };
-  useEffect(() => {
-    if (textAreaRef.current) {
-      textAreaRef.current.style.height = "0px";
-      const scrollHeight = textAreaRef.current.scrollHeight;
-      textAreaRef.current.style.height = scrollHeight + "px";
-    }
-  }, [textAreaRef, input, inputField]);
 
   const handleKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
     if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
@@ -86,7 +80,7 @@ function TaskCard({
     const target = e.target as HTMLTextAreaElement;
     target.selectionStart = target.value.length;
   }
-  const pointer = () => {
+  const calcPointerPosition = () => {
     if (dragging && toContainer === container) {
       if (nextPosition === index) {
         return "before";
@@ -97,14 +91,34 @@ function TaskCard({
     } else return "";
   };
 
-  const getClass = pointer();
+  useEffect(() => {
+    if (toContainer === container) {
+      if (nextPosition === index) {
+        setPointer("before");
+      }
+      if (nextPosition === index + 1 && nextPosition >= arrayLength) {
+        setPointer("after");
+      }
+      return () => {
+        setPointer("");
+      };
+    }
+  }, [toContainer, container, nextPosition, index]);
+
+  useEffect(() => {
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = "0px";
+      const scrollHeight = textAreaRef.current.scrollHeight;
+      textAreaRef.current.style.height = scrollHeight + "px";
+    }
+  }, [textAreaRef, input, inputField]);
 
   return (
     <div
       role="taskItem"
       className={clsx(
         styles.taskWrapper,
-        styles[getClass],
+        styles[pointer],
         dragging && styles.removePointer,
         dragItem?.index === index &&
           dragItem?.container === container &&
