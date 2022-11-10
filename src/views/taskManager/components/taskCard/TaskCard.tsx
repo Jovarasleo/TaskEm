@@ -156,12 +156,13 @@ function TaskCard({
           }}
         />
       ) : (
-        <div
+        <p
+          role="paragraph"
           className={clsx(styles.button, styles.taskDescription)}
           onClick={(e) => handleDescriptionClick(e)}
         >
           {input ? input : "Task description:"}
-        </div>
+        </p>
       )}
     </div>
   );
