@@ -1,9 +1,21 @@
 import { RefObject } from "react";
+
+export interface Actions {
+  type?: string;
+  value?: string;
+  container?: string;
+  id?: string;
+  toContainer?: string;
+  fromContainer?: string;
+  toIndex?: number;
+  fromIndex?: number;
+}
+
 export interface Task {
-  name: string;
-  description: string;
+  value: string;
   id: string;
 }
+
 export interface TaskContainers {
   todo: Task[];
   progress: Task[];
@@ -28,6 +40,8 @@ export type SaveTask = (
   name: string,
   description: string
 ) => void;
+
+export type DeleteTask = (id: string, container: string) => void;
 
 export type handleDragStart = (
   e: React.DragEvent<HTMLElement>,

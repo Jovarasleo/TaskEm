@@ -1,10 +1,8 @@
-import { useRef, useEffect } from "react";
-function useOutsideClick(callback: () => void) {
-  const ref = useRef<HTMLTextAreaElement>(null);
-
+import { useEffect, RefObject } from "react";
+function useOutsideClick(callback: () => void, el: RefObject<HTMLElement>) {
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
+      if (el?.current && !el?.current.contains(event.target as Node)) {
         callback();
       }
     };
@@ -14,8 +12,6 @@ function useOutsideClick(callback: () => void) {
     return () => {
       document.removeEventListener("click", handleClick, true);
     };
-  }, [ref]);
-
-  return ref;
+  }, [el, callback]);
 }
 export default useOutsideClick;

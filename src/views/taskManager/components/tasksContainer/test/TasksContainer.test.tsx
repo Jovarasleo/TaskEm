@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import TasksContainer from "./TasksContainer";
+import TasksContainer from "../TasksContainer";
 
 afterEach(() => {
   cleanup(); // Resets the DOM after each test suite
@@ -9,50 +9,54 @@ afterEach(() => {
 const testArray = [
   {
     id: "1",
-    name: "test1",
-    description: "description1",
+    value: "value1",
   },
   {
     id: "2",
     name: "test2",
-    description: "description2",
+    value: "value2",
   },
   {
     id: "3",
     name: "test3",
-    description: "description3",
+    value: "value3",
   },
 ];
-const saveTask = () => {};
+
+const taskText = "taskTextValue";
+
+const dispatch = jest.fn();
 describe("Test if task container renders and it's functionallity", () => {
   test("task container renders", () => {
     render(
       <TasksContainer
-        dataTestId={"tasksContainer"}
-        todo
-        saveTask={saveTask}
         tasks={testArray}
+        dispatch={dispatch}
         container={"todo"}
         dragging
-        selectedContainer="todo"
+        toContainer={""}
+        nextPosition={null}
+        dragItem={null}
+        handleDrag={() => {}}
         handleDragStart={() => {}}
         handleDragOver={() => {}}
       />
     );
-    const taskContainer = screen.getByTestId("tasksContainer");
+    const taskContainer = screen.getByRole("todo");
     expect(taskContainer).toBeInTheDocument();
   });
 
   test("taskManager takes tasksObject key as a container type and creates task for every item in array of that keys value", async () => {
     render(
       <TasksContainer
-        dataTestId={"tasksContainer"}
-        todo
-        saveTask={saveTask}
         tasks={testArray}
+        dispatch={dispatch}
         container={"todo"}
         dragging
-        selectedContainer="todo"
+        toContainer={""}
+        nextPosition={null}
+        dragItem={null}
+        handleDrag={() => {}}
         handleDragStart={() => {}}
         handleDragOver={() => {}}
       />
@@ -60,8 +64,7 @@ describe("Test if task container renders and it's functionallity", () => {
     const getAllTasks = await screen.findAllByRole("taskItem");
     expect(getAllTasks.length).toBe(testArray.length);
     testArray.forEach((task) => {
-      screen.getAllByText(task.name);
-      screen.getAllByText(task.description);
+      screen.getAllByText(task.value);
     });
   });
 });
