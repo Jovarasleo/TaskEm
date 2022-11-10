@@ -1,6 +1,6 @@
 import { cleanup, render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import TaskManager from "./TaskManager";
+import TaskManager from "../TaskManager";
 
 afterEach(() => {
   cleanup(); // Resets the DOM after each test suite
