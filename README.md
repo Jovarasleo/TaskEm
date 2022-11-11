@@ -2,7 +2,7 @@
 
 ### 💡: Main idea
 
-<p>Task'Em is a complex project with a basic idea.<br>Create a task managment application for 📱 and 🖥️ devices which will adapt to the users' needs.<br>From a simple to do list to the entire team managment application.</p>
+<p>Task'Em is a complex project with a basic idea.<br>Create a task managment application for 📱 and 🖥️ devices which will adapt to the users' needs.<br>From a simple to do list to the entire team managment application in one.</p>
 
 ### :pushpin:: Objectives
 <ul>  
@@ -30,3 +30,12 @@
   <img src="https://github.com/devicons/devicon/blob/master/icons/figma/figma-original.svg" title="Figma" **alt="Figma" width="40" height="40"/>&nbsp;
   <img src="https://github.com/devicons/devicon/blob/master/icons/git/git-original.svg" title="Git" **alt="Git" width="40" height="40"/>&nbsp;
 </div>
+
+### 💾: Run App
+
+<h3 align="center">Install: npm run install/h3>
+<h3 align="center">launch: npm run dev/h3>
+<h3 align="center">test: npm run test/h3>
+
+
+
