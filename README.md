@@ -1,6 +1,4 @@
-<p align="center">
-    <h1>Task'em</h1>
-</p>
+<p align="center"><h1>Task'em</h1></p>
 ### 💡: Idea and Objective :
 
 ### 🛠️: Languages and Tools : 
