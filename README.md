@@ -1,6 +1,6 @@
 <h1 align="center">Task'Em</h1>
 
-## 💡: Idea and Objective :
+### 💡: Main idea and objective :
 
 <p>Task'Em is a complex project with a basic idea</p>
 
