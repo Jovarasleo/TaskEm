@@ -1,8 +1,13 @@
 <h1 align="center">Task'Em</h1>
 
-### 💡: Main idea and objective
+### 💡: Main idea
 
 <p>Task'Em is a complex project with a basic idea.<br>Create a task managment application for 📱 and 🖥️ devices which will adapt to the users' needs.<br>From a simple to do list to the entire team managment application.</p>
+
+### :pushpin:: Objectives
+  <ul>
+    <li>Write quality, readable and testable code</li>
+  </ul>
 
 ### 🛠️: Languages and Tools
 <div>
