@@ -34,15 +34,12 @@
 #### 💾: Run App
 
 __Install:__
-
 <p>npm run install<p>
   
 __run:__
-  
 <p>npm run dev</p>
 
 __test:__
-
 <p>npm run test</p>
 
 
