@@ -31,13 +31,13 @@
   <img src="https://github.com/devicons/devicon/blob/master/icons/git/git-original.svg" title="Git" **alt="Git" width="40" height="40"/>&nbsp;
 </div>
 
-### 💾: Run App
+#### 💾: Run App
 
-<h2>Install:</h4>
-<p style="background:#eaeaea;">npm run install<p>
-<h2>launch:</h3>
+<h2>Install:</h2>
+<p>npm run install<p>
+<h2>run:</h2>
 <p>npm run dev</p>
-<h2>test:</h3>
+<h2>test:</h2>
 <p>npm run test</p>
 
 
