@@ -5,12 +5,11 @@
 <p>Task'Em is a complex project with a basic idea.<br>Create a task managment application for 📱 and 🖥️ devices which will adapt to the users' needs.<br>From a simple to do list to the entire team managment application.</p>
 
 ### :pushpin:: Objectives
-<ul>
+<ul>  
+  <li>Create Progressive Web App</li>
   <li>Write quality, readable and testable code</li>
   <li>Cover atleast 80% of code with tests</li>
   <li>Pass SonarCloud quality gate</li>
-  <li>Create Progressive Web App</li>
-  <li>Implement MySQL DataBase in the project</li>
   <li>Deploy full stack application to AWS</li>
 </ul>
 
