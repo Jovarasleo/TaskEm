@@ -1,10 +1,10 @@
 <h1 align="center">Task'Em</h1>
 
-### 💡: Main idea
+#### 💡: Main idea
 
 <p>Task'Em is a complex project with a basic idea.<br>Create a task managment application for 📱 and 🖥️ devices which will adapt to the users' needs.<br>From a simple to do list to the entire team managment application in one.</p>
 
-### :pushpin:: Objectives
+#### :pushpin:: Objectives
 <ul>  
   <li>Create Progressive Web App</li>
   <li>Write quality, readable and testable code</li>
@@ -13,7 +13,7 @@
   <li>Deploy full stack application to AWS</li>
 </ul>
 
-### 🛠️: Languages and Tools
+#### 🛠️: Languages and Tools
 <div>
   <img src="https://github.com/devicons/devicon/blob/master/icons/react/react-original.svg" title="React" alt="React" width="40" height="40"/>&nbsp;
   <img src="https://github.com/devicons/devicon/blob/master/icons/javascript/javascript-original.svg" title="JavaScript" alt="JavaScript" width="40" height="40"/>&nbsp;
@@ -34,7 +34,7 @@
 ### 💾: Run App
 
 <h2>Install:</h4>
-<p>npm run install<p>
+<p style="background:#eaeaea;">npm run install<p>
 <h2>launch:</h3>
 <p>npm run dev</p>
 <h2>test:</h3>
