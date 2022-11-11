@@ -2,7 +2,7 @@
 
 ### 💡: Main idea and objective
 
-<p>Task'Em is a complex project with a basic idea</p>
+<p>Task'Em is a complex project with a basic idea. Create a task managment application for mobile and desktop devices which will adapt to the user needs. From a simple to do list to the entire team managment application</p>
 
 ### 🛠️: Languages and Tools
 <div>
