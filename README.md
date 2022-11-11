@@ -33,7 +33,7 @@
 
 #### 💾: Run App
 
-<ins>Install:</ins><br>
+<Alt-H2>Install:</Alt-H2><br>
 npm run install
   
 <ins>run:</ins><br>
