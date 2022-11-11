@@ -1,6 +1,6 @@
-<h1 align="center">Task'Em</h1>
+<h1 align="center">Task'Em</h1>;
 ## 💡: Idea and Objective : 
-<p>Task'Em is a complex project with a basic idea</p>
+<p>Task'Em is a complex project with a basic idea</p>;
 ### 🛠️: Languages and Tools : 
 <div>
   <img src="https://github.com/devicons/devicon/blob/master/icons/react/react-original.svg" title="React" alt="React" width="40" height="40"/>&nbsp;
