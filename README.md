@@ -1,5 +1,5 @@
-<h1 align="center">Task'em</h1>
-### 💡: Idea and Objective : 
+<h1 align="center">Task'Em</h1>
+## 💡: Idea and Objective : 
 
 ### 🛠️: Languages and Tools : 
 <div>
