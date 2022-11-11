@@ -7,7 +7,7 @@
 ### :pushpin:: Objectives
 <ul>
   <li>Write quality, readable and testable code</li>
-  <li>Cover 80%> code with tests</li>
+  <li>Cover atleast 80% of code with tests</li>
   <li>Pass SonarCloud quality gate</li>
   <li>Create Progressive Web App</li>
   <li>Implement MySQL DataBase in the project</li>
