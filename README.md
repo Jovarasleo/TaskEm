@@ -31,7 +31,7 @@
   <img src="https://github.com/devicons/devicon/blob/master/icons/git/git-original.svg" title="Git" **alt="Git" width="40" height="40"/>&nbsp;
 </div>
 
-## 💾: Run App
+<h2 align="center"> 💾: Run App </h2>
 
 #### Install:
 npm run install
