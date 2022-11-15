@@ -93,7 +93,7 @@ function TaskCard({
         setPointer("");
       };
     }
-  }, [toContainer, container, nextPosition, index]);
+  }, [toContainer, container, nextPosition, index, arrayLength]);
 
   useEffect(() => {
     if (textAreaRef.current) {
