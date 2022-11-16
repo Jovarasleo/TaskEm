@@ -52,27 +52,23 @@ function TaskCard({
   };
 
   const closeTextBoxes = () => {
-    if (input.length) {
+    dispatch({
+      type: "SAVE_TASK",
+      container,
+      id,
+      value: input,
+    });
+    setInputField(false);
+  };
+
+  const handleKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
+    if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
       dispatch({
         type: "SAVE_TASK",
         container,
         id,
         value: input,
       });
-    }
-    setInputField(false);
-  };
-
-  const handleKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
-    if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
-      if (input.length) {
-        dispatch({
-          type: "SAVE_TASK",
-          container,
-          id,
-          value: input,
-        });
-      }
       setInputField(false);
     }
   };

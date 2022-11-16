@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import {
   handleDragStart,
   handleDragOver,
@@ -7,6 +7,7 @@ import {
   Task as TaskModel,
   Actions,
 } from "../../model/task";
+import usePositionIndicator from "../../hooks/usePositionIndicator";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
 import { uid } from "../../hooks/useGenerateId";
 import TaskCard from "../taskCard/TaskCard";
@@ -40,7 +41,6 @@ function TasksContainer({
   const containerRef = useRef<HTMLDivElement>(null);
   const outsideClickRef = useRef<HTMLTextAreaElement>(null);
 
-  const [indicator, setIndicator] = useState(false);
   const [addTask, setAddTask] = useState(false);
   const [input, setInput] = useState("");
 
@@ -61,16 +61,15 @@ function TasksContainer({
     }
   };
 
-  const handleEnter = () => {
-    if (!tasks.length) {
-      setIndicator(true);
-    } else setIndicator(false);
-  };
-  const handleExit = () => {
-    setIndicator(false);
-  };
-
+  const position = usePositionIndicator(
+    toContainer,
+    container,
+    nextIndex,
+    0,
+    0
+  );
   useOutsideClick(createTask, outsideClickRef);
+  const showPointer = position === "first";
 
   return (
     <section
@@ -78,11 +77,8 @@ function TasksContainer({
       className={styles.container}
       role={container}
       onDragOver={
-        dragging ? (e) => handleDrag(e, containerRef, container) : () => {}
+        dragging ? (e) => handleDrag(e, containerRef, container) : undefined
       }
-      onDragEnter={() => handleEnter()}
-      onDragExit={() => handleExit()}
-      onDrop={() => handleExit()}
       ref={containerRef}
     >
       {todoContainer && (
@@ -105,7 +101,7 @@ function TasksContainer({
           ref={outsideClickRef}
         />
       ) : null}
-      {indicator ? <div className={styles.pointer}></div> : null}
+      {showPointer ? <div className={styles.pointer}></div> : null}
       {tasks?.map((task, index) => {
         return (
           <TaskCard

@@ -17,11 +17,14 @@ const usePositionIndicator = (
       if (nextIndex === index + 1 && nextIndex >= arrayLength) {
         setPointer("after");
       }
+      if (nextIndex === 0) {
+        setPointer("first");
+      }
       return () => {
         setPointer("");
       };
     }
-  }, [toContainer, container, nextIndex, index]);
+  }, [toContainer, container, nextIndex, index, arrayLength]);
 
   return pointer;
 };
