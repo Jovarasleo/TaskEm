@@ -23,7 +23,7 @@ function TaskManger() {
     handleDragOver,
     handleDrag,
     dragging,
-    nextPosition,
+    nextIndex,
     toContainer,
     dragItem,
   } = useDragAndDrop(dispatch);
@@ -41,7 +41,7 @@ function TaskManger() {
             handleDragOver={handleDragOver}
             handleDrag={handleDrag}
             dragging={dragging}
-            nextPosition={nextPosition}
+            nextIndex={nextIndex}
             toContainer={toContainer}
             dragItem={dragItem.current}
           />

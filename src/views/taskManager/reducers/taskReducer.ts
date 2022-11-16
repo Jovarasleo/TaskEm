@@ -1,14 +1,14 @@
-import { Actions, TaskContainers } from "../model/task";
+import { Actions, TaskContainers, Task } from "../model/task";
 
 export const taskReducer = (state: TaskContainers, action: Actions) => {
   switch (action.type) {
-    case "ADD_TASK":
+    case "ADD_TASK": {
       return {
         ...state,
         todo: [...state.todo, { value: action.value, id: action.id }],
       };
-
-    case "DELETE_TASK":
+    }
+    case "DELETE_TASK": {
       const newArray = [
         ...state[action.container as keyof TaskContainers],
       ].filter((task) => task.id !== action.id);
@@ -16,8 +16,8 @@ export const taskReducer = (state: TaskContainers, action: Actions) => {
         ...state,
         [action.container as keyof TaskContainers]: [...newArray],
       };
-
-    case "MOVE_TASK":
+    }
+    case "MOVE_TASK": {
       const { toContainer, fromContainer, toIndex, fromIndex } = action;
       if (!fromContainer || !toContainer) return state;
       if (toContainer === fromContainer && toIndex === fromIndex) return state;
@@ -30,17 +30,17 @@ export const taskReducer = (state: TaskContainers, action: Actions) => {
         ...state,
         ...tasksCopy,
       };
-
+    }
     case "SAVE_TASK": {
       const tasksCopy = JSON.parse(JSON.stringify(state));
       tasksCopy[action.container as keyof TaskContainers]
-        .map((task: any) => {
+        .map((task: Task) => {
           if (task.id === action.id) {
-            task.value = action.value;
+            task.value = action.value || "";
           }
           return task;
         })
-        .filter((task: any) => task.value);
+        .filter((task: Task) => task.value);
       return {
         ...state,
         ...tasksCopy,

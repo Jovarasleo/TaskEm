@@ -7,6 +7,7 @@ import {
   Task as TaskModel,
   Actions,
 } from "../../model/task";
+import usePositionIndicator from "../../hooks/usePositionIndicator";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
 import { uid } from "../../hooks/useGenerateId";
 import TaskCard from "../taskCard/TaskCard";
@@ -18,7 +19,7 @@ interface TaskContainer {
   container: string;
   dragging: boolean;
   toContainer: string;
-  nextPosition: null | number;
+  nextIndex: null | number;
   dragItem: DragItem | null;
   dispatch: (action: Actions) => void;
   handleDragStart: handleDragStart;
@@ -30,7 +31,7 @@ function TasksContainer({
   tasks,
   container,
   toContainer,
-  nextPosition,
+  nextIndex,
   dragging,
   dragItem,
   dispatch,
@@ -39,8 +40,11 @@ function TasksContainer({
 }: TaskContainer) {
   const containerRef = useRef<HTMLDivElement>(null);
   const outsideClickRef = useRef<HTMLTextAreaElement>(null);
+
   const [addTask, setAddTask] = useState(false);
   const [input, setInput] = useState("");
+
+  const todoContainer = container === "todo";
 
   const createTask = () => {
     if (input.length) {
@@ -50,13 +54,22 @@ function TasksContainer({
     setAddTask(false);
     setInput("");
   };
+
   const handleKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
     if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
       createTask();
     }
   };
 
+  const position = usePositionIndicator(
+    toContainer,
+    container,
+    nextIndex,
+    0,
+    0
+  );
   useOutsideClick(createTask, outsideClickRef);
+  const showPointer = position === "before";
 
   return (
     <section
@@ -68,7 +81,7 @@ function TasksContainer({
       }
       ref={containerRef}
     >
-      {container === "todo" && (
+      {todoContainer && (
         <button
           role={"create_task"}
           onClick={() => setAddTask(true)}
@@ -88,7 +101,9 @@ function TasksContainer({
           ref={outsideClickRef}
         />
       ) : null}
-
+      {showPointer && !tasks.length ? (
+        <div className={styles.pointer}></div>
+      ) : null}
       {tasks?.map((task, index) => {
         return (
           <TaskCard
@@ -98,7 +113,7 @@ function TasksContainer({
             arrayLength={tasks.length}
             dragging={dragging}
             container={container}
-            nextPosition={nextPosition}
+            nextIndex={nextIndex}
             toContainer={toContainer}
             dragItem={dragItem}
             dispatch={dispatch}

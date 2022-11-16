@@ -6,7 +6,7 @@
   position: relative;
 
   h3 {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
   }
 
   .input {
@@ -24,4 +24,20 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
+}
+
+.pointer {
+  position: relative;
+  &:before {
+    content: "";
+    display: block;
+    left: 0;
+    height: 4px;
+    border-radius: 10px;
+    top: -12px;
+    background-color: rgb(237, 140, 13);
+    width: 100%;
+    position: absolute;
+    pointer-events: none;
+  }
 }

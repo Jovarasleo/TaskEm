@@ -5,6 +5,7 @@
 <p>Task'Em is a complex project with a basic idea.<br>Create a task managment application for 📱 and 🖥️ devices which will adapt to the users' needs.<br>From a simple to do list to the entire team managment application in one.</p>
 
 #### :pushpin:: Objectives
+
 <ul>  
   <li>Create Progressive Web App</li>
   <li>Write quality, readable and testable code</li>
@@ -14,6 +15,7 @@
 </ul>
 
 #### 🛠️: Languages and Tools
+
 <div>
   <img src="https://github.com/devicons/devicon/blob/master/icons/react/react-original.svg" title="React" alt="React" width="40" height="40"/>&nbsp;
   <img src="https://github.com/devicons/devicon/blob/master/icons/javascript/javascript-original.svg" title="JavaScript" alt="JavaScript" width="40" height="40"/>&nbsp;
@@ -34,11 +36,13 @@
 ### 💾: Run App
 
 #### Install:
+
 npm run install
+
 #### run:
+
 npm run dev
+
 #### test:
+
 npm run test
-
-
-

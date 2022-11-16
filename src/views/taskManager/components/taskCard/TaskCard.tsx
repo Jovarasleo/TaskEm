@@ -1,4 +1,4 @@
-import { FocusEvent, useState, useRef, useEffect } from "react";
+import { FocusEvent, useState, useRef } from "react";
 import { clsx } from "clsx";
 import {
   DragItem,
@@ -7,6 +7,8 @@ import {
   Actions,
 } from "views/taskManager/model/task";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
+import usePositionIndicator from "../../hooks/usePositionIndicator";
+import useContainerHeight from "../../hooks/useContainerHeight";
 import styles from "./styles.module.scss";
 
 interface TaskProps {
@@ -15,7 +17,7 @@ interface TaskProps {
   index: number;
   container: string;
   dragging: boolean;
-  nextPosition: null | number;
+  nextIndex: null | number;
   arrayLength: number;
   toContainer: string;
   dragItem: DragItem | null;
@@ -29,7 +31,7 @@ function TaskCard({
   index,
   container,
   dragging,
-  nextPosition,
+  nextIndex,
   arrayLength,
   toContainer,
   dragItem,
@@ -39,23 +41,9 @@ function TaskCard({
   const { value, id } = task;
   const [inputField, setInputField] = useState(false);
   const [input, setInput] = useState(value || "");
-  const [pointer, setPointer] = useState("");
+
   const textAreaRef = useRef<HTMLElement | null>(null);
   const outsideClickRef = useRef<HTMLElement | null>(null);
-
-  const closeTextBoxes = () => {
-    if (input.length) {
-      dispatch({
-        type: "SAVE_TASK",
-        container,
-        id,
-        value: input,
-      });
-    }
-    setInputField(false);
-  };
-
-  useOutsideClick(closeTextBoxes, outsideClickRef);
 
   const handleDescriptionClick = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
@@ -63,52 +51,49 @@ function TaskCard({
     setInputField(true);
   };
 
+  const closeTextBoxes = () => {
+    dispatch({
+      type: "SAVE_TASK",
+      container,
+      id,
+      value: input,
+    });
+    setInputField(false);
+  };
+
   const handleKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
     if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
-      if (input.length) {
-        dispatch({
-          type: "SAVE_TASK",
-          container,
-          id,
-          value: input,
-        });
-      }
+      dispatch({
+        type: "SAVE_TASK",
+        container,
+        id,
+        value: input,
+      });
       setInputField(false);
     }
   };
-  function moveCursorToEnd(e: FocusEvent) {
+
+  const moveCursorToEnd = (e: FocusEvent) => {
     const target = e.target as HTMLTextAreaElement;
     target.selectionStart = target.value.length;
-  }
+  };
 
-  useEffect(() => {
-    if (toContainer === container) {
-      if (nextPosition === index) {
-        setPointer("before");
-      }
-      if (nextPosition === index + 1 && nextPosition >= arrayLength) {
-        setPointer("after");
-      }
-      return () => {
-        setPointer("");
-      };
-    }
-  }, [toContainer, container, nextPosition, index, arrayLength]);
-
-  useEffect(() => {
-    if (textAreaRef.current) {
-      textAreaRef.current.style.height = "0px";
-      const scrollHeight = textAreaRef.current.scrollHeight;
-      textAreaRef.current.style.height = scrollHeight + "px";
-    }
-  }, [textAreaRef, input, inputField]);
+  const position = usePositionIndicator(
+    toContainer,
+    container,
+    nextIndex,
+    index,
+    arrayLength
+  );
+  useContainerHeight(textAreaRef, input, inputField);
+  useOutsideClick(closeTextBoxes, outsideClickRef);
 
   return (
     <div
       role="taskItem"
       className={clsx(
         styles.taskWrapper,
-        styles[pointer],
+        styles[position],
         dragging && styles.removePointer,
         dragItem?.index === index &&
           dragItem?.container === container &&

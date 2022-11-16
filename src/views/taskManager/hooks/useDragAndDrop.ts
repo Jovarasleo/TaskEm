@@ -9,7 +9,7 @@ import { useRef, useState } from "react";
 export const useDragAndDrop = (dispatch: any) => {
   const [dragging, setDragging] = useState(false);
   const [toContainer, setToContainer] = useState("");
-  const [nextPosition, setNextPosition] = useState<null | number>(0);
+  const [nextIndex, setNextIndex] = useState<null | number>(0);
 
   const dragItem = useRef<DragItem | null>(null);
   const dragItemNode = useRef<HTMLDivElement | null>(null);
@@ -35,7 +35,7 @@ export const useDragAndDrop = (dispatch: any) => {
   };
 
   const handleDragEnd = () => {
-    setNextPosition(null);
+    setNextIndex(null);
     setDragging(false);
     dragItemNode?.current?.removeEventListener("dragend", handleDragEnd);
     dispatch({
@@ -90,7 +90,7 @@ export const useDragAndDrop = (dispatch: any) => {
       return acc;
     }, 0);
 
-    setNextPosition(pointerIndex);
+    setNextIndex(pointerIndex);
     handleDragOver(e, container, getIndex);
   };
 
@@ -100,7 +100,7 @@ export const useDragAndDrop = (dispatch: any) => {
     handleDrag,
     dragging,
     toContainer,
-    nextPosition,
+    nextIndex,
     dragItem,
   };
 };

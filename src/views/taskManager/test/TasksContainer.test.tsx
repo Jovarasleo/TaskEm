@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import TasksContainer from "../TasksContainer";
+import TasksContainer from "../components/tasksContainer/TasksContainer";
 
 afterEach(() => {
   cleanup(); // Resets the DOM after each test suite
@@ -35,7 +35,7 @@ describe("Test if task container renders and it's functionallity", () => {
         container={"todo"}
         dragging
         toContainer={""}
-        nextPosition={null}
+        nextIndex={null}
         dragItem={null}
         handleDrag={() => {}}
         handleDragStart={() => {}}
@@ -54,7 +54,7 @@ describe("Test if task container renders and it's functionallity", () => {
         container={"todo"}
         dragging
         toContainer={""}
-        nextPosition={null}
+        nextIndex={null}
         dragItem={null}
         handleDrag={() => {}}
         handleDragStart={() => {}}
