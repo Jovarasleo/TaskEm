@@ -69,7 +69,7 @@ function TasksContainer({
     0
   );
   useOutsideClick(createTask, outsideClickRef);
-  const showPointer = position === "first";
+  const showPointer = position === "before";
 
   return (
     <section
@@ -101,7 +101,9 @@ function TasksContainer({
           ref={outsideClickRef}
         />
       ) : null}
-      {showPointer ? <div className={styles.pointer}></div> : null}
+      {showPointer && !tasks.length ? (
+        <div className={styles.pointer}></div>
+      ) : null}
       {tasks?.map((task, index) => {
         return (
           <TaskCard
