@@ -64,7 +64,7 @@ function TasksContainer({
       className={styles.container}
       role={container}
       onDragOver={
-        dragging ? (e) => handleDrag(e, containerRef, container) : () => {}
+        dragging ? (e) => handleDrag(e, containerRef, container) : undefined
       }
       ref={containerRef}
     >

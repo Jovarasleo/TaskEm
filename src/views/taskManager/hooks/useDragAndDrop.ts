@@ -65,7 +65,7 @@ export const useDragAndDrop = (dispatch: any) => {
         }
       })
       .map((element) => {
-        let rect = element.getBoundingClientRect();
+        const rect = element.getBoundingClientRect();
         const position = Math.round(e.clientY - rect.top - rect.height / 2);
         return position;
       });
@@ -78,7 +78,7 @@ export const useDragAndDrop = (dispatch: any) => {
     }, 0);
 
     const pointerPosition = [...draggableElements].map((element) => {
-      let rect = element.getBoundingClientRect();
+      const rect = element.getBoundingClientRect();
       const position = Math.round(e.clientY - rect.top - rect.height / 2);
       return position;
     });
