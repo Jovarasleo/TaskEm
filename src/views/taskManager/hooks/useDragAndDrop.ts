@@ -4,20 +4,32 @@ import {
   handleDragOver,
   handleDragStart,
 } from "../model/task";
-import { useRef, useState } from "react";
+import { useRef, useState, DragEvent, Dispatch } from "react";
 
-export const useDragAndDrop = (dispatch: any) => {
+type Action = {
+  type: "MOVE_TASK";
+  fromContainer: string | undefined;
+  toContainer: string;
+  fromIndex: number | undefined;
+  toIndex: number;
+};
+
+export const useDragAndDrop = (dispatch: Dispatch<Action>) => {
   const [dragging, setDragging] = useState(false);
   const [toContainer, setToContainer] = useState("");
   const [nextIndex, setNextIndex] = useState<null | number>(0);
 
   const dragItem = useRef<DragItem | null>(null);
-  const dragItemNode = useRef<HTMLDivElement | null>(null);
+  const dragItemNode = useRef<HTMLElement | null>(null);
   const dragtoIndex = useRef(0);
   const dragtoContainer = useRef("");
 
-  const handleDragStart: handleDragStart = (e: any, container, index) => {
-    dragItemNode.current = e.target;
+  const handleDragStart: handleDragStart = (
+    e: DragEvent<HTMLElement>,
+    container,
+    index
+  ) => {
+    dragItemNode.current = e.target as HTMLElement;
     dragItem.current = { container, index };
     dragtoContainer.current = container;
 
@@ -52,9 +64,8 @@ export const useDragAndDrop = (dispatch: any) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const target = ref.current || (e.target as any);
-    const draggableElements: HTMLElement[] =
-      target.querySelectorAll("[draggable]");
+    const target = ref.current || (e.target as HTMLElement);
+    const draggableElements = target.querySelectorAll("[draggable]");
 
     const mappedPositions = [...draggableElements]
       .filter((_, index) => {
