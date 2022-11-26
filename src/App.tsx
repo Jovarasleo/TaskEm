@@ -1,11 +1,11 @@
-import TaskManager from "./views/taskManager/TaskManager";
+import ProjectManager from "./views/projectManager/ProjectManager";
 import Layout from "./components/layout";
 import "./styles/global.scss";
 
 function App() {
   return (
     <Layout>
-      <TaskManager />
+      <ProjectManager />
     </Layout>
   );
 }

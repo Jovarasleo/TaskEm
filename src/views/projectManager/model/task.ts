@@ -9,6 +9,8 @@ export interface Actions {
   fromContainer?: string;
   toIndex?: number;
   fromIndex?: number;
+  project?: string;
+  payload?: TaskContainers;
 }
 
 export interface Task {

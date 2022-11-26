@@ -1,23 +1,12 @@
-import { useReducer } from "react";
-import { TaskContainers } from "./model/task";
-import { taskReducer } from "./reducers/taskReducer";
-import { useDragAndDrop } from "./hooks/useDragAndDrop";
-import useLocalStorage from "./hooks/useLocalStorage";
-import TasksContainer from "./components/tasksContainer/TasksContainer";
-import styles from "./styles.module.scss";
+import { TaskContainers } from "../../model/task";
 
-const initialState: TaskContainers = {
-  todo: [],
-  progress: [],
-  done: [],
-};
-const localStorage = window.localStorage.getItem("tasks");
-const DEFAULT_STATE = localStorage ? JSON.parse(localStorage) : initialState;
+import { useDragAndDrop } from "../../hooks/useDragAndDrop";
+import useLocalStorage from "../../hooks/useLocalStorage";
+import TasksContainer from "../taskContainer/TasksContainer";
+import styles from "../../styles.module.scss";
 
-function TaskManger() {
-  const [state, dispatch] = useReducer(taskReducer, DEFAULT_STATE);
-  useLocalStorage(state);
-
+function TaskManager({ project, state, dispatch }: any) {
+  useLocalStorage(project, state);
   const {
     handleDragStart,
     handleDragOver,
@@ -27,9 +16,10 @@ function TaskManger() {
     toContainer,
     dragItem,
   } = useDragAndDrop(dispatch);
-
+  console.log({ state });
   return (
     <div className={styles.managerContainer}>
+      <h2>{project}</h2>
       {Object.keys(state)?.map((container) => {
         return (
           <TasksContainer
@@ -50,4 +40,4 @@ function TaskManger() {
     </div>
   );
 }
-export default TaskManger;
+export default TaskManager;

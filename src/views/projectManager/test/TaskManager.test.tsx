@@ -1,14 +1,18 @@
 import { cleanup, render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import TaskManager from "../TaskManager";
+import TaskManager from "../components/taskManager/TaskManager";
 
 afterEach(() => {
   cleanup(); // Resets the DOM after each test suite
 });
 const taskText = "testing text";
+const project = "Test";
+const state = { todo: [], progress: [], done: [] };
 describe("Test if taskManager renders and it's functionality works", () => {
   test("clicking add button creates new task and delete button deletes task", () => {
-    render(<TaskManager />);
+    render(
+      <TaskManager project={project} state={state} dispatch={() => void {}} />
+    );
     //task creation
     const tasksCountBeforeAdding = screen.queryAllByRole("taskItem").length;
     const createTaskButton = screen.getByRole("create_task");
