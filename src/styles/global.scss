@@ -6,4 +6,13 @@
 }
 body {
   min-height: 100vh;
+  background: linear-gradient(90deg, #ffae52e7, #ff6f5cce);
+}
+main {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1400px;
+}
+body > div {
+  display: flex;
 }

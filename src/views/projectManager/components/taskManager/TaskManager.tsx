@@ -18,26 +18,28 @@ function TaskManager({ project, state, dispatch }: any) {
   } = useDragAndDrop(dispatch);
   console.log({ state });
   return (
-    <div className={styles.managerContainer}>
+    <>
       <h2>{project}</h2>
-      {Object.keys(state)?.map((container) => {
-        return (
-          <TasksContainer
-            key={container}
-            tasks={state[container as keyof TaskContainers]}
-            container={container}
-            dispatch={dispatch}
-            handleDragStart={handleDragStart}
-            handleDragOver={handleDragOver}
-            handleDrag={handleDrag}
-            dragging={dragging}
-            nextIndex={nextIndex}
-            toContainer={toContainer}
-            dragItem={dragItem.current}
-          />
-        );
-      })}
-    </div>
+      <div className={styles.managerContainer}>
+        {Object.keys(state)?.map((container) => {
+          return (
+            <TasksContainer
+              key={container}
+              tasks={state[container as keyof TaskContainers]}
+              container={container}
+              dispatch={dispatch}
+              handleDragStart={handleDragStart}
+              handleDragOver={handleDragOver}
+              handleDrag={handleDrag}
+              dragging={dragging}
+              nextIndex={nextIndex}
+              toContainer={toContainer}
+              dragItem={dragItem.current}
+            />
+          );
+        })}
+      </div>
+    </>
   );
 }
 export default TaskManager;

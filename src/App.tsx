@@ -1,6 +1,5 @@
 import ProjectManager from "./views/projectManager/ProjectManager";
-import Layout from "./components/layout";
-import "./styles/global.scss";
+import Layout from "./components/layout/layout";
 
 function App() {
   return (
