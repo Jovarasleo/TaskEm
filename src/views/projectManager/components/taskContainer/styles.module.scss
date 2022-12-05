@@ -1,13 +1,17 @@
+@import "../../../../styles/variables.scss";
+
 .container {
   width: 100%;
   border-radius: 30px;
   box-shadow: 0 0 5px black;
   padding: 20px;
   position: relative;
-  background-color: #ffffff;
+  background-color: $primaryWhite;
 
   h3 {
     margin-bottom: 30px;
+    pointer-events: none;
+    user-select: none;
   }
 
   .input {
@@ -25,6 +29,20 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  background-color: #de9f55;
+  color: #ffffff;
+  font-weight: 900;
+
+  &::before {
+    content: "+";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-51%, -55%);
+    font-size: 42px;
+  }
 }
 
 .pointer {
@@ -36,7 +54,7 @@
     height: 4px;
     border-radius: 10px;
     top: -12px;
-    background-color: rgb(237, 140, 13);
+    background-color: #de9f55;
     width: 100%;
     position: absolute;
     pointer-events: none;

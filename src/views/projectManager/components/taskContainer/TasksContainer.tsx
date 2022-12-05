@@ -86,9 +86,7 @@ function TasksContainer({
           role={"create_task"}
           onClick={() => setAddTask(true)}
           className={styles.addTaskButton}
-        >
-          +
-        </button>
+        />
       )}
       <h3>{container}</h3>
       {addTask ? (

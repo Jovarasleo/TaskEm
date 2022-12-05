@@ -1,7 +1,7 @@
 .taskWrapper {
   cursor: grab;
   border-radius: 10px;
-  box-shadow: 0px 0px 2px 1px rgb(22, 22, 22);
+  box-shadow: 0px 0px 3px 2px #666666;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -24,8 +24,9 @@
     border: none;
     font-size: 14px;
     overflow-wrap: break-word;
-    background-color: #e2e2e2;
+    background-color: #ededed;
     word-break: break-all;
+    box-shadow: 0px 2px 3px 1px #29292976;
     cursor: text;
   }
   .taskDescription {
@@ -59,7 +60,7 @@
     height: 4px;
     border-radius: 10px;
     top: -12px;
-    background-color: rgb(237, 140, 13);
+    background-color: #de9f55;
     width: 100%;
     position: absolute;
     pointer-events: none;
@@ -75,7 +76,7 @@
     height: 4px;
     border-radius: 10px;
     bottom: -12px;
-    background-color: rgb(237, 140, 13);
+    background-color: #de9f55;
     width: 100%;
     position: absolute;
     pointer-events: none;

@@ -1,20 +1,21 @@
-import { useState } from "react";
-function CreateProject({ selectProject }: any) {
+import TaskContext, { TasksContext } from "../../../../context/taskContext";
+import { useState, useReducer, useEffect, useContext } from "react";
+import { TaskContainers } from "../../../../views/projectManager/model/task";
+import { taskReducer } from "../../reducers/taskReducer";
+
+function CreateProject() {
+  const {
+    state,
+    dispatch,
+    projects,
+    selectProject,
+    selectedProject,
+    setSelectedProject,
+    setProjects,
+    addProject,
+  } = useContext(TaskContext) as TasksContext;
   const [projectName, setProjectName] = useState("");
-  const getProject = window.localStorage.getItem("PROJECT_MANAGER");
-  const projectsObj = getProject ? JSON.parse(getProject) : {};
-  const addProject = (value: string) => {
-    console.log({ projectsObj });
 
-    const newProject = {
-      todo: [],
-      progress: [],
-      done: [],
-    };
-    projectsObj[value] = newProject;
-
-    window.localStorage.setItem("PROJECT_MANAGER", JSON.stringify(projectsObj));
-  };
   return (
     <>
       <div>
@@ -27,7 +28,7 @@ function CreateProject({ selectProject }: any) {
           Create Project
         </button>
       </div>
-      {Object.keys(projectsObj).map((project: any) => {
+      {Object.keys(projects).map((project: any) => {
         return (
           <button
             key={project}

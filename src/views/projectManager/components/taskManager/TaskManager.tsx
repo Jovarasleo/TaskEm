@@ -1,5 +1,4 @@
 import { TaskContainers } from "../../model/task";
-
 import { useDragAndDrop } from "../../hooks/useDragAndDrop";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import TasksContainer from "../taskContainer/TasksContainer";
@@ -16,7 +15,7 @@ function TaskManager({ project, state, dispatch }: any) {
     toContainer,
     dragItem,
   } = useDragAndDrop(dispatch);
-  console.log({ state });
+
   return (
     <>
       <h2>{project}</h2>
