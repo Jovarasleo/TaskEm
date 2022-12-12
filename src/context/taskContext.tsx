@@ -1,12 +1,14 @@
 import { createContext, useReducer, useState, useEffect } from "react";
-import { taskReducer } from "../views/projectManager/reducers/taskReducer";
-import { TaskContainers, Actions } from "../views/projectManager/model/task";
+import { taskReducer } from "../views/taksManager/reducers/taskReducer";
+import { TaskContainers, Actions } from "../views/taksManager/model/task";
 
 const initialState: TaskContainers = {
   todo: [],
   progress: [],
   done: [],
 };
+
+const PROJECT_MANAGER = "PROJECT_MANAGER";
 
 export interface TasksContext {
   state: TaskContainers;
@@ -22,7 +24,7 @@ export interface TasksContext {
 const TaskContext = createContext<TasksContext | null>(null);
 
 function TaskProvider({ children }: any) {
-  const localStorage = window.localStorage.getItem("PROJECT_MANAGER");
+  const localStorage = window.localStorage.getItem(PROJECT_MANAGER);
   const [projects, setProjects] = useState(
     localStorage
       ? JSON.parse(localStorage)
@@ -37,21 +39,18 @@ function TaskProvider({ children }: any) {
 
   const selectProject = (project: string) => {
     setSelectedProject(project);
-
-    if (selectedProject) {
-      dispatch({ type: "SWITCH_PROJECT", payload: projects[project] });
-    }
+    dispatch({ type: "SWITCH_PROJECT", payload: projects[project] });
   };
 
   const addProject = (value: string) => {
     if (!value.length) return;
     const newObj = { ...projects, [value]: initialState };
     setProjects((prevValue: TaskContainers) => ({ ...prevValue, ...newObj }));
-    window.localStorage.setItem("PROJECT_MANAGER", JSON.stringify(newObj));
+    window.localStorage.setItem(PROJECT_MANAGER, JSON.stringify(newObj));
   };
 
   useEffect(() => {
-    const localStorage = window.localStorage.getItem("PROJECT_MANAGER");
+    const localStorage = window.localStorage.getItem(PROJECT_MANAGER);
     if (localStorage) {
       setProjects(JSON.parse(localStorage));
     }

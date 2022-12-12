@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import CreateProject from "../../views/projectManager/components/createProject/CreateProject";
+import { useState, useRef } from "react";
+import CreateProject from "../../views/taksManager/components/createProject/CreateProject";
 import NavButton from "./navButton";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import clsx from "clsx";
@@ -7,39 +7,41 @@ import styles from "./navbar.module.scss";
 
 function Navbar() {
   const [showNav, setShowNav] = useState(false);
-  const [animate, setAnimate] = useState(true);
-  const outsideClickRef = useRef<HTMLTextAreaElement>(null);
+  const [animate, setAnimate] = useState(false);
 
+  const outsideClickRef = useRef<HTMLTextAreaElement>(null);
   useOutsideClick(() => setAnimate(false), outsideClickRef);
 
-  useEffect(() => {
-    showNav ? setAnimate(true) : setAnimate(false);
-  }, [showNav]);
+  const showNavigation = () => {
+    setShowNav(true);
+    const timer = setTimeout(() => {
+      setAnimate(true);
+    }, 5);
+    return () => clearTimeout(timer);
+  };
 
   return (
-    <>
-      <header className={styles.header} ref={outsideClickRef}>
-        {!showNav && <NavButton onClick={() => setShowNav(!showNav)} />}
-        {showNav && (
-          <nav
-            className={clsx(styles.navWrapper, animate && styles.animate)}
-            onTransitionEnd={() => {
-              !animate && setShowNav(false);
-            }}
-          >
+    <header className={styles.header} ref={outsideClickRef}>
+      {!showNav ? (
+        <NavButton onClick={showNavigation} />
+      ) : (
+        <nav
+          className={clsx(styles.navWrapper, animate && styles.animate)}
+          onTransitionEnd={() => {
+            !animate && setShowNav(false);
+          }}
+        >
+          <div className={styles.titleWrapper}>
+            <h1>Task'Em!</h1>
             <NavButton
               onClick={() => setAnimate(false)}
               className={styles.active}
             />
-            <h2>Task'Em!</h2>
-            <ul>
-              <li>Home</li>
-            </ul>
-            <CreateProject />
-          </nav>
-        )}
-      </header>
-    </>
+          </div>
+          <CreateProject />
+        </nav>
+      )}
+    </header>
   );
 }
 export default Navbar;

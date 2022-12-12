@@ -1,23 +1,15 @@
 import TaskContext, { TasksContext } from "../../../../context/taskContext";
-import { useState, useReducer, useEffect, useContext } from "react";
-import { TaskContainers } from "../../../../views/projectManager/model/task";
-import { taskReducer } from "../../reducers/taskReducer";
+import { useState, useContext } from "react";
+import styles from "./styles.module.scss";
 
 function CreateProject() {
-  const {
-    state,
-    dispatch,
-    projects,
-    selectProject,
-    selectedProject,
-    setSelectedProject,
-    setProjects,
-    addProject,
-  } = useContext(TaskContext) as TasksContext;
+  const { projects, selectProject, addProject } = useContext(
+    TaskContext
+  ) as TasksContext;
   const [projectName, setProjectName] = useState("");
 
   return (
-    <>
+    <section className={styles.createProjectWrapper}>
       <div>
         <input
           type="text"
@@ -32,6 +24,7 @@ function CreateProject() {
         return (
           <button
             key={project}
+            className={styles.selectProject}
             onClick={() => {
               selectProject(project);
             }}
@@ -40,7 +33,7 @@ function CreateProject() {
           </button>
         );
       })}
-    </>
+    </section>
   );
 }
 export default CreateProject;

@@ -1,11 +1,18 @@
-import { TaskContainers } from "../../model/task";
-import { useDragAndDrop } from "../../hooks/useDragAndDrop";
-import useLocalStorage from "../../hooks/useLocalStorage";
-import TasksContainer from "../taskContainer/TasksContainer";
-import styles from "../../styles.module.scss";
+import { TaskContainers } from "./model/task";
+import { useDragAndDrop } from "./hooks/useDragAndDrop";
+import useLocalStorage from "./hooks/useLocalStorage";
+import TasksContainer from "./components/taskContainer/TasksContainer";
+import TaskContext, { TasksContext } from "../../context/taskContext";
+import { useContext } from "react";
+import styles from "./styles.module.scss";
 
-function TaskManager({ project, state, dispatch }: any) {
-  useLocalStorage(project, state);
+function TaskManager() {
+  const { state, dispatch, selectedProject } = useContext(
+    TaskContext
+  ) as TasksContext;
+
+  useLocalStorage(selectedProject, state);
+
   const {
     handleDragStart,
     handleDragOver,
@@ -18,7 +25,7 @@ function TaskManager({ project, state, dispatch }: any) {
 
   return (
     <>
-      <h2>{project}</h2>
+      <h2>{selectedProject}</h2>
       <div className={styles.managerContainer}>
         {Object.keys(state)?.map((container) => {
           return (
