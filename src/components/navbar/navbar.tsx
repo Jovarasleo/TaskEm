@@ -23,7 +23,7 @@ function Navbar() {
   return (
     <header className={styles.header} ref={outsideClickRef}>
       {!showNav ? (
-        <NavButton onClick={showNavigation} />
+        <NavButton onClick={() => showNavigation()} />
       ) : (
         <nav
           className={clsx(styles.navWrapper, animate && styles.animate)}
