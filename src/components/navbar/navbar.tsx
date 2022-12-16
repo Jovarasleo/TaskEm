@@ -12,13 +12,13 @@ function Navbar() {
   const outsideClickRef = useRef<HTMLTextAreaElement>(null);
   useOutsideClick(() => setAnimate(false), outsideClickRef);
 
-  const showNavigation = () => {
+  function showNavigation() {
     setShowNav(true);
     const timer = setTimeout(() => {
       setAnimate(true);
     }, 5);
     return () => clearTimeout(timer);
-  };
+  }
 
   return (
     <header className={styles.header} ref={outsideClickRef}>
