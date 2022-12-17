@@ -14,9 +14,9 @@ function TaskManager() {
   useLocalStorage(selectedProject, state);
 
   const {
-    handleDragStart,
-    handleDragOver,
     handleDrag,
+    handleDragStart,
+    handleDragLeave,
     dragging,
     nextIndex,
     toContainer,
@@ -34,9 +34,9 @@ function TaskManager() {
               tasks={state[container as keyof TaskContainers]}
               container={container}
               dispatch={dispatch}
-              handleDragStart={handleDragStart}
-              handleDragOver={handleDragOver}
               handleDrag={handleDrag}
+              handleDragStart={handleDragStart}
+              handleDragLeave={handleDragLeave}
               dragging={dragging}
               nextIndex={nextIndex}
               toContainer={toContainer}

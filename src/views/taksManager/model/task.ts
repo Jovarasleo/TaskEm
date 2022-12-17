@@ -62,3 +62,5 @@ export type handleDrag = (
   ref: RefObject<HTMLDivElement>,
   container: string
 ) => void;
+
+export type handleDragLeave = (e: React.DragEvent<HTMLElement>) => void;

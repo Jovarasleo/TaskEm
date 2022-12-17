@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import {
   handleDragStart,
-  handleDragOver,
+  handleDragLeave,
   handleDrag,
   DragItem,
   Task as TaskModel,
@@ -22,9 +22,9 @@ interface TaskContainer {
   nextIndex: null | number;
   dragItem: DragItem | null;
   dispatch: (action: Actions) => void;
-  handleDragStart: handleDragStart;
-  handleDragOver: handleDragOver;
   handleDrag: handleDrag;
+  handleDragStart: handleDragStart;
+  handleDragLeave: handleDragLeave;
 }
 
 function TasksContainer({
@@ -36,6 +36,7 @@ function TasksContainer({
   dragItem,
   dispatch,
   handleDrag,
+  handleDragLeave,
   handleDragStart,
 }: TaskContainer) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -79,6 +80,7 @@ function TasksContainer({
       onDragOver={
         dragging ? (e) => handleDrag(e, containerRef, container) : undefined
       }
+      onDragLeave={dragging ? (e) => handleDragLeave(e) : undefined}
       ref={containerRef}
     >
       {todoContainer && (
