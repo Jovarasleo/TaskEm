@@ -46,6 +46,9 @@ export const taskReducer = (state: TaskContainers, action: Actions) => {
         ...tasksCopy,
       };
     }
+    case "SWITCH_PROJECT": {
+      return { ...state, ...action.payload };
+    }
 
     default:
       return state;

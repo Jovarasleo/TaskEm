@@ -1,6 +1,5 @@
-import TaskManager from "./views/taskManager/TaskManager";
-import Layout from "./components/layout";
-import "./styles/global.scss";
+import TaskManager from "./views/taksManager/TaskManager";
+import Layout from "./components/layout/layout";
 
 function App() {
   return (

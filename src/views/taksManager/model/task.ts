@@ -9,6 +9,8 @@ export interface Actions {
   fromContainer?: string;
   toIndex?: number;
   fromIndex?: number;
+  project?: string;
+  payload?: TaskContainers;
 }
 
 export interface Task {
@@ -60,3 +62,5 @@ export type handleDrag = (
   ref: RefObject<HTMLDivElement>,
   container: string
 ) => void;
+
+export type handleDragLeave = (e: React.DragEvent<HTMLElement>) => void;

@@ -1,11 +1,6 @@
 import { FocusEvent, useState, useRef } from "react";
 import { clsx } from "clsx";
-import {
-  DragItem,
-  handleDragStart,
-  Task,
-  Actions,
-} from "views/taskManager/model/task";
+import { DragItem, handleDragStart, Task, Actions } from "../../model/task";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
 import usePositionIndicator from "../../hooks/usePositionIndicator";
 import useContainerHeight from "../../hooks/useContainerHeight";
