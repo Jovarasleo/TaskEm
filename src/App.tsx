@@ -1,4 +1,3 @@
-// import ProjectManager from "./views/projectManager/ProjectManager";
 import TaskManager from "./views/taksManager/TaskManager";
 import Layout from "./components/layout/layout";
 
