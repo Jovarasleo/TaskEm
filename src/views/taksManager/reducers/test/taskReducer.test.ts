@@ -48,11 +48,13 @@ describe("Test taskReducer", () => {
   });
 
   test("MOVE_TASK", () => {
+    //actually moving task
     const initialState: TaskContainers = {
       todo: [{ value: "test1", id: "1" }],
       progress: [],
       done: [],
     };
+
     const updateAction = {
       type: "MOVE_TASK",
       toContainer: "progress",
@@ -60,22 +62,15 @@ describe("Test taskReducer", () => {
       toIndex: 0,
       fromIndex: 0,
     };
-    const updatedState = taskReducer(initialState, updateAction);
 
+    const updatedState = taskReducer(initialState, updateAction);
     expect(updatedState).toStrictEqual({
       todo: [],
       progress: [{ value: "test1", id: "1" }],
       done: [],
     });
-  });
 
-  test("MOVE_TASK_MISSING_CONTAINER", () => {
-    const initialState: TaskContainers = {
-      todo: [{ value: "test1", id: "1" }],
-      progress: [],
-      done: [],
-    };
-
+    //task missing container values and silently fails
     const updatedActionMissingContainer = {
       type: "MOVE_TASK",
       toContainer: "",
@@ -84,26 +79,18 @@ describe("Test taskReducer", () => {
       fromIndex: 0,
     };
 
-    const updatedState = taskReducer(
+    const updatedState2 = taskReducer(
       initialState,
       updatedActionMissingContainer
     );
-
-    expect(updatedState).toStrictEqual({
+    expect(updatedState2).toStrictEqual({
       todo: [{ value: "test1", id: "1" }],
       progress: [],
       done: [],
     });
-  });
 
-  test("MOVE_TASK_TARGETS_SAME_TASK", () => {
-    const initialState: TaskContainers = {
-      todo: [{ value: "test1", id: "1" }],
-      progress: [],
-      done: [],
-    };
-
-    const updatedActionMissingContainer = {
+    //target same tasks does nothing, returns same state
+    const updatedActionSameTask = {
       type: "MOVE_TASK",
       toContainer: "todo",
       fromContainer: "todo",
@@ -111,12 +98,8 @@ describe("Test taskReducer", () => {
       fromIndex: 0,
     };
 
-    const updatedState = taskReducer(
-      initialState,
-      updatedActionMissingContainer
-    );
-
-    expect(updatedState).toStrictEqual({
+    const updatedState3 = taskReducer(initialState, updatedActionSameTask);
+    expect(updatedState3).toStrictEqual({
       todo: [{ value: "test1", id: "1" }],
       progress: [],
       done: [],
