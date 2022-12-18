@@ -12,6 +12,7 @@ import useOutsideClick from "../../../../hooks/useOutsideClick";
 import { uid } from "../../hooks/useGenerateId";
 import TaskCard from "../taskCard/TaskCard";
 import styles from "./styles.module.scss";
+import clsx from "clsx";
 
 interface TaskContainer {
   dataTestId?: string;
@@ -104,23 +105,30 @@ function TasksContainer({
       {showPointer && !tasks.length ? (
         <div className={styles.pointer}></div>
       ) : null}
-      {tasks?.map((task, index) => {
-        return (
-          <TaskCard
-            key={task?.id}
-            task={task}
-            index={index}
-            arrayLength={tasks.length}
-            dragging={dragging}
-            container={container}
-            nextIndex={nextIndex}
-            toContainer={toContainer}
-            dragItem={dragItem}
-            dispatch={dispatch}
-            handleDragStart={handleDragStart}
-          />
-        );
-      })}
+      <div
+        className={clsx(
+          styles.tasksContainer,
+          dragging ? styles.pointerNone : ""
+        )}
+      >
+        {tasks?.map((task, index) => {
+          return (
+            <TaskCard
+              key={task?.id}
+              task={task}
+              index={index}
+              arrayLength={tasks.length}
+              dragging={dragging}
+              container={container}
+              nextIndex={nextIndex}
+              toContainer={toContainer}
+              dragItem={dragItem}
+              dispatch={dispatch}
+              handleDragStart={handleDragStart}
+            />
+          );
+        })}
+      </div>
     </section>
   );
 }
