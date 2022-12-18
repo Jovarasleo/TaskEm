@@ -4,12 +4,15 @@
   width: 100%;
   border-radius: 30px;
   box-shadow: 0 0 5px black;
-  padding: 20px;
+  padding: 20px 5px;
   position: relative;
+
+  overflow: hidden;
   background-color: $primaryWhite;
 
   h3 {
     margin-bottom: 30px;
+    margin-left: 10px;
     pointer-events: none;
     user-select: none;
   }
@@ -22,6 +25,22 @@
     resize: vertical;
   }
 }
+
+.tasksContainer {
+  max-height: 80vh;
+  padding: 20px 5px 20px 5px;
+  overflow-y: auto;
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(108, 108, 108);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background-clip: padding-box;
+  }
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+}
+
 .addTaskButton {
   position: absolute;
   right: 20px;
@@ -59,4 +78,9 @@
     position: absolute;
     pointer-events: none;
   }
+}
+
+.pointerNone,
+.pointerNone > * {
+  pointer-events: none;
 }
