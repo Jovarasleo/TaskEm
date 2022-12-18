@@ -13,17 +13,32 @@
   }
 }
 
+:root {
+  --theme-background: linear-gradient(90deg, #ffae52e7, #ff6f5cce);
+  --theme-navigation: linear-gradient(#424242, #56565600);
+  --theme-main: #de9f55;
+  --color-white-0: #ffffff;
+  --color-white-1: #ededed;
+  --color-grey-1: #6c6c6c;
+  --color-grey-2: #4f4f4f;
+  --color-black-2: #161616;
+  --color-black-3: #000000;
+  --color-shadow-grey-1: #666666;
+  --color-shadow-grey-3: #29292976;
+}
+
 body {
+  font-size: 62.5%;
   min-height: 100vh;
-  background: linear-gradient(90deg, #ffae52e7, #ff6f5cce);
+  background: var(--theme-background);
 }
 
 main {
   margin: 0 auto;
-  padding: 0 10px;
-  margin-top: 80px;
+  padding: 0 1em;
+  margin-top: 8em;
+  max-width: 140em;
   width: 100%;
-  max-width: 1400px;
 }
 
 body > div {
