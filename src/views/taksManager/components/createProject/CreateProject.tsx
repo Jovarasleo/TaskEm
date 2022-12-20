@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import TaskContext, { TasksContext } from "../../../../context/taskContext";
-import Button from "../../../../components/Button/Button";
+import Button from "../../../../components/button/Button";
 import styles from "./styles.module.scss";
 
 function CreateProject() {

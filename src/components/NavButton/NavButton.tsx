@@ -1,4 +1,4 @@
-import Button, { ButtonProps } from "../Button/Button";
+import Button, { ButtonProps } from "../button/Button";
 import clsx from "clsx";
 import styles from "./NavButton.module.scss";
 

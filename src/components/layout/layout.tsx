@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import Header from "../Header/Header";
+import Header from "../header/Header";
 import { TaskProvider } from "../../context/taskContext";
 
 interface LayoutProps {

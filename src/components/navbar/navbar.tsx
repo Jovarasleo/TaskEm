@@ -1,5 +1,5 @@
 import CreateProject from "../../views/taksManager/components/createProject/CreateProject";
-import NavButton from "../NavButton/NavButton";
+import NavButton from "../navButton/NavButton";
 import clsx from "clsx";
 import styles from "./Navbar.module.scss";
 
@@ -19,10 +19,7 @@ function Navbar({ animate, setAnimate, setShowNav }: NavbarProps) {
     >
       <div className={styles.titleWrapper}>
         <h1 className={styles.title}>Task'Em!</h1>
-        <NavButton
-          onClick={() => setAnimate(false)}
-          className={styles.active}
-        />
+        <NavButton onClick={() => setAnimate(false)} className={styles.active} />
       </div>
       <CreateProject />
     </nav>

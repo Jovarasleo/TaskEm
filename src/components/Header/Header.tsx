@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
-import NavButton from "../NavButton/NavButton";
-import Navbar from "../Navbar/Navbar";
+import NavButton from "../navButton/NavButton";
+import Navbar from "../navbar/Navbar";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import styles from "./Header.module.scss";
 
