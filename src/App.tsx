@@ -1,5 +1,5 @@
 import TaskManager from "./views/taksManager/TaskManager";
-import Layout from "./components/Layout/layout";
+import Layout from "./components/Layout/Layout";
 
 function App() {
   return (
