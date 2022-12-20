@@ -1,7 +1,7 @@
 import CreateProject from "../../views/taksManager/components/createProject/CreateProject";
 import NavButton from "../navButton/NavButton";
 import clsx from "clsx";
-import styles from "./Navbar.module.scss";
+import styles from "./navbar.module.scss";
 
 interface NavbarProps {
   animate: boolean;

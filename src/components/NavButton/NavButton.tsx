@@ -1,6 +1,6 @@
 import Button, { ButtonProps } from "../button/Button";
 import clsx from "clsx";
-import styles from "./NavButton.module.scss";
+import styles from "./navButton.module.scss";
 
 const NavButton = ({ onClick, className }: ButtonProps) => {
   return (

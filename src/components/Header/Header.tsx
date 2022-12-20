@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import NavButton from "../navButton/NavButton";
 import Navbar from "../navbar/Navbar";
 import useOutsideClick from "../../hooks/useOutsideClick";
-import styles from "./Header.module.scss";
+import styles from "./header.module.scss";
 
 function Header() {
   const [showNav, setShowNav] = useState(false);
