@@ -23,8 +23,6 @@ const testArray = [
   },
 ];
 
-const taskText = "taskTextValue";
-
 const dispatch = jest.fn();
 describe("Test if task container renders and it's functionallity", () => {
   test("task container renders", () => {
@@ -39,7 +37,7 @@ describe("Test if task container renders and it's functionallity", () => {
         dragItem={null}
         handleDrag={() => {}}
         handleDragStart={() => {}}
-        handleDragOver={() => {}}
+        handleDragLeave={() => {}}
       />
     );
     const taskContainer = screen.getByRole("todo");
@@ -58,7 +56,7 @@ describe("Test if task container renders and it's functionallity", () => {
         dragItem={null}
         handleDrag={() => {}}
         handleDragStart={() => {}}
-        handleDragOver={() => {}}
+        handleDragLeave={() => {}}
       />
     );
     const getAllTasks = await screen.findAllByRole("taskItem");

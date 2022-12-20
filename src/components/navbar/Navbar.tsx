@@ -12,6 +12,7 @@ interface NavbarProps {
 function Navbar({ animate, setAnimate, setShowNav }: NavbarProps) {
   return (
     <nav
+      role="navigation"
       className={clsx(styles.navWrapper, animate && styles.animate)}
       onTransitionEnd={() => {
         !animate && setShowNav(false);

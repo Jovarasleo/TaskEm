@@ -23,7 +23,7 @@ function Header() {
     <>
       <header className={styles.header} ref={outsideClickRef}>
         {!showNav ? (
-          <NavButton onClick={showNavigation} />
+          <NavButton onClick={() => showNavigation()} />
         ) : (
           <Navbar
             animate={animate}
