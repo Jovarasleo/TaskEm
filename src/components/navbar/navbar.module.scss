@@ -1,0 +1,32 @@
+.navWrapper {
+  height: 100vh;
+  max-width: 400px;
+  background: linear-gradient(#424242, rgba(86, 86, 86, 0));
+  position: fixed;
+  width: 100%;
+  transition-duration: 300ms;
+  transition-property: transform;
+  transform: translateX(-400px);
+  &.animate {
+    transform: translateX(0);
+  }
+}
+
+.titleWrapper {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.title {
+  font-size: 2.6em;
+}
+
+.active {
+  position: relative;
+  margin-left: auto;
+
+  & div {
+    background-color: var(--color-white-1);
+  }
+}
