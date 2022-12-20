@@ -63,13 +63,7 @@ function TasksContainer({
     }
   };
 
-  const position = usePositionIndicator(
-    toContainer,
-    container,
-    nextIndex,
-    0,
-    0
-  );
+  const position = usePositionIndicator(toContainer, container, nextIndex, 0, 0);
   useOutsideClick(createTask, outsideClickRef);
   const showPointer = position === "before";
 
