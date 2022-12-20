@@ -10,17 +10,25 @@ interface NavbarProps {
 }
 
 function Navbar({ animate, setAnimate, setShowNav }: NavbarProps) {
+  const closeMenu = () => {
+    setShowNav(false);
+  };
+
+  const removeAnimate = () => {
+    setAnimate(false);
+  };
+
   return (
     <nav
       role="navigation"
       className={clsx(styles.navWrapper, animate && styles.animate)}
       onTransitionEnd={() => {
-        !animate && setShowNav(false);
+        !animate && closeMenu();
       }}
     >
       <div className={styles.titleWrapper}>
         <h1 className={styles.title}>Task'Em!</h1>
-        <NavButton onClick={() => setAnimate(false)} className={styles.active} />
+        <NavButton onClick={removeAnimate} className={styles.active} />
       </div>
       <CreateProject />
     </nav>

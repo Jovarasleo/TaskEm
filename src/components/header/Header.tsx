@@ -11,19 +11,19 @@ function Header() {
   const outsideClickRef = useRef<HTMLTextAreaElement>(null);
   useOutsideClick(() => setAnimate(false), outsideClickRef);
 
-  function showNavigation() {
+  const showNavigation = () => {
     setShowNav(true);
     const timer = setTimeout(() => {
       setAnimate(true);
     }, 5);
     return () => clearTimeout(timer);
-  }
+  };
 
   return (
     <>
       <header className={styles.header} ref={outsideClickRef}>
         {!showNav ? (
-          <NavButton onClick={() => showNavigation()} />
+          <NavButton onClick={showNavigation} />
         ) : (
           <Navbar
             animate={animate}
