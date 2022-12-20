@@ -5,6 +5,7 @@ import { TaskProvider } from "../../context/taskContext";
 interface LayoutProps {
   children: ReactElement;
 }
+
 function Layout({ children }: LayoutProps) {
   return (
     <>
