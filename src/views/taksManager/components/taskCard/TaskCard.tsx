@@ -84,10 +84,11 @@ function TaskCard({
   useOutsideClick(closeTextBoxes, outsideClickRef);
 
   return (
-    <div
+    <li
       role="taskItem"
       className={clsx(
         styles.taskWrapper,
+        position.length && styles.indicator,
         styles[position],
         dragging && styles.removePointer,
         dragItem?.index === index &&
@@ -100,7 +101,7 @@ function TaskCard({
         handleDragStart(e, container, index);
       }}
     >
-      <div>{`# ${index + 1}`}</div>
+      <span className={styles.taskIndex}>{`# ${index + 1}`}</span>
       <button
         role={"delete_task"}
         className={styles.deleteButton}
@@ -135,7 +136,7 @@ function TaskCard({
           {input ? input : "Task description:"}
         </p>
       )}
-    </div>
+    </li>
   );
 }
 export default TaskCard;

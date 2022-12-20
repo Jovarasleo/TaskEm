@@ -2,57 +2,59 @@
 
 .container {
   width: 100%;
-  border-radius: 30px;
-  box-shadow: 0 0 5px black;
-  padding: 20px 5px;
+  border-radius: 1.5em;
+  box-shadow: 0 0 0.5em var(--color-black-3);
+  background-color: var(--color-white-0);
+  padding: 0.5em 0.5em;
   position: relative;
-
   overflow: hidden;
-  background-color: $primaryWhite;
 
   h3 {
-    margin-bottom: 30px;
-    margin-left: 10px;
+    margin-bottom: $size-xl;
+    margin-top: $size-xs;
+    margin-left: $size-sm;
+    color: var(--color-grey-2);
+    font-size: 2.6em;
     pointer-events: none;
     user-select: none;
   }
 
   .input {
+    margin-bottom: $size-sm;
     position: relative;
     width: 100%;
     right: 0;
-    margin-bottom: 10px;
     resize: vertical;
   }
 }
 
 .tasksContainer {
   max-height: 80vh;
-  padding: 20px 5px 20px 5px;
+  padding: 2em 0.5em 2em 0.5em;
   overflow-y: auto;
   &::-webkit-scrollbar-thumb {
-    background-color: rgb(108, 108, 108);
+    background-color: var(--color-grey-1);
     border: 2px solid transparent;
-    border-radius: 8px;
+    border-radius: $size-sm;
     background-clip: padding-box;
   }
   &::-webkit-scrollbar {
-    width: 10px;
+    width: 1em;
   }
 }
 
 .addTaskButton {
   position: absolute;
-  right: 20px;
-  top: 20px;
+  right: 10px;
+  top: 10px;
   width: 30px;
   height: 30px;
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  background-color: #de9f55;
-  color: #ffffff;
-  font-weight: 900;
+  background-color: var(--theme-main);
+  color: var(--color-white-0);
+  font-weight: $font-weight-heavy;
 
   &::before {
     content: "+";
@@ -60,7 +62,7 @@
     left: 50%;
     top: 50%;
     transform: translate(-51%, -55%);
-    font-size: 42px;
+    font-size: $size-x2;
   }
 }
 
@@ -69,14 +71,14 @@
   &:before {
     content: "";
     display: block;
-    left: 0;
-    height: 4px;
-    border-radius: 10px;
-    top: -12px;
-    background-color: #de9f55;
     width: 100%;
+    left: 0;
+    top: $size-md;
+    height: $size-xs;
+    border-radius: 1em;
     position: absolute;
     pointer-events: none;
+    background-color: var(--theme-main);
   }
 }
 

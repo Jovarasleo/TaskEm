@@ -1,39 +1,49 @@
+@import "../../../../styles/variables.scss";
+
 .taskWrapper {
   cursor: grab;
-  border-radius: 10px;
-  box-shadow: 0px 0px 3px 2px #666666;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  position: relative;
+  opacity: 1;
   width: 100%;
   padding: 10px;
-  justify-content: center;
-  opacity: 1;
-  position: relative;
+  border-radius: 10px;
+  box-shadow: 0px 0px 3px 2px var(--color-shadow-grey-1);
+
+  .taskIndex {
+    font-size: 1.6em;
+  }
+
   .textarea {
     resize: none;
-    font-size: 14px;
+    font-size: 1.4em;
     overflow-wrap: break-word;
     border: 0;
     word-break: break-all;
     cursor: text;
   }
+
   .button {
-    text-align: left;
-    max-height: 120px;
+    cursor: text;
     display: flex;
     border: none;
-    font-size: 14px;
-    overflow-wrap: break-word;
-    background-color: #ededed;
+    text-align: left;
+    font-size: 1.4em;
+    max-height: 8em;
     word-break: break-all;
-    box-shadow: 0px 2px 3px 1px #29292976;
-    cursor: text;
+    overflow-wrap: break-word;
+    background-color: var(--color-white-1);
+    box-shadow: 0px 2px 3px 1px var(--color-shadow-grey-3);
   }
+
   .taskDescription {
     margin-top: 10px;
     padding: 5px;
     overflow: hidden;
   }
+
   .deleteButton {
     width: 25px;
     height: 25px;
@@ -46,24 +56,32 @@
   }
 }
 .taskWrapper + .taskWrapper {
-  margin-top: 20px;
+  margin-top: 12px;
 }
 .current {
-  box-shadow: 0px 0px 4px 2px rgb(22, 22, 22);
+  box-shadow: 0px 0px 4px 2px var(--color-black-2);
 }
+
+.indicator {
+  position: relative;
+  &:before,
+  &:after {
+    left: 0;
+    height: $size-xs;
+    display: block;
+    border-radius: 10px;
+    background-color: var(--theme-main);
+    width: 100%;
+    position: absolute;
+    pointer-events: none;
+  }
+}
+
 .before {
   position: relative;
   &:before {
     content: "";
-    display: block;
-    left: 0;
-    height: 4px;
-    border-radius: 10px;
-    top: -12px;
-    background-color: #de9f55;
-    width: 100%;
-    position: absolute;
-    pointer-events: none;
+    top: -$size-sm;
   }
 }
 
@@ -71,15 +89,7 @@
   position: relative;
   &:after {
     content: "";
-    display: block;
-    left: 0;
-    height: 4px;
-    border-radius: 10px;
-    bottom: -12px;
-    background-color: #de9f55;
-    width: 100%;
-    position: absolute;
-    pointer-events: none;
+    bottom: -$size-sm;
   }
 }
 .removePointer > * {

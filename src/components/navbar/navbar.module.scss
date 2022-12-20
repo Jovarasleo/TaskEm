@@ -1,10 +1,3 @@
-.header {
-  max-width: 400px;
-  position: relative;
-  z-index: 1;
-  color: #ffffff;
-}
-
 .navWrapper {
   height: 100vh;
   max-width: 400px;
@@ -25,31 +18,15 @@
   margin-left: 20px;
 }
 
-.menuButton {
-  position: absolute;
-  cursor: pointer;
-  margin: 12px;
-  width: 42px;
-  height: 42px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr;
-  gap: 8px;
-  border: none;
-  background-color: transparent;
-  & div {
-    background-color: #4f4f4f;
-    z-index: 1;
-    border-radius: 1px;
-    width: 100%;
-    height: 100%;
-  }
+.title {
+  font-size: 2.6em;
 }
+
 .active {
   position: relative;
   margin-left: auto;
 
   & div {
-    background-color: #f2f2f2;
+    background-color: var(--color-white-1);
   }
 }

@@ -63,13 +63,7 @@ function TasksContainer({
     }
   };
 
-  const position = usePositionIndicator(
-    toContainer,
-    container,
-    nextIndex,
-    0,
-    0
-  );
+  const position = usePositionIndicator(toContainer, container, nextIndex, 0, 0);
   useOutsideClick(createTask, outsideClickRef);
   const showPointer = position === "before";
 
@@ -105,7 +99,7 @@ function TasksContainer({
       {showPointer && !tasks.length ? (
         <div className={styles.pointer}></div>
       ) : null}
-      <div
+      <ul
         className={clsx(
           styles.tasksContainer,
           dragging ? styles.pointerNone : ""
@@ -128,7 +122,7 @@ function TasksContainer({
             />
           );
         })}
-      </div>
+      </ul>
     </section>
   );
 }

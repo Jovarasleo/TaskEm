@@ -25,7 +25,7 @@ function TaskManager() {
 
   return (
     <>
-      <h2>{selectedProject}</h2>
+      <h2 className={styles.projectName}>{selectedProject}</h2>
       <div className={styles.managerContainer}>
         {Object.keys(state)?.map((container) => {
           return (
