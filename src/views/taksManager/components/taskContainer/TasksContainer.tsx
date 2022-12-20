@@ -105,7 +105,7 @@ function TasksContainer({
       {showPointer && !tasks.length ? (
         <div className={styles.pointer}></div>
       ) : null}
-      <div
+      <ul
         className={clsx(
           styles.tasksContainer,
           dragging ? styles.pointerNone : ""
@@ -128,7 +128,7 @@ function TasksContainer({
             />
           );
         })}
-      </div>
+      </ul>
     </section>
   );
 }

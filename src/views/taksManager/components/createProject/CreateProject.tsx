@@ -1,5 +1,6 @@
-import TaskContext, { TasksContext } from "../../../../context/taskContext";
 import { useState, useContext } from "react";
+import TaskContext, { TasksContext } from "../../../../context/taskContext";
+import Button from "../../../../components/Button/Button";
 import styles from "./styles.module.scss";
 
 function CreateProject() {
@@ -10,29 +11,28 @@ function CreateProject() {
 
   return (
     <section className={styles.createProjectWrapper}>
+      <h3>Select project:</h3>
+      {Object.keys(projects).map((project: any) => {
+        return (
+          <Button
+            key={project}
+            type="select"
+            onClick={() => {
+              selectProject(project);
+            }}
+          >
+            {project}
+          </Button>
+        );
+      })}
       <div>
         <input
           type="text"
           onChange={(e) => setProjectName(e.target.value)}
           value={projectName}
         />
-        <button onClick={() => addProject(projectName)} style={{ padding: 5 }}>
-          Create Project
-        </button>
+        <Button onClick={() => addProject(projectName)}>Create Project</Button>
       </div>
-      {Object.keys(projects).map((project: any) => {
-        return (
-          <button
-            key={project}
-            className={styles.selectProject}
-            onClick={() => {
-              selectProject(project);
-            }}
-          >
-            {project}
-          </button>
-        );
-      })}
     </section>
   );
 }

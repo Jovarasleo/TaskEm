@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import Navbar from "../navbar/navbar";
+import Header from "../Header/Header";
 import { TaskProvider } from "../../context/taskContext";
 
 interface LayoutProps {
@@ -9,7 +9,7 @@ function Layout({ children }: LayoutProps) {
   return (
     <>
       <TaskProvider>
-        <Navbar />
+        <Header />
         <main>{children}</main>
       </TaskProvider>
     </>

@@ -84,7 +84,7 @@ function TaskCard({
   useOutsideClick(closeTextBoxes, outsideClickRef);
 
   return (
-    <div
+    <li
       role="taskItem"
       className={clsx(
         styles.taskWrapper,
@@ -136,7 +136,7 @@ function TaskCard({
           {input ? input : "Task description:"}
         </p>
       )}
-    </div>
+    </li>
   );
 }
 export default TaskCard;
