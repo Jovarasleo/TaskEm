@@ -10,13 +10,13 @@ interface NavbarProps {
 }
 
 function Navbar({ animate, setAnimate, setShowNav }: NavbarProps) {
-  const closeMenu = () => {
+  function closeMenu() {
     setShowNav(false);
-  };
+  }
 
-  const removeAnimate = () => {
+  function removeAnimate() {
     setAnimate(false);
-  };
+  }
 
   return (
     <nav
