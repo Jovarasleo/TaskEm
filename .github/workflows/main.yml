@@ -1,4 +1,4 @@
-name: CI
+name: FE CI
 
 on:
   push:
@@ -25,13 +25,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install dependencies
-        run: npm install
+        run: cd ./client && npm install
 
       - name: Run Tests
-        run: npm run test
+        run: cd ./client && npm run test
 
       - name: Build
-        run: npm run build
+        run: cd ./client && npm run build
 
   sonarcloud:
     name: SonarCloud
