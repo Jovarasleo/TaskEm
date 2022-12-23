@@ -38,9 +38,10 @@ body {
 main {
   margin: 0 auto;
   padding: 0 1em;
-  margin-top: 8em;
+  margin-top: 80px;
   max-width: 140em;
   width: 100%;
+  max-height: calc(100vh - 140px);
 }
 
 body > div {

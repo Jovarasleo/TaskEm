@@ -78,24 +78,31 @@ function TasksContainer({
       onDragLeave={dragging ? (e) => handleDragLeave(e) : undefined}
       ref={containerRef}
     >
-      {todoContainer && (
-        <button
-          role={"create_task"}
-          onClick={() => setAddTask(true)}
-          className={styles.addTaskButton}
-        />
-      )}
-      <h3>{container}</h3>
-      {addTask ? (
-        <textarea
-          autoFocus
-          className={styles.input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => handleKeypress(e)}
-          value={input}
-          ref={outsideClickRef}
-        />
-      ) : null}
+      <div>
+        <div className={styles.newTaskContainer}>
+          <h3>{container}</h3>
+          {todoContainer && (
+            <button
+              role={"create_task"}
+              onClick={() => setAddTask(true)}
+              className={styles.addTaskButton}
+            />
+          )}
+        </div>
+        {addTask ? (
+          <div className={styles.textareaWrapper}>
+            <textarea
+              autoFocus
+              className={styles.input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => handleKeypress(e)}
+              value={input}
+              ref={outsideClickRef}
+            />
+          </div>
+        ) : null}
+      </div>
+
       {showPointer && !tasks.length ? (
         <div className={styles.pointer}></div>
       ) : null}
