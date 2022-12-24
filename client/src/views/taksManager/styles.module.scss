@@ -2,8 +2,11 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   margin: 0 auto;
-  margin-top: 2em;
-  max-width: 140em;
+  margin-top: 20px;
+  // min-height: 40em;
+  height: 100%;
+
+  max-width: 1400px;
   gap: 1em;
 }
 
