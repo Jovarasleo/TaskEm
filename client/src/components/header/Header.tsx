@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import NavButton from "../navButton/NavButton";
 import Navbar from "../navbar/Navbar";
 import useOutsideClick from "../../hooks/useOutsideClick";
@@ -11,13 +11,13 @@ function Header() {
   const outsideClickRef = useRef<HTMLTextAreaElement>(null);
   useOutsideClick(() => setAnimate(false), outsideClickRef);
 
-  const showNavigation = () => {
+  const showNavigation = useCallback(() => {
     setShowNav(true);
     const timer = setTimeout(() => {
       setAnimate(true);
     }, 5);
     return () => clearTimeout(timer);
-  };
+  }, []);
 
   return (
     <>
