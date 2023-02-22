@@ -10,18 +10,24 @@ export interface Actions {
   toIndex?: number;
   fromIndex?: number;
   project?: string;
-  payload?: TaskContainers;
+  payload?: TaskManager;
 }
 
 export interface Task {
   value: string;
   id: string;
+  count: number;
 }
 
 export interface TaskContainers {
   todo: Task[];
   progress: Task[];
   done: Task[];
+}
+
+export interface TaskManager {
+  tasks: TaskContainers;
+  count: number;
 }
 
 export interface DragItem {

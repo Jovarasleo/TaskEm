@@ -4,7 +4,11 @@ import { DragItem, handleDragStart, Task, Actions } from "../../model/task";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
 import usePositionIndicator from "../../hooks/usePositionIndicator";
 import useContainerHeight from "../../hooks/useContainerHeight";
+import { BsCheckLg, BsXLg } from "react-icons/bs";
+import { AiOutlineDelete } from "react-icons/ai";
+
 import styles from "./styles.module.scss";
+import Button from "../../../../components/button/Button";
 
 interface TaskProps {
   dataTestId?: string;
@@ -36,9 +40,19 @@ function TaskCard({
   const { value, id } = task;
   const [inputField, setInputField] = useState(false);
   const [input, setInput] = useState(value || "");
+  const [confirmDeletion, setConfirmDeletion] = useState(false);
+
+  const handleConfirmDeletion = (confirm: boolean) => {
+    if (confirm && !confirmDeletion) {
+      setConfirmDeletion(true);
+    } else {
+      setConfirmDeletion(false);
+    }
+  };
 
   const textAreaRef = useRef<HTMLElement | null>(null);
   const outsideClickRef = useRef<HTMLElement | null>(null);
+  const deleteButtonRef = useRef<HTMLDivElement | null>(null);
 
   const handleDescriptionClick = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
@@ -82,6 +96,7 @@ function TaskCard({
   );
   useContainerHeight(textAreaRef, input, inputField);
   useOutsideClick(closeTextBoxes, outsideClickRef);
+  useOutsideClick(() => handleConfirmDeletion(false), deleteButtonRef);
 
   return (
     <li
@@ -95,22 +110,50 @@ function TaskCard({
           dragItem?.container === container &&
           styles.current
       )}
+      tabIndex={0}
       data-testid={dataTestId}
       draggable={!inputField}
       onDragStart={(e: React.DragEvent<HTMLElement>) => {
         handleDragStart(e, container, index);
       }}
     >
-      <span className={styles.taskIndex}>{`# ${index + 1}`}</span>
-      <button
+      <span className={styles.taskIndex}>{`# ${task.count}`}</span>
+      <div
         role={"delete_task"}
-        className={styles.deleteButton}
-        onClick={() =>
-          dispatch({ type: "DELETE_TASK", id: task.id, container: container })
-        }
+        className={clsx(
+          styles.deleteButton,
+          confirmDeletion && styles.confirmationView
+        )}
+        ref={deleteButtonRef}
+        tabIndex={0}
+        onClick={() => handleConfirmDeletion(true)}
       >
-        -
-      </button>
+        {confirmDeletion ? (
+          <>
+            <Button
+              type="button"
+              className={styles.confirmationButton}
+              onClick={() =>
+                dispatch({
+                  type: "DELETE_TASK",
+                  id: task.id,
+                  container: container,
+                })
+              }
+            >
+              <BsCheckLg />
+            </Button>
+            <Button
+              className={styles.confirmationButton}
+              onClick={() => handleConfirmDeletion(false)}
+            >
+              <BsXLg />
+            </Button>
+          </>
+        ) : (
+          <AiOutlineDelete />
+        )}
+      </div>
       {inputField ? (
         <textarea
           autoFocus
@@ -130,7 +173,7 @@ function TaskCard({
       ) : (
         <p
           role="paragraph"
-          className={clsx(styles.button, styles.taskDescription)}
+          className={clsx(styles.paragraph, styles.taskDescription)}
           onClick={(e) => handleDescriptionClick(e)}
         >
           {input ? input : "Task description:"}

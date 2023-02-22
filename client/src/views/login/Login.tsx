@@ -15,6 +15,15 @@ function Login() {
         }}
       >
         Login screen
+        <form
+          action="submit"
+          className="loginForm"
+          onSubmit={(e) => e.preventDefault()}
+        >
+          <input type="text" placeholder="Username" />
+          <input type="password" placeholder="Password" />
+          <button type="submit">Login</button>
+        </form>
       </h1>
     </main>
   );

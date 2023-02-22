@@ -1,0 +1,20 @@
+.modalWrapper {
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-shadow-grey-3);
+}
+
+.modal {
+  width: 240px;
+  height: 120px;
+  background-color: var(--color-grey-3);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.modal::backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-shadow-grey-3);
+}

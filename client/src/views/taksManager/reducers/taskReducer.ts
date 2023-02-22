@@ -1,20 +1,30 @@
-import { Actions, TaskContainers, Task } from "../model/task";
+import { Actions, TaskContainers, Task, TaskManager } from "../model/task";
 
-export const taskReducer = (state: TaskContainers, action: Actions) => {
+export const taskReducer = (state: TaskManager, action: Actions) => {
   switch (action.type) {
     case "ADD_TASK": {
       return {
         ...state,
-        todo: [...state.todo, { value: action.value, id: action.id }],
+        tasks: {
+          ...state.tasks,
+          todo: [
+            ...state.tasks.todo,
+            { value: action.value, id: action.id, count: state.count },
+          ],
+        },
+        count: state.count++,
       };
     }
     case "DELETE_TASK": {
       const newArray = [
-        ...state[action.container as keyof TaskContainers],
+        ...state.tasks[action.container as keyof TaskContainers],
       ].filter((task) => task.id !== action.id);
       return {
         ...state,
-        [action.container as keyof TaskContainers]: [...newArray],
+        tasks: {
+          ...state.tasks,
+          [action.container as keyof TaskContainers]: [...newArray],
+        },
       };
     }
     case "MOVE_TASK": {
@@ -24,8 +34,8 @@ export const taskReducer = (state: TaskContainers, action: Actions) => {
 
       const tasksCopy = JSON.parse(JSON.stringify(state));
 
-      const getTask = tasksCopy[fromContainer].splice(fromIndex, 1)[0];
-      tasksCopy[toContainer].splice(toIndex, 0, getTask);
+      const getTask = tasksCopy.tasks[fromContainer].splice(fromIndex, 1)[0];
+      tasksCopy.tasks[toContainer].splice(toIndex, 0, getTask);
       return {
         ...state,
         ...tasksCopy,
@@ -33,7 +43,7 @@ export const taskReducer = (state: TaskContainers, action: Actions) => {
     }
     case "SAVE_TASK": {
       const tasksCopy = JSON.parse(JSON.stringify(state));
-      tasksCopy[action.container as keyof TaskContainers]
+      tasksCopy.tasks[action.container as keyof TaskContainers]
         .map((task: Task) => {
           if (task.id === action.id) {
             task.value = action.value || "";
@@ -47,7 +57,12 @@ export const taskReducer = (state: TaskContainers, action: Actions) => {
       };
     }
     case "SWITCH_PROJECT": {
-      return { ...state, ...action.payload };
+      console.log(state, action.payload);
+      if (!state) {
+        return { ...action.payload };
+      } else {
+        return { ...state, ...action.payload };
+      }
     }
 
     default:

@@ -106,12 +106,7 @@ function TasksContainer({
       {showPointer && !tasks.length ? (
         <div className={styles.pointer}></div>
       ) : null}
-      <ul
-        className={clsx(
-          styles.tasksContainer,
-          dragging ? styles.pointerNone : ""
-        )}
-      >
+      <ul className={clsx(styles.tasksContainer, dragging && styles.pointerNone)}>
         {tasks?.map((task, index) => {
           return (
             <TaskCard

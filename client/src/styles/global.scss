@@ -29,19 +29,21 @@
   --color-shadow-grey-3: #29292976;
 }
 
-body {
+html {
   font-size: 62.5%;
-  min-height: 100vh;
+}
+
+body {
   background: var(--theme-background);
 }
 
 main {
   margin: 0 auto;
-  padding: 0 1em;
+  padding: 0 1rem;
   margin-top: 80px;
-  max-width: 140em;
+  max-width: 140rem;
   width: 100%;
-  max-height: calc(100vh - 140px);
+  max-height: calc(100svh - 140px);
 }
 
 body > div {

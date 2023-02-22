@@ -40,7 +40,7 @@ export const useDragAndDrop = (dispatch: Dispatch<Action>) => {
   };
 
   const handleDragOver: handleDragOver = (e, container, index) => {
-    e.stopPropagation();
+    e.preventDefault();
 
     dragtoContainer.current = container;
     dragtoIndex.current = index;
@@ -50,8 +50,6 @@ export const useDragAndDrop = (dispatch: Dispatch<Action>) => {
   };
 
   const handleDragLeave: handleDragLeave = (e) => {
-    e.stopPropagation();
-
     const { container, index } = dragItem.current as DragItem;
     dragtoContainer.current = container;
     dragtoIndex.current = index;
@@ -77,11 +75,11 @@ export const useDragAndDrop = (dispatch: Dispatch<Action>) => {
   };
 
   const handleDrag: handleDrag = (e, ref, container) => {
-    e.preventDefault();
-    e.stopPropagation();
-
     const target = ref.current || (e.target as HTMLElement);
     const draggableElements = target.querySelectorAll("[draggable]");
+    const scroll = e.clientY - target.getBoundingClientRect().top;
+
+    const clientYPosition = target.clientHeight / 2 - scroll;
 
     const mappedPositions = [...draggableElements]
       .filter((_, index) => {
@@ -116,6 +114,14 @@ export const useDragAndDrop = (dispatch: Dispatch<Action>) => {
       }
       return acc;
     }, 0);
+
+    if (clientYPosition > 200 || clientYPosition < -200) {
+      draggableElements[getIndex]?.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "center",
+      });
+    }
 
     setNextIndex(pointerIndex);
     handleDragOver(e, container, getIndex);

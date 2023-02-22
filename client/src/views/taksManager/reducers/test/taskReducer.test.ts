@@ -1,6 +1,6 @@
 import { cleanup } from "@testing-library/react";
 import { taskReducer } from "../taskReducer";
-import { TaskContainers } from "../../model/task";
+import { TaskContainers, TaskManager } from "../../model/task";
 import "@testing-library/jest-dom";
 
 afterEach(() => {
@@ -9,10 +9,13 @@ afterEach(() => {
 
 describe("Test taskReducer", () => {
   test("ADD_TASK", () => {
-    const initialState: TaskContainers = {
-      todo: [],
-      progress: [],
-      done: [],
+    const initialState: TaskManager = {
+      tasks: {
+        todo: [],
+        progress: [],
+        done: [],
+      },
+      count: 1,
     };
     const updateAction = {
       type: "ADD_TASK",
@@ -21,17 +24,23 @@ describe("Test taskReducer", () => {
     };
     const updatedState = taskReducer(initialState, updateAction);
     expect(updatedState).toStrictEqual({
-      todo: [{ value: "test1", id: "1" }],
-      progress: [],
-      done: [],
+      tasks: {
+        todo: [{ value: "test1", id: "1", count: 1 }],
+        progress: [],
+        done: [],
+      },
+      count: 1,
     });
   });
 
   test("DELETE_TASK", () => {
-    const initialState: TaskContainers = {
-      todo: [],
-      progress: [{ value: "test1", id: "1" }],
-      done: [],
+    const initialState: TaskManager = {
+      tasks: {
+        todo: [],
+        progress: [{ value: "test1", id: "1", count: 1 }],
+        done: [],
+      },
+      count: 1,
     };
     const updateAction = {
       type: "DELETE_TASK",
@@ -41,18 +50,23 @@ describe("Test taskReducer", () => {
     const updatedState = taskReducer(initialState, updateAction);
 
     expect(updatedState).toStrictEqual({
-      todo: [],
-      progress: [],
-      done: [],
+      tasks: {
+        todo: [],
+        progress: [],
+        done: [],
+      },
+      count: 1,
     });
   });
 
   test("MOVE_TASK", () => {
-    //actually moving task
-    const initialState: TaskContainers = {
-      todo: [{ value: "test1", id: "1" }],
-      progress: [],
-      done: [],
+    const initialState: TaskManager = {
+      tasks: {
+        todo: [{ value: "test1", id: "1", count: 1 }],
+        progress: [],
+        done: [],
+      },
+      count: 1,
     };
 
     const updateAction = {
@@ -65,9 +79,12 @@ describe("Test taskReducer", () => {
 
     const updatedState = taskReducer(initialState, updateAction);
     expect(updatedState).toStrictEqual({
-      todo: [],
-      progress: [{ value: "test1", id: "1" }],
-      done: [],
+      tasks: {
+        todo: [],
+        progress: [{ value: "test1", id: "1", count: 1 }],
+        done: [],
+      },
+      count: 1,
     });
 
     //task missing container values and silently fails
@@ -84,9 +101,12 @@ describe("Test taskReducer", () => {
       updatedActionMissingContainer
     );
     expect(updatedState2).toStrictEqual({
-      todo: [{ value: "test1", id: "1" }],
-      progress: [],
-      done: [],
+      tasks: {
+        todo: [{ value: "test1", id: "1", count: 1 }],
+        progress: [],
+        done: [],
+      },
+      count: 1,
     });
 
     //target same tasks does nothing, returns same state
@@ -100,17 +120,23 @@ describe("Test taskReducer", () => {
 
     const updatedState3 = taskReducer(initialState, updatedActionSameTask);
     expect(updatedState3).toStrictEqual({
-      todo: [{ value: "test1", id: "1" }],
-      progress: [],
-      done: [],
+      tasks: {
+        todo: [{ value: "test1", id: "1", count: 1 }],
+        progress: [],
+        done: [],
+      },
+      count: 1,
     });
   });
 
   test("SAVE_TASK", () => {
-    const initialState: TaskContainers = {
-      todo: [],
-      progress: [{ value: "test1", id: "1" }],
-      done: [],
+    const initialState: TaskManager = {
+      tasks: {
+        todo: [],
+        progress: [{ value: "test1", id: "1", count: 1 }],
+        done: [],
+      },
+      count: 1,
     };
     const updateAction = {
       type: "SAVE_TASK",
@@ -121,40 +147,55 @@ describe("Test taskReducer", () => {
     const updatedState = taskReducer(initialState, updateAction);
 
     expect(updatedState).toStrictEqual({
-      todo: [],
-      progress: [{ value: "test1 modified", id: "1" }],
-      done: [],
+      tasks: {
+        todo: [],
+        progress: [{ value: "test1 modified", id: "1", count: 1 }],
+        done: [],
+      },
+      count: 1,
     });
   });
 
   test("SWITCH_PROJECT", () => {
-    const initialState: TaskContainers = {
-      todo: [],
-      progress: [{ value: "test1", id: "1" }],
-      done: [],
+    const initialState: TaskManager = {
+      tasks: {
+        todo: [],
+        progress: [{ value: "test1", id: "1", count: 1 }],
+        done: [],
+      },
+      count: 1,
     };
     const switchProject = {
       type: "SWITCH_PROJECT",
       payload: {
-        todo: [],
-        progress: [{ value: "test2", id: "2" }],
-        done: [{ value: "test2", id: "3" }],
+        tasks: {
+          todo: [],
+          progress: [{ value: "test2", id: "2", count: 2 }],
+          done: [{ value: "test2", id: "3", count: 3 }],
+        },
+        count: 3,
       },
     };
     const updatedState = taskReducer(initialState, switchProject);
 
     expect(updatedState).toStrictEqual({
-      todo: [],
-      progress: [{ value: "test2", id: "2" }],
-      done: [{ value: "test2", id: "3" }],
+      tasks: {
+        todo: [],
+        progress: [{ value: "test2", id: "2", count: 2 }],
+        done: [{ value: "test2", id: "3", count: 3 }],
+      },
+      count: 3,
     });
   });
 
   test("DEFAULT", () => {
-    const initialState: TaskContainers = {
-      todo: [],
-      progress: [{ value: "test1", id: "1" }],
-      done: [],
+    const initialState: TaskManager = {
+      tasks: {
+        todo: [],
+        progress: [{ value: "test1", id: "1", count: 1 }],
+        done: [],
+      },
+      count: 1,
     };
     const testDefault = {
       type: "",
@@ -162,9 +203,12 @@ describe("Test taskReducer", () => {
     const updatedState = taskReducer(initialState, testDefault);
 
     expect(updatedState).toStrictEqual({
-      todo: [],
-      progress: [{ value: "test1", id: "1" }],
-      done: [],
+      tasks: {
+        todo: [],
+        progress: [{ value: "test1", id: "1", count: 1 }],
+        done: [],
+      },
+      count: 1,
     });
   });
 });
