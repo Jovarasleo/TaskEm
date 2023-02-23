@@ -1,6 +1,6 @@
 import { cleanup } from "@testing-library/react";
 import { taskReducer } from "../taskReducer";
-import { TaskContainers, TaskManager } from "../../model/task";
+import { TaskManager } from "../../model/task";
 import "@testing-library/jest-dom";
 
 afterEach(() => {

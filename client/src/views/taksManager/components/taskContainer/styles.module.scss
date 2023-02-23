@@ -11,6 +11,7 @@
   flex-direction: column;
   transform: translateZ(10);
   touch-action: none;
+  transition: all 1s;
 
   .newTaskContainer {
     min-height: 48px;

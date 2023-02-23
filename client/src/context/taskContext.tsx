@@ -1,10 +1,6 @@
 import { createContext, useReducer, useState, useEffect } from "react";
 import { taskReducer } from "../views/taksManager/reducers/taskReducer";
-import {
-  TaskContainers,
-  Actions,
-  TaskManager,
-} from "../views/taksManager/model/task";
+import { Actions, TaskManager } from "../views/taksManager/model/task";
 
 const initialState: TaskManager = {
   tasks: { todo: [], progress: [], done: [] },
