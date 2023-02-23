@@ -35,7 +35,9 @@ export const useDragAndDrop = (dispatch: Dispatch<Action>) => {
     dragItem.current = { container, index };
     dragtoContainer.current = container;
 
-    setDragging(true);
+    setTimeout(() => {
+      setDragging(true);
+    }, 0);
   };
 
   const handleDragOver: handleDragOver = (e, container, index) => {
@@ -78,8 +80,6 @@ export const useDragAndDrop = (dispatch: Dispatch<Action>) => {
     const draggableElements = target.querySelectorAll("[draggable]");
     const scrollContainer = target.querySelector("ul");
 
-    useAutoScroll(scrollContainer, e);
-
     const mappedPositions = [...draggableElements]
       .filter((_, index) => {
         if (container === dragItem.current?.container) {
@@ -114,7 +114,10 @@ export const useDragAndDrop = (dispatch: Dispatch<Action>) => {
       return acc;
     }, 0);
 
+    const scrollToBottom = draggableElements.length === pointerIndex;
+
     setNextIndex(pointerIndex);
+    useAutoScroll(scrollContainer, scrollToBottom, e);
     handleDragOver(e, container, getIndex);
   };
 

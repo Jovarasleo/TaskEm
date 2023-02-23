@@ -34,7 +34,7 @@ describe("useAutoScroll", () => {
     } as DragEvent<HTMLElement>;
 
     const initialScrollTop = scrollContainer?.scrollTop;
-    useAutoScroll(scrollContainer, e);
+    useAutoScroll(scrollContainer, false, e);
     const finalScrollTop = scrollContainer?.scrollTop;
     expect(finalScrollTop).toBe(initialScrollTop);
   });
@@ -45,7 +45,7 @@ describe("useAutoScroll", () => {
     } as DragEvent<HTMLElement>;
 
     const initialScrollTop = scrollContainer?.scrollTop;
-    useAutoScroll(scrollContainer, e);
+    useAutoScroll(scrollContainer, false, e);
     const finalScrollTop = scrollContainer?.scrollTop;
     expect(finalScrollTop).toBeLessThanOrEqual(initialScrollTop || 0);
   });
@@ -56,7 +56,7 @@ describe("useAutoScroll", () => {
     } as DragEvent<HTMLElement>;
 
     const initialScrollTop = scrollContainer?.scrollTop;
-    useAutoScroll(scrollContainer, e);
+    useAutoScroll(scrollContainer, false, e);
     const finalScrollTop = scrollContainer?.scrollTop;
     expect(finalScrollTop).toBeGreaterThanOrEqual(initialScrollTop || 0);
   });

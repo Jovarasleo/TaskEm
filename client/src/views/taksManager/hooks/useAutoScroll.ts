@@ -2,6 +2,7 @@ import { DragEvent } from "react";
 
 const useAutoScroll = (
   scrollContainer: HTMLUListElement | null,
+  scrollToBottom: boolean,
   e: DragEvent<HTMLElement>
 ) => {
   const easeInOutQuad = (x: number) => {
@@ -37,6 +38,13 @@ const useAutoScroll = (
 
   if (scrollContainer && scrollDistanceFromBottom < distanceThreshold) {
     scrollContainer.scrollTop += scrollStep;
+  }
+
+  if (scrollToBottom && scrollContainer) {
+    const interval = setTimeout(() => {
+      scrollContainer.scrollTop += scrollStep;
+      clearInterval(interval);
+    }, 100);
   }
 };
 export default useAutoScroll;
