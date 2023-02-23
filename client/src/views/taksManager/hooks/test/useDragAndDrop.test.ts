@@ -1,4 +1,4 @@
-import { cleanup, renderHook, act } from "@testing-library/react";
+import { renderHook, act } from "@testing-library/react";
 import { useDragAndDrop } from "../useDragAndDrop";
 
 describe("useDragAndDrop", () => {
@@ -11,7 +11,6 @@ describe("useDragAndDrop", () => {
       result.current.handleDragStart(dragEvent, "container1", 0);
     });
 
-    // expect(result.current.dragging).toBe(true);
     expect(result.current.toContainer).toBe("");
     expect(result.current.nextIndex).toBe(0);
     expect(result.current.dragItem.current).toMatchObject({

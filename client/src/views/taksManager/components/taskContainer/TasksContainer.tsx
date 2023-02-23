@@ -9,7 +9,7 @@ import {
 } from "../../model/task";
 import usePositionIndicator from "../../hooks/usePositionIndicator";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
-import { useGenerateId } from "../../hooks/useGenerateId";
+import { uid } from "../../utility/uid";
 import TaskCard from "../taskCard/TaskCard";
 import styles from "./styles.module.scss";
 import clsx from "clsx";
@@ -50,7 +50,7 @@ function TasksContainer({
 
   const createTask = () => {
     if (input.length) {
-      const id = useGenerateId();
+      const id = uid();
       dispatch({ type: "ADD_TASK", value: input, id: id });
     }
     setAddTask(false);

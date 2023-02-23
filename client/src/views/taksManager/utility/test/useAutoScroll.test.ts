@@ -1,13 +1,13 @@
 import { cleanup } from "@testing-library/react";
 import { DragEvent } from "react";
-import useAutoScroll from "../useAutoScroll";
+import autoScroll from "../autoScroll";
 import "@testing-library/jest-dom";
 
 afterEach(() => {
   cleanup();
 });
 
-describe("useAutoScroll", () => {
+describe("autoScroll", () => {
   let scrollContainer: HTMLUListElement | null;
 
   beforeEach(() => {
@@ -34,7 +34,7 @@ describe("useAutoScroll", () => {
     } as DragEvent<HTMLElement>;
 
     const initialScrollTop = scrollContainer?.scrollTop;
-    useAutoScroll(scrollContainer, false, e);
+    autoScroll(scrollContainer, false, e);
     const finalScrollTop = scrollContainer?.scrollTop;
     expect(finalScrollTop).toBe(initialScrollTop);
   });
@@ -45,7 +45,7 @@ describe("useAutoScroll", () => {
     } as DragEvent<HTMLElement>;
 
     const initialScrollTop = scrollContainer?.scrollTop;
-    useAutoScroll(scrollContainer, false, e);
+    autoScroll(scrollContainer, false, e);
     const finalScrollTop = scrollContainer?.scrollTop;
     expect(finalScrollTop).toBeLessThanOrEqual(initialScrollTop || 0);
   });
@@ -56,7 +56,7 @@ describe("useAutoScroll", () => {
     } as DragEvent<HTMLElement>;
 
     const initialScrollTop = scrollContainer?.scrollTop;
-    useAutoScroll(scrollContainer, false, e);
+    autoScroll(scrollContainer, false, e);
     const finalScrollTop = scrollContainer?.scrollTop;
     expect(finalScrollTop).toBeGreaterThanOrEqual(initialScrollTop || 0);
   });

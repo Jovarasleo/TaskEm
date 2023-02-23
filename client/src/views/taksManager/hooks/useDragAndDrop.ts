@@ -6,7 +6,7 @@ import {
   handleDragLeave,
 } from "../model/task";
 import { useRef, useState, DragEvent, Dispatch } from "react";
-import useAutoScroll from "./useAutoScroll";
+import autoScroll from "../utility/autoScroll";
 
 type Action = {
   type: "MOVE_TASK";
@@ -117,7 +117,7 @@ export const useDragAndDrop = (dispatch: Dispatch<Action>) => {
     const scrollToBottom = draggableElements.length === pointerIndex;
 
     setNextIndex(pointerIndex);
-    useAutoScroll(scrollContainer, scrollToBottom, e);
+    autoScroll(scrollContainer, scrollToBottom, e);
     handleDragOver(e, container, getIndex);
   };
 
