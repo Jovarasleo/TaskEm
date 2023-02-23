@@ -15,6 +15,7 @@ export const taskReducer = (state: TaskManager, action: Actions) => {
         count: state.count++,
       };
     }
+
     case "DELETE_TASK": {
       const newArray = [
         ...state.tasks[action.container as keyof TaskContainers],
@@ -27,6 +28,7 @@ export const taskReducer = (state: TaskManager, action: Actions) => {
         },
       };
     }
+
     case "MOVE_TASK": {
       const { toContainer, fromContainer, toIndex, fromIndex } = action;
       if (!fromContainer || !toContainer) return state;
@@ -41,6 +43,7 @@ export const taskReducer = (state: TaskManager, action: Actions) => {
         ...tasksCopy,
       };
     }
+
     case "SAVE_TASK": {
       const tasksCopy = JSON.parse(JSON.stringify(state));
       tasksCopy.tasks[action.container as keyof TaskContainers]
@@ -56,12 +59,19 @@ export const taskReducer = (state: TaskManager, action: Actions) => {
         ...tasksCopy,
       };
     }
+
     case "SWITCH_PROJECT": {
-      console.log(state, action.payload);
       if (!state) {
         return { ...action.payload };
       } else {
         return { ...state, ...action.payload };
+      }
+    }
+
+    case "DELETE_PROJECT": {
+      console.log(state, action.project);
+      {
+        return {};
       }
     }
 

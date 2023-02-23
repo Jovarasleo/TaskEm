@@ -6,6 +6,7 @@ const useLocalStorage = (project: string, state: TaskManager) => {
     if (!state) {
       return;
     }
+
     const getProjectManager = window.localStorage.getItem("PROJECT_MANAGER");
     const projects = getProjectManager && JSON.parse(getProjectManager);
     const newProject = { ...projects, [project]: state };

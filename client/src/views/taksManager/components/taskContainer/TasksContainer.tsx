@@ -9,7 +9,7 @@ import {
 } from "../../model/task";
 import usePositionIndicator from "../../hooks/usePositionIndicator";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
-import { uid } from "../../hooks/useGenerateId";
+import { useGenerateId } from "../../hooks/useGenerateId";
 import TaskCard from "../taskCard/TaskCard";
 import styles from "./styles.module.scss";
 import clsx from "clsx";
@@ -50,7 +50,7 @@ function TasksContainer({
 
   const createTask = () => {
     if (input.length) {
-      const id = uid();
+      const id = useGenerateId();
       dispatch({ type: "ADD_TASK", value: input, id: id });
     }
     setAddTask(false);
@@ -75,7 +75,7 @@ function TasksContainer({
       onDragOver={
         dragging ? (e) => handleDrag(e, containerRef, container) : undefined
       }
-      onDragLeave={dragging ? (e) => handleDragLeave(e) : undefined}
+      onDragLeave={dragging ? () => handleDragLeave() : undefined}
       ref={containerRef}
     >
       <div>

@@ -157,6 +157,7 @@ function TaskCard({
       {inputField ? (
         <textarea
           autoFocus
+          spellCheck={false}
           className={clsx(styles.textarea, styles.taskDescription)}
           rows={1}
           onChange={(e) => setInput(e.target.value)}

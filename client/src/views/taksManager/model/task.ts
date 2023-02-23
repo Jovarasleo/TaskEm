@@ -69,4 +69,4 @@ export type handleDrag = (
   container: string
 ) => void;
 
-export type handleDragLeave = (e: React.DragEvent<HTMLElement>) => void;
+export type handleDragLeave = () => void;

@@ -2,9 +2,12 @@ import { useDragAndDrop } from "./hooks/useDragAndDrop";
 import useLocalStorage from "./hooks/useLocalStorage";
 import TasksContainer from "./components/taskContainer/TasksContainer";
 import TaskContext, { TasksContext } from "../../context/taskContext";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { TaskContainers } from "./model/task";
 import styles from "./styles.module.scss";
+import { BsGear } from "react-icons/bs";
+import Button from "@components/button/Button";
+import Dropdown from "@components/dropdown/Dropdown";
 
 function TaskManager() {
   const { state, dispatch, selectedProject } = useContext(
@@ -23,11 +26,39 @@ function TaskManager() {
     dragItem,
   } = useDragAndDrop(dispatch);
 
+  const [showOptions, setShowOptions] = useState(false);
+
   return (
     <>
-      <h2 className={styles.projectName}>{selectedProject}</h2>
+      <span className={styles.projectNameWrapper}>
+        <h2 className={styles.projectName}>{selectedProject}</h2>
+        <div>
+          <Button
+            type="button"
+            onClick={() => setShowOptions((prevState) => !prevState)}
+            className={styles.projectSettingsGear}
+          >
+            <BsGear />
+          </Button>
+          <Dropdown
+            options={[
+              {
+                title: "rename",
+                onClick: () =>
+                  dispatch({ type: "DELETE_PROJECT", project: selectedProject }),
+              },
+              {
+                title: "delete",
+                onClick: () =>
+                  dispatch({ type: "DELETE_PROJECT", project: selectedProject }),
+              },
+            ]}
+            visibility={showOptions}
+          />
+        </div>
+      </span>
       <div className={styles.managerContainer}>
-        {state ? (
+        {state && Object.keys(state).length !== 0 ? (
           Object.keys(state.tasks)?.map((container) => {
             return (
               <TasksContainer

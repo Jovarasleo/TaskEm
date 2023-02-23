@@ -6,6 +6,7 @@ import {
   handleDragLeave,
 } from "../model/task";
 import { useRef, useState, DragEvent, Dispatch } from "react";
+import useAutoScroll from "./useAutoScroll";
 
 type Action = {
   type: "MOVE_TASK";
@@ -20,7 +21,7 @@ export const useDragAndDrop = (dispatch: Dispatch<Action>) => {
   const [toContainer, setToContainer] = useState("");
   const [nextIndex, setNextIndex] = useState<null | number>(0);
 
-  const dragItem = useRef<DragItem | null>(null);
+  const dragItem = useRef<DragItem | null>({ container: "", index: 0 });
   const dragItemNode = useRef<HTMLElement | null>(null);
   const dragtoIndex = useRef(0);
   const dragtoContainer = useRef("");
@@ -34,9 +35,7 @@ export const useDragAndDrop = (dispatch: Dispatch<Action>) => {
     dragItem.current = { container, index };
     dragtoContainer.current = container;
 
-    setTimeout(() => {
-      setDragging(true);
-    }, 0);
+    setDragging(true);
   };
 
   const handleDragOver: handleDragOver = (e, container, index) => {
@@ -49,8 +48,8 @@ export const useDragAndDrop = (dispatch: Dispatch<Action>) => {
     setToContainer(container);
   };
 
-  const handleDragLeave: handleDragLeave = (e) => {
-    const { container, index } = dragItem.current as DragItem;
+  const handleDragLeave: handleDragLeave = () => {
+    const { container, index } = dragItem?.current as DragItem;
     dragtoContainer.current = container;
     dragtoIndex.current = index;
 
@@ -77,9 +76,9 @@ export const useDragAndDrop = (dispatch: Dispatch<Action>) => {
   const handleDrag: handleDrag = (e, ref, container) => {
     const target = ref.current || (e.target as HTMLElement);
     const draggableElements = target.querySelectorAll("[draggable]");
-    const scroll = e.clientY - target.getBoundingClientRect().top;
+    const scrollContainer = target.querySelector("ul");
 
-    const clientYPosition = target.clientHeight / 2 - scroll;
+    useAutoScroll(scrollContainer, e);
 
     const mappedPositions = [...draggableElements]
       .filter((_, index) => {
@@ -115,25 +114,22 @@ export const useDragAndDrop = (dispatch: Dispatch<Action>) => {
       return acc;
     }, 0);
 
-    if (clientYPosition > 200 || clientYPosition < -200) {
-      draggableElements[getIndex]?.scrollIntoView({
-        behavior: "smooth",
-        inline: "center",
-        block: "center",
-      });
-    }
-
     setNextIndex(pointerIndex);
     handleDragOver(e, container, getIndex);
   };
 
   return {
     handleDrag,
+    handleDragOver,
     handleDragStart,
     handleDragLeave,
+    handleDragEnd,
     dragging,
     toContainer,
     nextIndex,
     dragItem,
+    dragItemNode,
+    dragtoIndex,
+    dragtoContainer,
   };
 };

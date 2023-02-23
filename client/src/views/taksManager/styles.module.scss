@@ -9,6 +9,30 @@
   gap: 1em;
 }
 
+.projectNameWrapper {
+  display: flex;
+  justify-content: space-between;
+
+  .projectSettingsGear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    background-color: transparent;
+    position: relative;
+
+    svg {
+      font-size: 36px;
+      transition: all 300ms;
+    }
+  }
+  .projectSettingsGear:hover svg {
+    color: white;
+    transform: rotate(90deg);
+  }
+}
+
 .projectName {
   font-size: 2.4rem;
   font-weight: 900;

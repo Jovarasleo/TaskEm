@@ -7,7 +7,6 @@ test("drag-and-drop test", async ({ page }) => {
   await page.getByRole("textbox").fill("test");
   await page.getByRole("button", { name: "Create Project" }).click();
   await page.getByRole("button", { name: "test" }).click();
-  // await page.getByRole("button").click();
   await page.locator("button.menuButton ").click();
 
   await page.getByRole("button", { name: "+" }).click();
