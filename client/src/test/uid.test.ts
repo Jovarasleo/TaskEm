@@ -1,4 +1,4 @@
-import { uid } from "../uid";
+import { uid } from "../util/uid";
 
 describe("uid", () => {
   it("should return a unique string", () => {

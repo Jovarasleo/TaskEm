@@ -1,17 +1,15 @@
 import { useEffect } from "react";
-import { TaskManager } from "../model/task";
+import { Project } from "../model/task";
+import { PROJECT_MANAGER } from "../../../context/taskContext";
 
-const useLocalStorage = (project: string, state: TaskManager) => {
+const useLocalStorage = (state: Project[]) => {
   useEffect(() => {
     if (!state) {
       return;
     }
 
-    const getProjectManager = window.localStorage.getItem("PROJECT_MANAGER");
-    const projects = getProjectManager && JSON.parse(getProjectManager);
-    const newProject = { ...projects, [project]: state };
-    window.localStorage.setItem("PROJECT_MANAGER", JSON.stringify(newProject));
-  }, [state, project]);
+    window.localStorage.setItem(PROJECT_MANAGER, JSON.stringify(state));
+  }, [state]);
 };
 
 export default useLocalStorage;

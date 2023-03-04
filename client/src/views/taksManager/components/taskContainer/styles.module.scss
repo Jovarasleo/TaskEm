@@ -67,17 +67,20 @@
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  background-color: var(--theme-main);
-  color: var(--color-white-0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
   font-weight: $font-weight-heavy;
 
-  &::before {
-    content: "+";
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -55%);
-    font-size: $size-x2;
+  &:hover svg {
+    color: var(--theme-main);
+  }
+
+  svg {
+    transition: 300ms all;
+    font-size: 30px;
+    color: var(--color-grey-2);
   }
 }
 

@@ -52,7 +52,7 @@
     background-color: rgb(246, 246, 246);
     box-shadow: 0 0 2px 2px rgb(112, 112, 112);
     transition-duration: 300ms;
-    transition-property: border-radius, width;
+    transition-property: border-radius, width, box-shadow;
     width: 25px;
     height: 25px;
     border-radius: 50%;
@@ -63,6 +63,10 @@
     right: 5px;
     top: 5px;
     cursor: pointer;
+
+    &:hover {
+      box-shadow: 0 0 3px 2px var(--color-grey-2);
+    }
 
     svg {
       fill: var(--color-grey-2);
@@ -96,7 +100,7 @@
   margin-top: 12px;
 }
 .current {
-  box-shadow: 0px 0px 4px 2px var(--color-black-2);
+  box-shadow: 0px 0px 4px 3px rgb(179, 85, 26);
 }
 
 .indicator {

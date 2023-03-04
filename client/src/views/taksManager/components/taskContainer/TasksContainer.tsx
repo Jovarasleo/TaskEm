@@ -9,13 +9,15 @@ import {
 } from "../../model/task";
 import usePositionIndicator from "../../hooks/usePositionIndicator";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
-import { uid } from "../../utility/uid";
+import { uid } from "../../../../util/uid";
 import TaskCard from "../taskCard/TaskCard";
 import styles from "./styles.module.scss";
 import clsx from "clsx";
+import { BsPlusCircle } from "react-icons/bs";
 
 interface TaskContainer {
   dataTestId?: string;
+  projectId: string;
   tasks: TaskModel[];
   container: string;
   dragging: boolean;
@@ -29,6 +31,7 @@ interface TaskContainer {
 }
 
 function TasksContainer({
+  projectId,
   tasks,
   container,
   toContainer,
@@ -51,7 +54,15 @@ function TasksContainer({
   const createTask = () => {
     if (input.length) {
       const id = uid();
-      dispatch({ type: "ADD_TASK", value: input, id: id });
+      dispatch({
+        type: "ADD_TASK",
+        payload: {
+          projectId,
+          containerName: "todo",
+          value: input,
+          taskId: id,
+        },
+      });
     }
     setAddTask(false);
     setInput("");
@@ -69,7 +80,6 @@ function TasksContainer({
 
   return (
     <section
-      key={container}
       className={styles.container}
       role={container}
       onDragOver={
@@ -86,13 +96,16 @@ function TasksContainer({
               role={"create_task"}
               onClick={() => setAddTask(true)}
               className={styles.addTaskButton}
-            />
+            >
+              <BsPlusCircle />
+            </button>
           )}
         </div>
         {addTask ? (
           <div className={styles.textareaWrapper}>
             <textarea
               autoFocus
+              placeholder="Enter your thoughts here.."
               className={styles.input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => handleKeypress(e)}
@@ -110,9 +123,10 @@ function TasksContainer({
         {tasks?.map((task, index) => {
           return (
             <TaskCard
-              key={task?.id}
+              key={task?.taskId}
               task={task}
               index={index}
+              projectId={projectId}
               arrayLength={tasks.length}
               dragging={dragging}
               container={container}

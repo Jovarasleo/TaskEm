@@ -2,7 +2,7 @@ import { useState, useContext } from "react";
 import TaskContext, { TasksContext } from "../../../context/taskContext";
 
 const useCreateProject = () => {
-  const { projects, selectProject, addProject } = useContext(
+  const { state, projectIndex, setSelectedProjectId, addProject } = useContext(
     TaskContext
   ) as TasksContext;
   const [projectName, setProjectName] = useState("");
@@ -12,7 +12,7 @@ const useCreateProject = () => {
   };
 
   const handleAddProject = () => {
-    const savedProjects = Object.keys(projects).filter(
+    const savedProjects = Object.keys(state).filter(
       (project) => project === projectName
     );
 
@@ -24,10 +24,11 @@ const useCreateProject = () => {
   };
 
   return {
-    projects,
+    state,
     projectName,
+    projectIndex,
     handleProjectName,
-    selectProject,
+    setSelectedProjectId,
     handleAddProject,
   };
 };

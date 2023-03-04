@@ -12,6 +12,7 @@ import Button from "../../../../components/button/Button";
 
 interface TaskProps {
   dataTestId?: string;
+  projectId: string;
   task: Task;
   index: number;
   container: string;
@@ -25,6 +26,7 @@ interface TaskProps {
 }
 
 function TaskCard({
+  projectId,
   task,
   dataTestId,
   index,
@@ -37,7 +39,9 @@ function TaskCard({
   dispatch,
   handleDragStart,
 }: TaskProps) {
-  const { value, id } = task;
+  // const { value, taskId } = task;
+  const value = task?.value;
+  const taskId = task?.taskId;
   const [inputField, setInputField] = useState(false);
   const [input, setInput] = useState(value || "");
   const [confirmDeletion, setConfirmDeletion] = useState(false);
@@ -63,9 +67,12 @@ function TaskCard({
   const closeTextBoxes = () => {
     dispatch({
       type: "SAVE_TASK",
-      container,
-      id,
-      value: input,
+      payload: {
+        projectId: projectId,
+        containerName: container,
+        taskValue: input,
+        taskId: taskId,
+      },
     });
     setInputField(false);
   };
@@ -74,9 +81,12 @@ function TaskCard({
     if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
       dispatch({
         type: "SAVE_TASK",
-        container,
-        id,
-        value: input,
+        payload: {
+          projectId: projectId,
+          containerName: container,
+          taskValue: input,
+          taskId: taskId,
+        },
       });
       setInputField(false);
     }
@@ -114,10 +124,10 @@ function TaskCard({
       data-testid={dataTestId}
       draggable={!inputField}
       onDragStart={(e: React.DragEvent<HTMLElement>) => {
-        handleDragStart(e, container, index);
+        handleDragStart(e, container, index, taskId);
       }}
     >
-      <span className={styles.taskIndex}>{`# ${task.count}`}</span>
+      <span className={styles.taskIndex}>{`# ${task?.count}`}</span>
       <div
         role={"delete_task"}
         className={clsx(
@@ -136,8 +146,11 @@ function TaskCard({
               onClick={() =>
                 dispatch({
                   type: "DELETE_TASK",
-                  id: task.id,
-                  container: container,
+                  payload: {
+                    projectId: projectId,
+                    taskId: taskId,
+                    containerName: container,
+                  },
                 })
               }
             >

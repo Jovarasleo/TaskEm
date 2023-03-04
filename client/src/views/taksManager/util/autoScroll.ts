@@ -10,7 +10,7 @@ const autoScroll = (
   };
 
   const containerRect = scrollContainer?.getBoundingClientRect();
-  const distanceThreshold = 250;
+  const distanceThreshold = containerRect ? containerRect?.height / 4 : 250;
 
   const containerTop = containerRect?.top || 0;
   const containerBottom = containerRect?.bottom || 0;
@@ -29,7 +29,7 @@ const autoScroll = (
 
   const scrollSpeed = easeInOutQuad(distanceRatio);
 
-  const acceleration = Math.pow(scrollSpeed, 3) * 150;
+  const acceleration = Math.pow(scrollSpeed, 3) * 1000;
   const scrollStep = acceleration > 5 ? acceleration : 5;
 
   if (scrollContainer && scrollDistanceFromTop < distanceThreshold) {

@@ -4,3 +4,8 @@
   display: grid;
   gap: 5px;
 }
+
+.selectedProject {
+  background-color: var(--theme-main);
+  color: var(--color-white-1);
+}

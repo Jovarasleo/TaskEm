@@ -1,29 +1,32 @@
 import Button from "@components/button/Button";
 import styles from "./styles.module.scss";
 import useCreateProject from "../../hooks/useCreateProject";
+import { Project } from "../../model/task";
 
 function CreateProject() {
   const {
-    projects,
+    state,
     projectName,
+    projectIndex,
     handleProjectName,
-    selectProject,
+    setSelectedProjectId,
     handleAddProject,
   } = useCreateProject();
 
   return (
     <section className={styles.createProjectWrapper}>
       <h3>Select project:</h3>
-      {Object.keys(projects).map((project: any) => {
+      {state.map((project: Project, index) => {
         return (
           <Button
-            key={project}
+            key={project.projectId}
             type="select"
+            className={index === projectIndex ? styles.selectedProject : ""}
             onClick={() => {
-              selectProject(project);
+              setSelectedProjectId(project.projectId);
             }}
           >
-            {project}
+            {project.projectName}
           </Button>
         );
       })}

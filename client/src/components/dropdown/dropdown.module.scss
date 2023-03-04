@@ -1,6 +1,66 @@
 .dropdownWrapper {
-  position: absolute;
+  transition: 300ms all;
   z-index: 1000;
-  right: 3rem;
-  margin-top: 3rem;
+  position: absolute;
+  right: 1rem;
+  margin-top: 1rem;
+  background-color: rgb(112, 112, 112);
+  width: 0;
+  height: 0;
+  border-radius: 8px;
+  border: 1px solid darkgray;
+  overflow: hidden;
+
+  li {
+    list-style-type: none;
+    width: 100%;
+
+    button {
+      width: 100%;
+      padding: 4px 0;
+      border-radius: 0;
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    &:not(:last-child) {
+      margin-bottom: 4px;
+    }
+
+    button:hover {
+      background-color: var(--theme-main);
+      color: var(--color-white-1);
+    }
+  }
+}
+
+.transition {
+  padding: 4px 4px;
+  width: 120px;
+  height: 64px;
+}
+
+.projectSettingsGear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  background-color: transparent;
+  position: relative;
+
+  svg {
+    font-size: 36px;
+    color: var(--color-grey-3);
+    transition: all 300ms;
+  }
+}
+.projectSettingsGear:hover svg {
+  color: white;
+}
+
+.activeGear svg {
+  transform: rotate(90deg);
+  fill: white;
 }

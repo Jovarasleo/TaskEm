@@ -5,21 +5,18 @@ import {
   handleDragStart,
   handleDragLeave,
 } from "../model/task";
-import { useRef, useState, DragEvent, Dispatch } from "react";
-import autoScroll from "../utility/autoScroll";
+import { useRef, useState, DragEvent } from "react";
+import autoScroll from "../util/autoScroll";
+import { Actions } from "../model/task";
 
-type Action = {
-  type: "MOVE_TASK";
-  fromContainer: string | undefined;
-  toContainer: string;
-  fromIndex: number | undefined;
-  toIndex: number;
-};
-
-export const useDragAndDrop = (dispatch: Dispatch<Action>) => {
+export const useDragAndDrop = (
+  dispatch: (action: Actions) => void,
+  projectId: string
+) => {
   const [dragging, setDragging] = useState(false);
   const [toContainer, setToContainer] = useState("");
   const [nextIndex, setNextIndex] = useState<null | number>(0);
+  const [taskId, setTaskId] = useState("");
 
   const dragItem = useRef<DragItem | null>({ container: "", index: 0 });
   const dragItemNode = useRef<HTMLElement | null>(null);
@@ -29,11 +26,13 @@ export const useDragAndDrop = (dispatch: Dispatch<Action>) => {
   const handleDragStart: handleDragStart = (
     e: DragEvent<HTMLElement>,
     container,
-    index
+    index,
+    taskId
   ) => {
     dragItemNode.current = e.target as HTMLElement;
     dragItem.current = { container, index };
     dragtoContainer.current = container;
+    setTaskId(taskId);
 
     setTimeout(() => {
       setDragging(true);
@@ -63,10 +62,14 @@ export const useDragAndDrop = (dispatch: Dispatch<Action>) => {
     dragItemNode?.current?.removeEventListener("dragend", handleDragEnd);
     dispatch({
       type: "MOVE_TASK",
-      fromContainer: dragItem.current?.container,
-      toContainer: dragtoContainer.current,
-      fromIndex: dragItem.current?.index,
-      toIndex: dragtoIndex.current,
+      payload: {
+        projectId,
+        taskId: taskId,
+        fromContainer: dragItem.current?.container,
+        toContainer: dragtoContainer.current,
+        fromIndex: dragItem.current?.index,
+        toIndex: dragtoIndex.current,
+      },
     });
     dragItem.current = null;
     dragItemNode.current = null;
@@ -77,8 +80,8 @@ export const useDragAndDrop = (dispatch: Dispatch<Action>) => {
 
   const handleDrag: handleDrag = (e, ref, container) => {
     const target = ref.current || (e.target as HTMLElement);
-    const draggableElements = target.querySelectorAll("[draggable]");
     const scrollContainer = target.querySelector("ul");
+    const draggableElements = scrollContainer?.children || [];
 
     const mappedPositions = [...draggableElements]
       .filter((_, index) => {

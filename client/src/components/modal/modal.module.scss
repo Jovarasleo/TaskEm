@@ -1,16 +1,50 @@
 .modalWrapper {
   position: absolute;
   inset: 0;
-  background-color: var(--color-shadow-grey-3);
+  background-color: transparent;
+  animation-name: wrapperBackground;
+  animation-duration: 150ms;
+  animation-fill-mode: forwards;
+}
+
+@keyframes wrapperBackground {
+  from {
+    background-color: transparent;
+  }
+  to {
+    background-color: var(--color-shadow-grey-3);
+  }
 }
 
 .modal {
-  width: 240px;
-  height: 120px;
+  transition-duration: 300ms;
+  border-radius: 10px;
   background-color: var(--color-grey-3);
-  position: absolute;
-  top: 50%;
+  position: fixed;
+  width: 0;
+  height: 0;
   left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .modalButtonsWrapper {
+    width: 50%;
+    display: flex;
+    justify-content: space-between;
+
+    .cofirmButton {
+    }
+  }
+}
+
+.animateModal {
+  width: 100%;
+  height: auto;
+  padding: 40px 0;
 }
 
 .modal::backdrop {
