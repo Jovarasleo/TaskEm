@@ -1,7 +1,7 @@
 export default function deepCopy<T>(obj: T): T {
   if (typeof obj === "object" && obj !== null) {
     if (Array.isArray(obj)) {
-      return obj.map(deepCopy) as unknown as T;
+      return obj.map(deepCopy) as T;
     } else {
       const newObj: Partial<T> = {};
       for (const key in obj) {

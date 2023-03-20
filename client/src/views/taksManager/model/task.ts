@@ -90,23 +90,23 @@ export type SaveTask = (
 
 export type DeleteTask = (id: string, container: string) => void;
 
-export type handleDragStart = (
+export type HandleDragStart = (
   e: React.DragEvent<HTMLElement>,
   container: string,
   index: number,
   taskId: string
 ) => void;
 
-export type handleDragOver = (
+export type HandleDragOver = (
   e: React.DragEvent<HTMLElement>,
   container: string,
   index: number
 ) => void;
 
-export type handleDrag = (
+export type HandleDrag = (
   e: React.DragEvent<HTMLElement>,
   ref: RefObject<HTMLDivElement>,
   container: string
 ) => void;
 
-export type handleDragLeave = () => void;
+export type HandleDragLeave = () => void;

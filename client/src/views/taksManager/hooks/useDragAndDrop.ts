@@ -1,11 +1,11 @@
 import {
   DragItem,
-  handleDrag,
-  handleDragOver,
-  handleDragStart,
-  handleDragLeave,
+  HandleDrag,
+  HandleDragOver,
+  HandleDragStart,
+  HandleDragLeave,
 } from "../model/task";
-import { useRef, useState, DragEvent } from "react";
+import { useRef, useState, DragEvent, useCallback } from "react";
 import autoScroll from "../util/autoScroll";
 import { Actions } from "../model/task";
 
@@ -16,69 +16,38 @@ export const useDragAndDrop = (
   const [dragging, setDragging] = useState(false);
   const [toContainer, setToContainer] = useState("");
   const [nextIndex, setNextIndex] = useState<null | number>(0);
-  const [taskId, setTaskId] = useState("");
 
+  const savedTaskId = useRef("");
   const dragItem = useRef<DragItem | null>({ container: "", index: 0 });
   const dragItemNode = useRef<HTMLElement | null>(null);
   const dragtoIndex = useRef(0);
   const dragtoContainer = useRef("");
+  const isDragging = useRef(false);
 
-  const handleDragStart: handleDragStart = (
-    e: DragEvent<HTMLElement>,
-    container,
-    index,
-    taskId
-  ) => {
-    dragItemNode.current = e.target as HTMLElement;
-    dragItem.current = { container, index };
-    dragtoContainer.current = container;
-    setTaskId(taskId);
+  const handleDragStart: HandleDragStart = useCallback(
+    (e, container, index, taskId) => {
+      dragItemNode.current = e.target as HTMLElement;
+      dragItem.current = { container, index };
+      dragtoContainer.current = container;
+      savedTaskId.current = taskId;
+      isDragging.current = true;
 
-    setTimeout(() => {
       setDragging(true);
-    }, 0);
-  };
+    },
+    []
+  );
 
-  const handleDragOver: handleDragOver = (e, container, index) => {
+  const handleDragOver: HandleDragOver = useCallback((e, container, index) => {
     e.preventDefault();
 
     dragtoContainer.current = container;
     dragtoIndex.current = index;
-    dragItemNode?.current?.addEventListener("dragend", handleDragEnd);
 
     setToContainer(container);
-  };
+  }, []);
 
-  const handleDragLeave: handleDragLeave = () => {
-    const { container, index } = dragItem?.current as DragItem;
-    dragtoContainer.current = container;
-    dragtoIndex.current = index;
-
-    setNextIndex(null);
-    setToContainer("");
-  };
-
-  const handleDragEnd = () => {
-    dragItemNode?.current?.removeEventListener("dragend", handleDragEnd);
-    dispatch({
-      type: "MOVE_TASK",
-      payload: {
-        projectId,
-        taskId: taskId,
-        fromContainer: dragItem.current?.container,
-        toContainer: dragtoContainer.current,
-        fromIndex: dragItem.current?.index,
-        toIndex: dragtoIndex.current,
-      },
-    });
-    dragItem.current = null;
-    dragItemNode.current = null;
-
-    setNextIndex(null);
-    setDragging(false);
-  };
-
-  const handleDrag: handleDrag = (e, ref, container) => {
+  const handleDrag: HandleDrag = (e, ref, container) => {
+    e.preventDefault();
     const target = ref.current || (e.target as HTMLElement);
     const scrollContainer = target.querySelector("ul");
     const draggableElements = scrollContainer?.children || [];
@@ -122,6 +91,38 @@ export const useDragAndDrop = (
     setNextIndex(pointerIndex);
     autoScroll(scrollContainer, scrollToBottom, e);
     handleDragOver(e, container, getIndex);
+  };
+
+  const handleDragLeave: HandleDragLeave = useCallback(() => {
+    const { container, index } = dragItem?.current as DragItem;
+    dragtoContainer.current = container;
+    dragtoIndex.current = index;
+
+    setNextIndex(null);
+    setToContainer("");
+  }, []);
+
+  const handleDragEnd = () => {
+    dispatch({
+      type: "MOVE_TASK",
+      payload: {
+        projectId,
+        taskId: savedTaskId.current,
+        fromContainer: dragItem.current?.container,
+        toContainer: dragtoContainer.current,
+        fromIndex: dragItem.current?.index,
+        toIndex: dragtoIndex.current,
+      },
+    });
+    dragItem.current = null;
+    dragItemNode.current = null;
+
+    setNextIndex(null);
+    // isDragging.current = false;
+
+    // if (!isDragging.current) {
+    setDragging(false);
+    // }
   };
 
   return {

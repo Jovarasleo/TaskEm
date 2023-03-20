@@ -41,6 +41,9 @@
 
 .tasksContainer {
   padding: 1rem 0.5rem 1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--color-grey-1) transparent;
@@ -86,6 +89,7 @@
 
 .pointer {
   position: relative;
+  pointer-events: none;
   &:before {
     content: "";
     display: block;
@@ -100,7 +104,6 @@
   }
 }
 
-.pointerNone,
-.pointerNone > * {
-  pointer-events: none;
+.pointerNone {
+  // pointer-events: none;
 }

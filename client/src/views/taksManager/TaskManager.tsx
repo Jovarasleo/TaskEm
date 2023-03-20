@@ -22,6 +22,7 @@ function TaskManager() {
     handleDrag,
     handleDragStart,
     handleDragLeave,
+    handleDragEnd,
     dragging,
     nextIndex,
     toContainer,
@@ -64,6 +65,7 @@ function TaskManager() {
                 handleDrag={handleDrag}
                 handleDragStart={handleDragStart}
                 handleDragLeave={handleDragLeave}
+                handleDragEnd={handleDragEnd}
                 dragging={dragging}
                 nextIndex={nextIndex}
                 toContainer={toContainer}

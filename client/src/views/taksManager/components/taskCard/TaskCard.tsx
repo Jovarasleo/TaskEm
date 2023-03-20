@@ -1,6 +1,6 @@
 import { FocusEvent, useState, useRef } from "react";
 import { clsx } from "clsx";
-import { DragItem, handleDragStart, Task, Actions } from "../../model/task";
+import { DragItem, HandleDragStart, Task, Actions } from "../../model/task";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
 import usePositionIndicator from "../../hooks/usePositionIndicator";
 import useContainerHeight from "../../hooks/useContainerHeight";
@@ -22,7 +22,7 @@ interface TaskProps {
   toContainer: string;
   dragItem: DragItem | null;
   dispatch: (action: Actions) => void;
-  handleDragStart: handleDragStart;
+  handleDragStart: HandleDragStart;
 }
 
 function TaskCard({
@@ -39,9 +39,7 @@ function TaskCard({
   dispatch,
   handleDragStart,
 }: TaskProps) {
-  // const { value, taskId } = task;
-  const value = task?.value;
-  const taskId = task?.taskId;
+  const { value, taskId } = task;
   const [inputField, setInputField] = useState(false);
   const [input, setInput] = useState(value || "");
   const [confirmDeletion, setConfirmDeletion] = useState(false);
@@ -113,9 +111,9 @@ function TaskCard({
       role="taskItem"
       className={clsx(
         styles.taskWrapper,
-        position.length && styles.indicator,
-        styles[position],
-        dragging && styles.removePointer,
+        // position.length && styles.indicator,
+        // styles[position],
+        // dragging && styles.dragging,
         dragItem?.index === index &&
           dragItem?.container === container &&
           styles.current
@@ -127,6 +125,7 @@ function TaskCard({
         handleDragStart(e, container, index, taskId);
       }}
     >
+      {/* <div className={dragging ? styles.removePointer : ""}> */}
       <span className={styles.taskIndex}>{`# ${task?.count}`}</span>
       <div
         role={"delete_task"}
@@ -193,6 +192,7 @@ function TaskCard({
           {input ? input : "Task description:"}
         </p>
       )}
+      {/* </div> */}
     </li>
   );
 }

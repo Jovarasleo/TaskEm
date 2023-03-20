@@ -1,8 +1,8 @@
 import { useState, useRef } from "react";
 import {
-  handleDragStart,
-  handleDragLeave,
-  handleDrag,
+  HandleDragStart,
+  HandleDragLeave,
+  HandleDrag,
   DragItem,
   Task as TaskModel,
   Actions,
@@ -25,9 +25,10 @@ interface TaskContainer {
   nextIndex: null | number;
   dragItem: DragItem | null;
   dispatch: (action: Actions) => void;
-  handleDrag: handleDrag;
-  handleDragStart: handleDragStart;
-  handleDragLeave: handleDragLeave;
+  handleDrag: HandleDrag;
+  handleDragStart: HandleDragStart;
+  handleDragLeave: HandleDragLeave;
+  handleDragEnd: () => void;
 }
 
 function TasksContainer({
@@ -42,6 +43,7 @@ function TasksContainer({
   handleDrag,
   handleDragLeave,
   handleDragStart,
+  handleDragEnd,
 }: TaskContainer) {
   const containerRef = useRef<HTMLDivElement>(null);
   const outsideClickRef = useRef<HTMLTextAreaElement>(null);
@@ -82,10 +84,10 @@ function TasksContainer({
     <section
       className={styles.container}
       role={container}
-      onDragOver={
-        dragging ? (e) => handleDrag(e, containerRef, container) : undefined
-      }
-      onDragLeave={dragging ? () => handleDragLeave() : undefined}
+      onDragOver={(e) => handleDrag(e, containerRef, container)}
+      onDragLeave={() => handleDragLeave()}
+      onDragEnd={() => handleDragEnd()}
+      onDragEnter={(e) => e.preventDefault()}
       ref={containerRef}
     >
       <div>
@@ -119,7 +121,12 @@ function TasksContainer({
       {showPointer && !tasks.length ? (
         <div className={styles.pointer}></div>
       ) : null}
-      <ul className={clsx(styles.tasksContainer, dragging && styles.pointerNone)}>
+      <ul
+        className={clsx(
+          styles.tasksContainer,
+          dragging ? styles.pointerNone : ""
+        )}
+      >
         {tasks?.map((task, index) => {
           return (
             <TaskCard
