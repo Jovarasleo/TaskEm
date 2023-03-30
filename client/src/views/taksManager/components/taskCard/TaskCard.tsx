@@ -1,4 +1,4 @@
-import { FocusEvent, useState, useRef } from "react";
+import { FocusEvent, useState, useRef, useEffect } from "react";
 import { clsx } from "clsx";
 import { DragItem, HandleDragStart, Task, Actions } from "../../model/task";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
@@ -35,9 +35,15 @@ function TaskCard({
   nextIndex,
   arrayLength,
   toContainer,
+  handleMouseDown,
+  handleMouseMove,
+  handleMouseUp,
   dragItem,
+  containerRef,
   dispatch,
+  handleDrag,
   handleDragStart,
+  handleAllowTransfer,
 }: TaskProps) {
   const { value, taskId } = task;
   const [inputField, setInputField] = useState(false);
@@ -55,6 +61,7 @@ function TaskCard({
   const textAreaRef = useRef<HTMLElement | null>(null);
   const outsideClickRef = useRef<HTMLElement | null>(null);
   const deleteButtonRef = useRef<HTMLDivElement | null>(null);
+  const taskItem = useRef<HTMLLIElement | null>(null);
 
   const handleDescriptionClick = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
@@ -95,13 +102,6 @@ function TaskCard({
     target.selectionStart = target.value.length;
   };
 
-  const position = usePositionIndicator(
-    toContainer,
-    container,
-    nextIndex,
-    index,
-    arrayLength
-  );
   useContainerHeight(textAreaRef, input, inputField);
   useOutsideClick(closeTextBoxes, outsideClickRef);
   useOutsideClick(() => handleConfirmDeletion(false), deleteButtonRef);
@@ -109,23 +109,20 @@ function TaskCard({
   return (
     <li
       role="taskItem"
+      ref={taskItem}
       className={clsx(
         styles.taskWrapper,
-        // position.length && styles.indicator,
-        // styles[position],
-        // dragging && styles.dragging,
-        dragItem?.index === index &&
-          dragItem?.container === container &&
-          styles.current
+        dragging && nextIndex === index && container === toContainer
+          ? styles.draggable
+          : ""
       )}
       tabIndex={0}
-      data-testid={dataTestId}
-      draggable={!inputField}
-      onDragStart={(e: React.DragEvent<HTMLElement>) => {
-        handleDragStart(e, container, index, taskId);
+      onMouseDown={(e) => {
+        handleMouseDown(e, taskItem, container, index, taskId, containerRef);
       }}
+      onMouseEnter={dragging ? () => handleAllowTransfer() : () => {}}
+      data-testid={dataTestId}
     >
-      {/* <div className={dragging ? styles.removePointer : ""}> */}
       <span className={styles.taskIndex}>{`# ${task?.count}`}</span>
       <div
         role={"delete_task"}
@@ -135,7 +132,11 @@ function TaskCard({
         )}
         ref={deleteButtonRef}
         tabIndex={0}
-        onClick={() => handleConfirmDeletion(true)}
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleConfirmDeletion(true);
+        }}
       >
         {confirmDeletion ? (
           <>
@@ -173,7 +174,7 @@ function TaskCard({
           className={clsx(styles.textarea, styles.taskDescription)}
           rows={1}
           onChange={(e) => setInput(e.target.value)}
-          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
           onKeyDown={(e) => handleKeypress(e)}
           placeholder="Describe task here..."
           onFocus={(e) => moveCursorToEnd(e)}
@@ -188,6 +189,7 @@ function TaskCard({
           role="paragraph"
           className={clsx(styles.paragraph, styles.taskDescription)}
           onClick={(e) => handleDescriptionClick(e)}
+          onMouseDown={(e) => e.stopPropagation()}
         >
           {input ? input : "Task description:"}
         </p>

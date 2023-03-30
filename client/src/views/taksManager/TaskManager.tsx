@@ -2,9 +2,8 @@ import { useDragAndDrop } from "./hooks/useDragAndDrop";
 import useLocalStorage from "./hooks/useLocalStorage";
 import TasksContainer from "./components/taskContainer/TasksContainer";
 import TaskContext, { TasksContext } from "../../context/taskContext";
-import { useContext, useState, useRef } from "react";
+import { useContext, useState } from "react";
 import styles from "./styles.module.scss";
-
 import Button from "@components/button/Button";
 import Dropdown from "@components/dropdown/Dropdown";
 import clsx from "clsx";
@@ -17,17 +16,22 @@ function TaskManager() {
   ) as TasksContext;
 
   useLocalStorage(state);
+  const projectId = state.length ? state[projectIndex].projectId : null;
 
   const {
     handleDrag,
     handleDragStart,
     handleDragLeave,
     handleDragEnd,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
+    handleAllowTransfer,
     dragging,
     nextIndex,
     toContainer,
     dragItem,
-  } = useDragAndDrop(dispatch, state[projectIndex]?.projectId);
+  } = useDragAndDrop(dispatch, projectId);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -57,15 +61,19 @@ function TaskManager() {
           state[projectIndex]?.containers?.map((container, index) => {
             return (
               <TasksContainer
-                key={state[projectIndex].projectId + index}
+                key={projectId + index}
                 tasks={container.tasks}
-                projectId={state[projectIndex].projectId}
+                projectId={projectId}
                 container={container.containerName}
                 dispatch={dispatch}
                 handleDrag={handleDrag}
                 handleDragStart={handleDragStart}
                 handleDragLeave={handleDragLeave}
                 handleDragEnd={handleDragEnd}
+                handleMouseDown={handleMouseDown}
+                handleMouseMove={handleMouseMove}
+                handleMouseUp={handleMouseUp}
+                handleAllowTransfer={handleAllowTransfer}
                 dragging={dragging}
                 nextIndex={nextIndex}
                 toContainer={toContainer}

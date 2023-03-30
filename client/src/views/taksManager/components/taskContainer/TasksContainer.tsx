@@ -40,10 +40,14 @@ function TasksContainer({
   dragging,
   dragItem,
   dispatch,
+  handleMouseDown,
+  handleMouseMove,
+  handleMouseUp,
   handleDrag,
   handleDragLeave,
   handleDragStart,
   handleDragEnd,
+  handleAllowTransfer,
 }: TaskContainer) {
   const containerRef = useRef<HTMLDivElement>(null);
   const outsideClickRef = useRef<HTMLTextAreaElement>(null);
@@ -84,10 +88,8 @@ function TasksContainer({
     <section
       className={styles.container}
       role={container}
-      onDragOver={(e) => handleDrag(e, containerRef, container)}
-      onDragLeave={() => handleDragLeave()}
-      onDragEnd={() => handleDragEnd()}
-      onDragEnter={(e) => e.preventDefault()}
+      onMouseOver={(e) => handleDrag(e, containerRef, container)}
+      onMouseEnter={() => handleAllowTransfer()}
       ref={containerRef}
     >
       <div>
@@ -137,11 +139,17 @@ function TasksContainer({
               arrayLength={tasks.length}
               dragging={dragging}
               container={container}
+              containerRef={containerRef}
               nextIndex={nextIndex}
               toContainer={toContainer}
               dragItem={dragItem}
               dispatch={dispatch}
               handleDragStart={handleDragStart}
+              handleDrag={handleDrag}
+              handleMouseDown={handleMouseDown}
+              handleMouseMove={handleMouseMove}
+              handleMouseUp={handleMouseUp}
+              handleAllowTransfer={handleAllowTransfer}
             />
           );
         })}
