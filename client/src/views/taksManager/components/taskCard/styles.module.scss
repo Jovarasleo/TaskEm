@@ -2,6 +2,7 @@
 
 .taskWrapper {
   cursor: grab;
+  user-select: none;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -27,7 +28,7 @@
   }
 
   .paragraph {
-    cursor: text;
+    cursor: pointer;
     border: none;
     text-align: left;
     font-size: 1.4rem;
@@ -136,8 +137,7 @@
 }
 
 .draggable {
-  background-color: rgb(80, 80, 80);
-  box-shadow: 2px 2px 4px rgb(58, 58, 58);
+  box-shadow: inset 0 0 10px 3px rgb(170, 93, 55);
   & > * {
     visibility: hidden;
   }

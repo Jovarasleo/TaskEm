@@ -4,11 +4,8 @@ import TasksContainer from "./components/taskContainer/TasksContainer";
 import TaskContext, { TasksContext } from "../../context/taskContext";
 import { useContext, useState } from "react";
 import styles from "./styles.module.scss";
-import Button from "@components/button/Button";
 import Dropdown from "@components/dropdown/Dropdown";
-import clsx from "clsx";
 import Modal from "@components/modal/Modal";
-import useOutsideClick from "../../hooks/useOutsideClick";
 
 function TaskManager() {
   const { state, dispatch, projectIndex } = useContext(
@@ -21,17 +18,12 @@ function TaskManager() {
   const {
     handleDrag,
     handleDragStart,
-    handleDragLeave,
-    handleDragEnd,
     handleMouseDown,
-    handleMouseMove,
-    handleMouseUp,
-    handleAllowTransfer,
     dragging,
     nextIndex,
     toContainer,
     dragItem,
-  } = useDragAndDrop(dispatch, projectId);
+  } = useDragAndDrop(dispatch, state[projectIndex].projectId);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -57,8 +49,8 @@ function TaskManager() {
         ) : null}
       </span>
       <div className={styles.managerContainer}>
-        {state.length ? (
-          state[projectIndex]?.containers?.map((container, index) => {
+        {!!projectId ? (
+          state[projectIndex].containers?.map((container, index) => {
             return (
               <TasksContainer
                 key={projectId + index}
@@ -68,12 +60,7 @@ function TaskManager() {
                 dispatch={dispatch}
                 handleDrag={handleDrag}
                 handleDragStart={handleDragStart}
-                handleDragLeave={handleDragLeave}
-                handleDragEnd={handleDragEnd}
                 handleMouseDown={handleMouseDown}
-                handleMouseMove={handleMouseMove}
-                handleMouseUp={handleMouseUp}
-                handleAllowTransfer={handleAllowTransfer}
                 dragging={dragging}
                 nextIndex={nextIndex}
                 toContainer={toContainer}

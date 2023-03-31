@@ -1,9 +1,9 @@
-import { DragEvent } from "react";
+import { MouseEvent } from "react";
 
 const autoScroll = (
   scrollContainer: HTMLUListElement | null,
   scrollToBottom: boolean,
-  e: DragEvent<HTMLElement>
+  e: MouseEvent<HTMLElement>
 ) => {
   const easeInOutQuad = (x: number) => {
     return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;

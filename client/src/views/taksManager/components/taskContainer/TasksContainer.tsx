@@ -1,13 +1,11 @@
 import { useState, useRef } from "react";
 import {
   HandleDragStart,
-  HandleDragLeave,
   HandleDrag,
   DragItem,
   Task as TaskModel,
   Actions,
 } from "../../model/task";
-import usePositionIndicator from "../../hooks/usePositionIndicator";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
 import { uid } from "../../../../util/uid";
 import TaskCard from "../taskCard/TaskCard";
@@ -27,8 +25,13 @@ interface TaskContainer {
   dispatch: (action: Actions) => void;
   handleDrag: HandleDrag;
   handleDragStart: HandleDragStart;
-  handleDragLeave: HandleDragLeave;
-  handleDragEnd: () => void;
+  handleMouseDown: (
+    e: React.MouseEvent<HTMLLIElement>,
+    taskItem: HTMLLIElement | null,
+    container: string,
+    index: number,
+    taskId: string
+  ) => void;
 }
 
 function TasksContainer({
@@ -40,14 +43,9 @@ function TasksContainer({
   dragging,
   dragItem,
   dispatch,
-  handleMouseDown,
-  handleMouseMove,
-  handleMouseUp,
   handleDrag,
-  handleDragLeave,
   handleDragStart,
-  handleDragEnd,
-  handleAllowTransfer,
+  handleMouseDown,
 }: TaskContainer) {
   const containerRef = useRef<HTMLDivElement>(null);
   const outsideClickRef = useRef<HTMLTextAreaElement>(null);
@@ -80,16 +78,13 @@ function TasksContainer({
     }
   };
 
-  const position = usePositionIndicator(toContainer, container, nextIndex, 0, 0);
   useOutsideClick(createTask, outsideClickRef);
-  const showPointer = position === "before";
 
   return (
     <section
       className={styles.container}
       role={container}
       onMouseOver={(e) => handleDrag(e, containerRef, container)}
-      onMouseEnter={() => handleAllowTransfer()}
       ref={containerRef}
     >
       <div>
@@ -119,16 +114,7 @@ function TasksContainer({
           </div>
         ) : null}
       </div>
-
-      {showPointer && !tasks.length ? (
-        <div className={styles.pointer}></div>
-      ) : null}
-      <ul
-        className={clsx(
-          styles.tasksContainer,
-          dragging ? styles.pointerNone : ""
-        )}
-      >
+      <ul className={clsx(styles.tasksContainer)}>
         {tasks?.map((task, index) => {
           return (
             <TaskCard
@@ -139,17 +125,12 @@ function TasksContainer({
               arrayLength={tasks.length}
               dragging={dragging}
               container={container}
-              containerRef={containerRef}
               nextIndex={nextIndex}
               toContainer={toContainer}
               dragItem={dragItem}
               dispatch={dispatch}
               handleDragStart={handleDragStart}
-              handleDrag={handleDrag}
               handleMouseDown={handleMouseDown}
-              handleMouseMove={handleMouseMove}
-              handleMouseUp={handleMouseUp}
-              handleAllowTransfer={handleAllowTransfer}
             />
           );
         })}

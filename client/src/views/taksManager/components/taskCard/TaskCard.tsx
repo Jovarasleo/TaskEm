@@ -1,8 +1,7 @@
-import { FocusEvent, useState, useRef, useEffect } from "react";
+import { FocusEvent, useState, useRef } from "react";
 import { clsx } from "clsx";
 import { DragItem, HandleDragStart, Task, Actions } from "../../model/task";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
-import usePositionIndicator from "../../hooks/usePositionIndicator";
 import useContainerHeight from "../../hooks/useContainerHeight";
 import { BsCheckLg, BsXLg } from "react-icons/bs";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -23,6 +22,13 @@ interface TaskProps {
   dragItem: DragItem | null;
   dispatch: (action: Actions) => void;
   handleDragStart: HandleDragStart;
+  handleMouseDown: (
+    e: React.MouseEvent<HTMLLIElement>,
+    taskItem: HTMLLIElement | null,
+    container: string,
+    index: number,
+    taskId: string
+  ) => void;
 }
 
 function TaskCard({
@@ -33,22 +39,19 @@ function TaskCard({
   container,
   dragging,
   nextIndex,
-  arrayLength,
   toContainer,
-  handleMouseDown,
-  handleMouseMove,
-  handleMouseUp,
-  dragItem,
-  containerRef,
   dispatch,
-  handleDrag,
-  handleDragStart,
-  handleAllowTransfer,
+  handleMouseDown,
 }: TaskProps) {
   const { value, taskId } = task;
   const [inputField, setInputField] = useState(false);
   const [input, setInput] = useState(value || "");
   const [confirmDeletion, setConfirmDeletion] = useState(false);
+
+  const textAreaRef = useRef<HTMLElement | null>(null);
+  const outsideClickRef = useRef<HTMLElement | null>(null);
+  const deleteButtonRef = useRef<HTMLDivElement>(null);
+  const taskItem = useRef<HTMLLIElement>(null);
 
   const handleConfirmDeletion = (confirm: boolean) => {
     if (confirm && !confirmDeletion) {
@@ -57,11 +60,6 @@ function TaskCard({
       setConfirmDeletion(false);
     }
   };
-
-  const textAreaRef = useRef<HTMLElement | null>(null);
-  const outsideClickRef = useRef<HTMLElement | null>(null);
-  const deleteButtonRef = useRef<HTMLDivElement | null>(null);
-  const taskItem = useRef<HTMLLIElement | null>(null);
 
   const handleDescriptionClick = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
@@ -118,9 +116,8 @@ function TaskCard({
       )}
       tabIndex={0}
       onMouseDown={(e) => {
-        handleMouseDown(e, taskItem, container, index, taskId, containerRef);
+        handleMouseDown(e, taskItem.current, container, index, taskId);
       }}
-      onMouseEnter={dragging ? () => handleAllowTransfer() : () => {}}
       data-testid={dataTestId}
     >
       <span className={styles.taskIndex}>{`# ${task?.count}`}</span>
@@ -194,7 +191,6 @@ function TaskCard({
           {input ? input : "Task description:"}
         </p>
       )}
-      {/* </div> */}
     </li>
   );
 }
