@@ -17,10 +17,9 @@ export const useDragAndDrop = (
   const [nextIndex, setNextIndex] = useState<null | number>(0);
 
   const savedTaskId = useRef("");
-  const dragItem = useRef<DragItem>({ container: "", index: 0 });
+  const originalPosition = useRef({ container: "", index: 0 });
+  const dragItemPosition = useRef<DragItem>({ container: "", index: 0 });
   const dragItemNode = useRef<HTMLElement | null>(null);
-  const dragtoIndex = useRef(0);
-  const dragtoContainer = useRef("");
   const isDragging = useRef(false);
 
   const position = useRef({ left: 0, top: 0 });
@@ -98,9 +97,8 @@ export const useDragAndDrop = (
 
   const handleDragStart: HandleDragStart = useCallback(
     (container, index, taskId) => {
-      dragItem.current = { container, index };
-      dragtoIndex.current = index;
-      dragtoContainer.current = container;
+      originalPosition.current = { container, index };
+      dragItemPosition.current = { container, index };
       savedTaskId.current = taskId;
 
       setToContainer(container);
@@ -108,35 +106,6 @@ export const useDragAndDrop = (
       setDragging(true);
     },
     []
-  );
-
-  const handleDragOver: HandleDragOver = useCallback(
-    (container, index) => {
-      dragtoContainer.current = container;
-      dragtoIndex.current = index;
-
-      if (
-        (dragItem.current.container === container &&
-          dragItem.current.index === index) ||
-        projectId === null
-      ) {
-        return;
-      }
-
-      dispatch({
-        type: "MOVE_TASK",
-        payload: {
-          projectId,
-          taskId: savedTaskId.current,
-          fromContainer: dragItem.current?.container,
-          toContainer: dragtoContainer.current,
-          fromIndex: dragItem.current?.index,
-          toIndex: dragtoIndex.current,
-        },
-      });
-      dragItem.current = { container, index };
-    },
-    [projectId]
   );
 
   const handleDrag: HandleDrag = (e, ref, container) => {
@@ -150,8 +119,8 @@ export const useDragAndDrop = (
 
     const mappedPositions = [...draggableElements]
       .filter((_, index) => {
-        if (container === dragItem.current?.container) {
-          return index !== dragItem.current?.index;
+        if (container === dragItemPosition.current?.container) {
+          return index !== dragItemPosition.current?.index;
         } else {
           return index + 1;
         }
@@ -175,11 +144,53 @@ export const useDragAndDrop = (
     handleDragOver(container, getIndex);
   };
 
-  const handleDragEnd = () => {
-    if (!isDragging.current) {
-      return;
-    }
+  const handleDragOver: HandleDragOver = useCallback(
+    (container, index) => {
+      if (
+        (dragItemPosition.current.container === container &&
+          dragItemPosition.current.index === index) ||
+        projectId === null
+      ) {
+        return;
+      }
 
+      dispatch({
+        type: "MOVE_TASK",
+        payload: {
+          projectId,
+          taskId: savedTaskId.current,
+          fromContainer: dragItemPosition.current?.container,
+          toContainer: container,
+          fromIndex: dragItemPosition.current?.index,
+          toIndex: index,
+        },
+      });
+      dragItemPosition.current = { container, index };
+    },
+    [projectId]
+  );
+
+  const handleDragCancel = () => {
+    if (!dragging || !projectId) return;
+
+    const { container, index } = originalPosition.current;
+    setToContainer(container);
+    setNextIndex(index);
+    dispatch({
+      type: "MOVE_TASK",
+      payload: {
+        projectId,
+        taskId: savedTaskId.current,
+        fromContainer: dragItemPosition.current?.container,
+        toContainer: container,
+        fromIndex: dragItemPosition.current?.index,
+        toIndex: index,
+      },
+    });
+    dragItemPosition.current = { container, index };
+  };
+
+  const handleDragEnd = () => {
     savedTaskId.current = "";
     isDragging.current = false;
     dragItemNode.current = null;
@@ -194,9 +205,9 @@ export const useDragAndDrop = (
     handleDrag,
     handleDragStart,
     handleMouseDown,
+    handleDragCancel,
     dragging,
     toContainer,
     nextIndex,
-    dragItem,
   };
 };

@@ -19,7 +19,6 @@ interface TaskProps {
   nextIndex: null | number;
   arrayLength: number;
   toContainer: string;
-  dragItem: DragItem | null;
   dispatch: (action: Actions) => void;
   handleDragStart: HandleDragStart;
   handleMouseDown: (

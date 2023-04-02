@@ -1,6 +1,6 @@
 @import "../../../../styles/variables.scss";
 
-.container {
+.tasksContainerWrapper {
   border-radius: 1.5rem;
   box-shadow: 0 0 0.5rem var(--color-black-3);
   background-color: var(--color-white-0);
@@ -37,6 +37,10 @@
       min-height: 3em;
     }
   }
+}
+
+.containerHover:hover {
+  background-color: rgb(255, 239, 219);
 }
 
 .tasksContainer {
@@ -102,8 +106,4 @@
     pointer-events: none;
     background-color: var(--theme-main);
   }
-}
-
-.pointerNone {
-  // pointer-events: none;
 }

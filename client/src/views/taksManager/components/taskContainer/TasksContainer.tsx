@@ -21,7 +21,6 @@ interface TaskContainer {
   dragging: boolean;
   toContainer: string;
   nextIndex: null | number;
-  dragItem: DragItem | null;
   dispatch: (action: Actions) => void;
   handleDrag: HandleDrag;
   handleDragStart: HandleDragStart;
@@ -41,7 +40,6 @@ function TasksContainer({
   toContainer,
   nextIndex,
   dragging,
-  dragItem,
   dispatch,
   handleDrag,
   handleDragStart,
@@ -82,7 +80,10 @@ function TasksContainer({
 
   return (
     <section
-      className={styles.container}
+      className={clsx(
+        styles.tasksContainerWrapper,
+        dragging && styles.containerHover
+      )}
       role={container}
       onMouseOver={(e) => handleDrag(e, containerRef, container)}
       ref={containerRef}
@@ -127,7 +128,6 @@ function TasksContainer({
               container={container}
               nextIndex={nextIndex}
               toContainer={toContainer}
-              dragItem={dragItem}
               dispatch={dispatch}
               handleDragStart={handleDragStart}
               handleMouseDown={handleMouseDown}

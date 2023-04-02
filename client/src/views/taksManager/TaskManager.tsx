@@ -19,10 +19,10 @@ function TaskManager() {
     handleDrag,
     handleDragStart,
     handleMouseDown,
+    handleDragCancel,
     dragging,
     nextIndex,
     toContainer,
-    dragItem,
   } = useDragAndDrop(dispatch, state[projectIndex].projectId);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -48,7 +48,7 @@ function TaskManager() {
           />
         ) : null}
       </span>
-      <div className={styles.managerContainer}>
+      <div className={styles.managerContainer} onMouseLeave={handleDragCancel}>
         {!!projectId ? (
           state[projectIndex].containers?.map((container, index) => {
             return (
@@ -64,7 +64,6 @@ function TaskManager() {
                 dragging={dragging}
                 nextIndex={nextIndex}
                 toContainer={toContainer}
-                dragItem={dragItem.current}
               />
             );
           })
