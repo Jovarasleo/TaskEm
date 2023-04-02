@@ -23,7 +23,7 @@ function TaskManager() {
     dragging,
     nextIndex,
     toContainer,
-  } = useDragAndDrop(dispatch, state[projectIndex].projectId);
+  } = useDragAndDrop(dispatch, state[projectIndex]?.projectId);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
