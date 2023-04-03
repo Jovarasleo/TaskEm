@@ -1,36 +1,30 @@
-import { useState, useRef, useCallback } from "react";
-import NavButton from "../navButton/NavButton";
-import Navbar from "../navbar/Navbar";
+import { useState, useRef } from "react";
+import NavButton from "./NavButton";
+import Navbar from "./Navbar";
 import useOutsideClick from "../../hooks/useOutsideClick";
-import styles from "./header.module.scss";
+import styles from "./styles.module.scss";
 
 function Header() {
   const [showNav, setShowNav] = useState(false);
-  const [animate, setAnimate] = useState(false);
+  const [showButton, setShowButton] = useState(true);
 
   const outsideClickRef = useRef<HTMLTextAreaElement>(null);
-  useOutsideClick(() => setAnimate(false), outsideClickRef);
+  useOutsideClick(() => setShowNav(false), outsideClickRef);
 
-  const showNavigation = useCallback(() => {
-    setShowNav(true);
-    const timer = setTimeout(() => {
-      setAnimate(true);
-    }, 5);
-    return () => clearTimeout(timer);
-  }, []);
+  const handleNavigation = () => {
+    setShowNav((prevState) => !prevState);
+    setShowButton(false);
+  };
 
   return (
     <>
       <header className={styles.header} ref={outsideClickRef}>
-        {!showNav ? (
-          <NavButton onClick={showNavigation} />
-        ) : (
-          <Navbar
-            animate={animate}
-            setAnimate={setAnimate}
-            setShowNav={setShowNav}
-          />
-        )}
+        <NavButton onClick={handleNavigation} visible={showButton} />
+        <Navbar
+          handleNavigation={handleNavigation}
+          handleButton={setShowButton}
+          visible={showNav}
+        />
       </header>
     </>
   );

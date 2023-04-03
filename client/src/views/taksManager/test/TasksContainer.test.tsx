@@ -10,15 +10,16 @@ const testArray = [
   {
     id: "1",
     value: "value1",
+    count: 1,
   },
   {
     id: "2",
-    name: "test2",
+    count: 2,
     value: "value2",
   },
   {
     id: "3",
-    name: "test3",
+    count: 3,
     value: "value3",
   },
 ];

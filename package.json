@@ -8,9 +8,9 @@
     "dev": "cd ./client && npm run dev",
     "install": "cd ./client && npm install && cd ./server && npm install",
     "update": "cd ./client && npm update && cd ./server && npm update",
-    "build": "webpack --config webpack/webpack.config.js --env env=prod",
-    "start": "npx serve -s build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "cd ./client && npm run build",
+    "start": "cd ./client && npx serve -s build",
+    "test": "cd ./client && npm run test"
   },
   "repository": {
     "type": "git",

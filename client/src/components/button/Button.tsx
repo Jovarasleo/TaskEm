@@ -1,18 +1,27 @@
 import { ReactElement, ReactNode } from "react";
 import styles from "./button.module.scss";
 import clsx from "clsx";
-
+import { RefObject } from "react";
 export interface ButtonProps {
   className?: string;
   type?: string;
   children?: ReactElement | ReactNode;
+  ref?: RefObject<HTMLButtonElement>;
   onClick: (value?: any) => void;
 }
-function Button({ className, type, children, onClick, ...rest }: ButtonProps) {
+function Button({
+  className,
+  type,
+  children,
+  onClick,
+  ref,
+  ...rest
+}: ButtonProps) {
   return (
     <button
       className={clsx(styles.button, type && styles[type], className)}
       onClick={onClick}
+      ref={ref}
       {...rest}
     >
       {children}

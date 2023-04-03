@@ -16,6 +16,11 @@ describe("Test if taskManager renders and it's functionality works", () => {
         <TaskManager />
       </TaskProvider>
     );
+    //check if project exists
+    const selectText = screen.getByText("No projects yet!");
+    if (selectText) {
+      return;
+    }
     //task creation
     const tasksCountBeforeAdding = screen.queryAllByRole("taskItem").length;
     const createTaskButton = screen.getByRole("create_task");

@@ -2,6 +2,7 @@
 
 .taskWrapper {
   cursor: grab;
+  user-select: none;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -11,55 +12,94 @@
   padding: 10px;
   border-radius: 10px;
   box-shadow: 0px 0px 3px 2px var(--color-shadow-grey-1);
+  background-color: white;
 
   .taskIndex {
-    font-size: 1.6em;
+    font-size: 1.6rem;
   }
 
   .textarea {
     resize: none;
-    font-size: 1.4em;
+    font-size: 1.4rem;
     overflow-wrap: break-word;
     border: 0;
     word-break: break-all;
     cursor: text;
   }
 
-  .button {
-    cursor: text;
-    display: flex;
+  .paragraph {
+    cursor: pointer;
     border: none;
     text-align: left;
-    font-size: 1.4em;
-    max-height: 8em;
+    font-size: 1.4rem;
+    max-height: 8rem;
     word-break: break-all;
     overflow-wrap: break-word;
     background-color: var(--color-white-1);
     box-shadow: 0px 2px 3px 1px var(--color-shadow-grey-3);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
   }
 
   .taskDescription {
     margin-top: 10px;
     padding: 5px;
     overflow: hidden;
+    line-height: 1.4;
   }
 
   .deleteButton {
+    background-color: rgb(246, 246, 246);
+    box-shadow: 0 0 2px 2px rgb(112, 112, 112);
+    transition-duration: 300ms;
+    transition-property: border-radius, width, box-shadow;
     width: 25px;
     height: 25px;
     border-radius: 50%;
-    border: none;
     position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     right: 5px;
     top: 5px;
     cursor: pointer;
+
+    &:hover {
+      box-shadow: 0 0 3px 2px var(--color-grey-2);
+    }
+
+    svg {
+      fill: var(--color-grey-2);
+      font-size: 16px;
+    }
+  }
+
+  .confirmationView {
+    width: 120px;
+    border-radius: 12px;
+
+    .confirmationButton {
+      background-color: transparent;
+      width: 50%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .confirmationButton svg {
+      fill: var(--color-grey-1);
+      font-size: 20px;
+      transition: 0.3s fill;
+    }
+    .confirmationButton:hover svg {
+      fill: var(--theme-main);
+    }
   }
 }
-.taskWrapper + .taskWrapper {
-  margin-top: 12px;
-}
+
 .current {
-  box-shadow: 0px 0px 4px 2px var(--color-black-2);
+  box-shadow: 0px 0px 4px 3px rgb(179, 85, 26);
 }
 
 .indicator {
@@ -73,7 +113,6 @@
     background-color: var(--theme-main);
     width: 100%;
     position: absolute;
-    pointer-events: none;
   }
 }
 
@@ -92,6 +131,14 @@
     bottom: -$size-sm;
   }
 }
-.removePointer > * {
+
+.removePointer {
   pointer-events: none;
+}
+
+.draggable {
+  box-shadow: inset 0 0 10px 3px rgb(170, 93, 55);
+  & > * {
+    visibility: hidden;
+  }
 }

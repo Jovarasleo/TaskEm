@@ -1,37 +1,42 @@
-import { useState, useContext } from "react";
-import TaskContext, { TasksContext } from "../../../../context/taskContext";
-import Button from "../../../../components/button/Button";
+import Button from "@components/button/Button";
 import styles from "./styles.module.scss";
+import useCreateProject from "../../hooks/useCreateProject";
+import { Project } from "../../model/task";
 
 function CreateProject() {
-  const { projects, selectProject, addProject } = useContext(
-    TaskContext
-  ) as TasksContext;
-  const [projectName, setProjectName] = useState("");
+  const {
+    state,
+    projectName,
+    projectIndex,
+    handleProjectName,
+    setSelectedProjectId,
+    handleAddProject,
+  } = useCreateProject();
 
   return (
     <section className={styles.createProjectWrapper}>
       <h3>Select project:</h3>
-      {Object.keys(projects).map((project: any) => {
+      {state.map((project: Project, index) => {
         return (
           <Button
-            key={project}
+            key={project.projectId}
             type="select"
+            className={index === projectIndex ? styles.selectedProject : ""}
             onClick={() => {
-              selectProject(project);
+              setSelectedProjectId(project.projectId);
             }}
           >
-            {project}
+            {project.projectName}
           </Button>
         );
       })}
       <div>
         <input
           type="text"
-          onChange={(e) => setProjectName(e.target.value)}
+          onChange={(e) => handleProjectName(e.target.value)}
           value={projectName}
         />
-        <Button onClick={() => addProject(projectName)}>Create Project</Button>
+        <Button onClick={() => handleAddProject()}>Create Project</Button>
       </div>
     </section>
   );

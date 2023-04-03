@@ -1,14 +1,16 @@
 @import "../../../../styles/variables.scss";
 
-.container {
-  border-radius: 1.5em;
-  box-shadow: 0 0 0.5em var(--color-black-3);
+.tasksContainerWrapper {
+  border-radius: 1.5rem;
+  box-shadow: 0 0 0.5rem var(--color-black-3);
   background-color: var(--color-white-0);
-  padding: 0.5em 0.5em;
+  padding: 0.5rem 0.5rem;
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
+  transform: translateZ(10);
+  touch-action: none;
 
   .newTaskContainer {
     min-height: 48px;
@@ -20,9 +22,9 @@
     h3 {
       margin-top: $size-xs;
       color: var(--color-grey-2);
-      font-size: 2.6em;
-      pointer-events: none;
+      font-size: 2.6rem;
       user-select: none;
+      pointer-events: none;
     }
   }
   .textareaWrapper {
@@ -37,11 +39,19 @@
   }
 }
 
+.containerHover:hover {
+  background-color: rgb(255, 239, 219);
+}
+
 .tasksContainer {
-  padding: 1em 0.5em 1em 0.5em;
+  padding: 1rem 0.5rem 1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--color-grey-1) transparent;
+  scroll-behavior: smooth;
 
   &::-webkit-scrollbar-track {
     background-color: transparent;
@@ -64,22 +74,26 @@
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  background-color: var(--theme-main);
-  color: var(--color-white-0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
   font-weight: $font-weight-heavy;
 
-  &::before {
-    content: "+";
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -55%);
-    font-size: $size-x2;
+  &:hover svg {
+    color: var(--theme-main);
+  }
+
+  svg {
+    transition: 300ms all;
+    font-size: 30px;
+    color: var(--color-grey-2);
   }
 }
 
 .pointer {
   position: relative;
+  pointer-events: none;
   &:before {
     content: "";
     display: block;
@@ -92,9 +106,4 @@
     pointer-events: none;
     background-color: var(--theme-main);
   }
-}
-
-.pointerNone,
-.pointerNone > * {
-  pointer-events: none;
 }

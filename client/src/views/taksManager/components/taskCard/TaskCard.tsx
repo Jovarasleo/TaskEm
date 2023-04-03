@@ -1,13 +1,17 @@
 import { FocusEvent, useState, useRef } from "react";
 import { clsx } from "clsx";
-import { DragItem, handleDragStart, Task, Actions } from "../../model/task";
+import { DragItem, HandleDragStart, Task, Actions } from "../../model/task";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
-import usePositionIndicator from "../../hooks/usePositionIndicator";
 import useContainerHeight from "../../hooks/useContainerHeight";
+import { BsCheckLg, BsXLg } from "react-icons/bs";
+import { AiOutlineDelete } from "react-icons/ai";
+
 import styles from "./styles.module.scss";
+import Button from "../../../../components/button/Button";
 
 interface TaskProps {
   dataTestId?: string;
+  projectId: string;
   task: Task;
   index: number;
   container: string;
@@ -15,30 +19,46 @@ interface TaskProps {
   nextIndex: null | number;
   arrayLength: number;
   toContainer: string;
-  dragItem: DragItem | null;
   dispatch: (action: Actions) => void;
-  handleDragStart: handleDragStart;
+  handleDragStart: HandleDragStart;
+  handleMouseDown: (
+    e: React.MouseEvent<HTMLLIElement>,
+    taskItem: HTMLLIElement | null,
+    container: string,
+    index: number,
+    taskId: string
+  ) => void;
 }
 
 function TaskCard({
+  projectId,
   task,
   dataTestId,
   index,
   container,
   dragging,
   nextIndex,
-  arrayLength,
   toContainer,
-  dragItem,
   dispatch,
-  handleDragStart,
+  handleMouseDown,
 }: TaskProps) {
-  const { value, id } = task;
+  const { value, taskId } = task;
   const [inputField, setInputField] = useState(false);
   const [input, setInput] = useState(value || "");
+  const [confirmDeletion, setConfirmDeletion] = useState(false);
 
   const textAreaRef = useRef<HTMLElement | null>(null);
   const outsideClickRef = useRef<HTMLElement | null>(null);
+  const deleteButtonRef = useRef<HTMLDivElement>(null);
+  const taskItem = useRef<HTMLLIElement>(null);
+
+  const handleConfirmDeletion = (confirm: boolean) => {
+    if (confirm && !confirmDeletion) {
+      setConfirmDeletion(true);
+    } else {
+      setConfirmDeletion(false);
+    }
+  };
 
   const handleDescriptionClick = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
@@ -49,9 +69,12 @@ function TaskCard({
   const closeTextBoxes = () => {
     dispatch({
       type: "SAVE_TASK",
-      container,
-      id,
-      value: input,
+      payload: {
+        projectId: projectId,
+        containerName: container,
+        taskValue: input,
+        taskId: taskId,
+      },
     });
     setInputField(false);
   };
@@ -60,9 +83,12 @@ function TaskCard({
     if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
       dispatch({
         type: "SAVE_TASK",
-        container,
-        id,
-        value: input,
+        payload: {
+          projectId: projectId,
+          containerName: container,
+          taskValue: input,
+          taskId: taskId,
+        },
       });
       setInputField(false);
     }
@@ -73,51 +99,78 @@ function TaskCard({
     target.selectionStart = target.value.length;
   };
 
-  const position = usePositionIndicator(
-    toContainer,
-    container,
-    nextIndex,
-    index,
-    arrayLength
-  );
   useContainerHeight(textAreaRef, input, inputField);
   useOutsideClick(closeTextBoxes, outsideClickRef);
+  useOutsideClick(() => handleConfirmDeletion(false), deleteButtonRef);
 
   return (
     <li
       role="taskItem"
+      ref={taskItem}
       className={clsx(
         styles.taskWrapper,
-        position.length && styles.indicator,
-        styles[position],
-        dragging && styles.removePointer,
-        dragItem?.index === index &&
-          dragItem?.container === container &&
-          styles.current
+        dragging && nextIndex === index && container === toContainer
+          ? styles.draggable
+          : ""
       )}
-      data-testid={dataTestId}
-      draggable={!inputField}
-      onDragStart={(e: React.DragEvent<HTMLElement>) => {
-        handleDragStart(e, container, index);
+      tabIndex={0}
+      onMouseDown={(e) => {
+        handleMouseDown(e, taskItem.current, container, index, taskId);
       }}
+      data-testid={dataTestId}
     >
-      <span className={styles.taskIndex}>{`# ${index + 1}`}</span>
-      <button
+      <span className={styles.taskIndex}>{`# ${task?.count}`}</span>
+      <div
         role={"delete_task"}
-        className={styles.deleteButton}
-        onClick={() =>
-          dispatch({ type: "DELETE_TASK", id: task.id, container: container })
-        }
+        className={clsx(
+          styles.deleteButton,
+          confirmDeletion && styles.confirmationView
+        )}
+        ref={deleteButtonRef}
+        tabIndex={0}
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleConfirmDeletion(true);
+        }}
       >
-        -
-      </button>
+        {confirmDeletion ? (
+          <>
+            <Button
+              type="button"
+              className={styles.confirmationButton}
+              onClick={() =>
+                dispatch({
+                  type: "DELETE_TASK",
+                  payload: {
+                    projectId: projectId,
+                    taskId: taskId,
+                    containerName: container,
+                  },
+                })
+              }
+            >
+              <BsCheckLg />
+            </Button>
+            <Button
+              className={styles.confirmationButton}
+              onClick={() => handleConfirmDeletion(false)}
+            >
+              <BsXLg />
+            </Button>
+          </>
+        ) : (
+          <AiOutlineDelete />
+        )}
+      </div>
       {inputField ? (
         <textarea
           autoFocus
+          spellCheck={false}
           className={clsx(styles.textarea, styles.taskDescription)}
           rows={1}
           onChange={(e) => setInput(e.target.value)}
-          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
           onKeyDown={(e) => handleKeypress(e)}
           placeholder="Describe task here..."
           onFocus={(e) => moveCursorToEnd(e)}
@@ -130,8 +183,9 @@ function TaskCard({
       ) : (
         <p
           role="paragraph"
-          className={clsx(styles.button, styles.taskDescription)}
+          className={clsx(styles.paragraph, styles.taskDescription)}
           onClick={(e) => handleDescriptionClick(e)}
+          onMouseDown={(e) => e.stopPropagation()}
         >
           {input ? input : "Task description:"}
         </p>

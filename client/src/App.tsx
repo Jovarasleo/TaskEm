@@ -7,7 +7,7 @@ function App(): JSX.Element {
   return (
     <Routes>
       <Route
-        path="/"
+        path="*"
         element={
           <Layout>
             <Routes>
