@@ -1,5 +1,5 @@
 import express, { json } from "express";
-// import { getProjectsRouter } from "./routes/projectRoutes";
+import { getProjectsRouter } from "./routes/projectRoutes";
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -7,7 +7,8 @@ const app = express();
 
 app.use(json());
 
-// app.use("/", getProjectsRouter);
+// console.log(getProjectsRouter);
+app.use("/", getProjectsRouter);
 // app.use("/", setNewProjectRouter);
 // app.use("/:id", getProjectByIdRouter);
 
