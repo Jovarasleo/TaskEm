@@ -1,6 +1,11 @@
-const Project = require("../model/Project");
+import Project from "../models/project";
+import { Request, Response, NextFunction } from "express";
 
-exports.getAllProjects = async (req, res, next) => {
+export const getAllProjects = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const projects = await Project.findAll();
     res.status(200).send(projects);
@@ -9,7 +14,11 @@ exports.getAllProjects = async (req, res, next) => {
   }
 };
 
-exports.createNewProject = async (req, res, next) => {
+export const createNewProject = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { title, body } = req.body;
     const project = new Project(title, body);
@@ -20,7 +29,11 @@ exports.createNewProject = async (req, res, next) => {
   }
 };
 
-exports.getProjectById = async (req, res, next) => {
+export const getProjectById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { id } = req.params;
     const project = await Project.findById(id);

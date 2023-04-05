@@ -1,7 +1,10 @@
-const db = require("../config/db");
+import db from "../../config/db";
 
 class Project {
-  constructor(title, body) {
+  title: string;
+  body: string;
+
+  constructor(title: string, body: string) {
     this.title = title;
     this.body = body;
   }
@@ -29,7 +32,7 @@ class Project {
     }
   }
 
-  static async findById(id) {
+  static async findById(id: string) {
     const sql = "SELECT * FROM projects WHERE id = ?";
 
     try {
@@ -41,4 +44,4 @@ class Project {
   }
 }
 
-module.exports = Project;
+export default Project;
