@@ -1,4 +1,5 @@
 import express, { json } from "express";
+import { getProjectsRouter } from "./routes/projectRoutes";
 import * as dotenv from "dotenv";
 dotenv.config();
 
