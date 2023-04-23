@@ -1,4 +1,4 @@
-import Project from "../models/project";
+import Project from "../gateway/project.gateway";
 import { Request, Response, NextFunction } from "express";
 
 export const getAllProjects = async (

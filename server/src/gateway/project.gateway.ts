@@ -1,4 +1,4 @@
-import db from "../../config/db";
+import db from "../interface/data.access";
 
 class Project {
   title: string;
