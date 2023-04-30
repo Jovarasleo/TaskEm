@@ -7,14 +7,26 @@ interface Props {
 }
 
 async function createUser(
-  { createUserGateway }: any,
+  { findUserGateway, createUserGateway }: any,
+  { generateId, hashPassword }: any,
   { username, password, email }: Props
 ) {
-  const user = new User(username, password, email);
-  const validatedUser = user.getUser();
+  const foundUser = findUserGateway(email);
+  const isUserFound = await foundUser;
 
-  const newUser = await createUserGateway(validatedUser);
-  return newUser;
+  if (isUserFound.length) {
+    return { error: "Email is already being used" };
+  }
+
+  const user = new User(username, password, email);
+  const validatedUser = await user.validateUser(generateId, hashPassword);
+
+  if (validatedUser.error) {
+    return { error: validatedUser.error };
+  } else {
+    const newUser = await createUserGateway(validatedUser);
+    return newUser;
+  }
 }
 
 export default createUser;
