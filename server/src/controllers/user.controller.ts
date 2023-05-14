@@ -3,6 +3,7 @@ import AuthenticateUser from "../user-cases/authUserInteractor";
 import { createUserGateway, findUserGateway } from "../gateway/user.gateway";
 import generateId from "../infrastructure/utils/uuidGenerator";
 import hashPassword from "../infrastructure/utils/passwordHash";
+import { generateToken } from "../infrastructure/utils/jwtGenerator";
 import { Request, Response, NextFunction } from "express";
 
 export const getUserByUuid = async (req: Request, res: Response) => {
@@ -40,7 +41,11 @@ export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
-    const user = AuthenticateUser({ findUserGateway }, { email, password });
+    const user = AuthenticateUser(
+      { findUserGateway },
+      { generateToken },
+      { email, password }
+    );
     const response = await user;
     if (response) {
       res.status(200).send({ success: true, response: response });

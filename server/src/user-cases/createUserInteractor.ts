@@ -11,6 +11,10 @@ async function createUser(
   { generateId, hashPassword }: any,
   { username, password, email }: Props
 ) {
+  if (!username || !password || !email) {
+    return { error: "missing data" };
+  }
+
   const foundUser = findUserGateway(email);
   const isUserFound = await foundUser;
 

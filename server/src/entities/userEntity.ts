@@ -1,3 +1,10 @@
+export interface IUser {
+  username: string;
+  password: string;
+  email: string;
+  uuid: string;
+}
+
 class User {
   readonly username: string;
   readonly password: string;
@@ -15,7 +22,6 @@ class User {
   ) {
     let errors = [];
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    console.log(this.email);
 
     if (!this.username) {
       errors.push("Name is required");
