@@ -4,11 +4,9 @@
   position: absolute;
   right: 1rem;
   margin-top: 1rem;
-  background-color: rgb(112, 112, 112);
+  background-color: rgb(38, 38, 38);
   width: 0;
   height: 0;
-  border-radius: 8px;
-  border: 1px solid darkgray;
   overflow: hidden;
 
   li {
@@ -25,7 +23,7 @@
     }
 
     &:not(:last-child) {
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     button:hover {
@@ -36,9 +34,9 @@
 }
 
 .transition {
-  padding: 4px 4px;
+  padding: 1px 1px;
   width: 120px;
-  height: 64px;
+  height: 54px;
 }
 
 .projectSettingsGear {

@@ -32,10 +32,12 @@
 html {
   font-size: 62.5%;
   overflow: hidden;
+  min-height: 100%;
 }
 
 body {
   background: var(--theme-background);
+  height: 100vh;
 }
 
 main {
@@ -45,8 +47,11 @@ main {
   max-width: 140rem;
   width: 100%;
   max-height: calc(100svh - 140px);
+  display: flex;
+  flex-direction: column;
 }
 
-body > div {
+#app {
+  height: 100%;
   display: flex;
 }

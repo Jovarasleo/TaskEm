@@ -1,10 +1,9 @@
 .managerContainer {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  margin: 0 auto;
   margin-top: 20px;
-  height: 100%;
-  max-width: 1400px;
+  flex: 1;
+  min-height: 300px;
   gap: 1em;
 }
 

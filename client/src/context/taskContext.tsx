@@ -1,4 +1,4 @@
-import { createContext, useEffect, useReducer, useState } from "react";
+import { createContext, useEffect, useReducer, useRef, useState } from "react";
 import { taskReducer } from "../views/taksManager/reducers/taskReducer";
 import { Actions, Project } from "../views/taksManager/model/task";
 import { uid } from "../util/uid";
@@ -71,6 +71,7 @@ function TaskProvider({ children }: any) {
   };
 
   useEffect(() => {
+    console.log(selectedProjectId);
     selectProject(selectedProjectId);
   }, [state, selectedProjectId]);
 

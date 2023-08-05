@@ -1,7 +1,7 @@
 import express, { json } from "express";
 import usersRouters from "./routes/user";
-import { auth } from "./infrastructure/middlewares/auth";
 import projectRouters from "./routes/project";
+import { auth } from "./infrastructure/middlewares/auth";
 import * as dotenv from "dotenv";
 import cors from "cors";
 dotenv.config();

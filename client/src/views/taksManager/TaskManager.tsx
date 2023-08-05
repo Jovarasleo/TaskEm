@@ -13,7 +13,7 @@ function TaskManager() {
   ) as TasksContext;
 
   useLocalStorage(state);
-  const projectId = state.length ? state[projectIndex].projectId : null;
+  const projectId = state.length ? state[projectIndex]?.projectId : null;
 
   const {
     handleDrag,
