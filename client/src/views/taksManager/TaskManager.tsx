@@ -2,7 +2,7 @@ import { useDragAndDrop } from "./hooks/useDragAndDrop";
 import useLocalStorage from "./hooks/useLocalStorage";
 import TasksContainer from "./components/taskContainer/TasksContainer";
 import TaskContext, { TasksContext } from "../../context/taskContext";
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import styles from "./styles.module.scss";
 import Dropdown from "@components/dropdown/Dropdown";
 import Modal from "@components/modal/Modal";
@@ -35,6 +35,7 @@ function TaskManager() {
     dragging,
     nextIndex,
     toContainer,
+    currentlyDragging,
   } = useDragAndDrop(dispatch, project[0]?.projectId);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -85,6 +86,7 @@ function TaskManager() {
                 dragging={dragging}
                 nextIndex={nextIndex}
                 toContainer={toContainer}
+                currentlyDragging={currentlyDragging}
               />
             );
           })

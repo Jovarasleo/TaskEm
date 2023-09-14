@@ -21,6 +21,7 @@ interface TaskProps {
   nextIndex: null | number;
   arrayLength: number;
   toContainer: string;
+  currentlyDragging: string;
   dispatch: (action: Actions) => void;
   handleDragStart: HandleDragStart;
   handleMouseDown: (
@@ -41,6 +42,7 @@ function TaskCard({
   dragging,
   nextIndex,
   toContainer,
+  currentlyDragging,
   dispatch,
   handleMouseDown,
 }: TaskProps) {
@@ -111,9 +113,7 @@ function TaskCard({
       ref={taskItem}
       className={clsx(
         styles.taskWrapper,
-        dragging && nextIndex === index && container === toContainer
-          ? styles.draggable
-          : ""
+        dragging && currentlyDragging === task.taskId ? styles.draggable : ""
       )}
       tabIndex={0}
       onMouseDown={(e) => {

@@ -146,7 +146,12 @@ const taskSlice = createSlice({
   } as InitialTaskState,
   reducers: {
     createTask: (state, action) => {
-      const { projectId, containerId, value, position, taskId } = action.payload;
+      const { projectId, containerId, value, taskId } = action.payload;
+
+      const positionValuesList = state.data.map((item) => item.position);
+      const smallestValue = positionValuesList.length
+        ? Math.min(...positionValuesList) - 1000
+        : new Date().getTime();
 
       return {
         ...state,
@@ -157,10 +162,10 @@ const taskSlice = createSlice({
             taskId,
             projectId,
             containerId,
-            position,
+            position: smallestValue,
             count: state.data.length + 1,
           },
-        ],
+        ].sort((a, b) => a.position - b.position),
       };
     },
 
@@ -199,64 +204,81 @@ const taskSlice = createSlice({
       if (toContainerId === fromContainerId && toIndex === fromIndex)
         return state;
 
-      const tasksInContainer = state.data
-        .filter((task) => task.containerId === toContainerId)
-        .sort((a, b) => a.position - b.position);
+      const tasksInContainer = state.data.filter(
+        (task) => task.containerId === toContainerId
+      );
 
       console.log(toIndex);
 
       const taskAbove = tasksInContainer[toIndex - 1]?.position;
       const taskBelow = tasksInContainer[toIndex + 1]?.position;
+      const taskAtIndex = tasksInContainer[toIndex]?.position;
 
-      console.log({ taskAbove, taskBelow, tasksInContainer });
+      const moveUp = toIndex < fromIndex;
+      const moveDn = toIndex > fromIndex;
 
-      const newPosition = () => {
+      // console.log({ taskAbove, taskBelow, tasksInContainer });
+      const sameContainer = toContainerId === fromContainerId;
+
+      const newPosition = (position: number) => {
         if (!tasksInContainer.length) {
-          return;
+          return position;
         }
-
-        if (tasksInContainer.length === toIndex) {
-          return tasksInContainer[toIndex - 1].position + 1000;
+        //first task in container
+        if (!taskAbove && taskAtIndex) {
+          console.log("IF 3");
+          return taskAtIndex - 1000;
         }
-
-        if (tasksInContainer.length && toIndex === 0) {
-          return tasksInContainer[toIndex].position - 1000;
+        //insert in between
+        if (sameContainer && moveUp && taskAbove && taskAtIndex) {
+          console.log("IF 4");
+          return (taskAtIndex + taskAbove) / 2;
         }
-
-        if (taskBelow && taskAbove) {
-          console.log("4 if");
-          console.log(
-            current(tasksInContainer[toIndex - 1]),
-            current(tasksInContainer[toIndex + 1])
-          );
-          return (taskBelow + taskAbove) / 2;
+        //insert in between
+        if (sameContainer && moveDn && taskAtIndex && taskBelow) {
+          console.log("IF 5");
+          return (taskAtIndex + taskBelow) / 2;
         }
-        if (taskBelow && !taskAbove) {
-          console.log("5 if");
-          return taskBelow - 1000;
-        }
-
-        if (!taskBelow && taskAbove) {
-          console.log("6 if");
+        //last task in another container
+        if (taskAbove && !taskBelow && !taskAtIndex) {
+          console.log("IF 1");
           return taskAbove + 1000;
         }
+        //last task in current container
+        if (!sameContainer && taskAbove && !taskBelow && taskAtIndex) {
+          console.log("IF 2");
+          return (taskAtIndex + taskAbove) / 2;
+        }
+        //last task in current container
+        if (sameContainer && taskAbove && !taskBelow && taskAtIndex) {
+          console.log("IF 2.5");
+          return taskAtIndex + 1000;
+        }
+        //insert between tasks in another container
+        if (!sameContainer && taskAbove && taskBelow && taskAtIndex) {
+          console.log("IF 3.5");
+          return (taskAtIndex + taskAbove) / 2;
+        }
+        console.log({ taskAbove, taskBelow, taskAtIndex });
+        return position;
       };
 
       const currentTask = state.data.find((task) => task.taskId === taskId);
       const newTasksArray = state.data.filter((task) => task.taskId !== taskId);
 
+      if (!currentTask) {
+        return state;
+      }
+
       const newTask = {
         ...currentTask,
-        position:
-          newPosition() != undefined
-            ? (Math.floor(newPosition()) as number)
-            : (currentTask?.position as number),
+        position: Math.floor(newPosition(currentTask.position)),
         containerId: toContainerId as string,
       };
 
       return {
         ...state,
-        data: [...newTasksArray, newTask],
+        data: [...newTasksArray, newTask].sort((a, b) => a.position - b.position),
       };
     },
   },

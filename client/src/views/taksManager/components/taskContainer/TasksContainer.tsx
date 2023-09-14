@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import {
   HandleDragStart,
   HandleDrag,
@@ -24,6 +24,7 @@ interface TaskContainer {
   dragging: boolean;
   toContainer: string;
   nextIndex: null | number;
+  currentlyDragging: string;
   dispatch: (action: Actions) => void;
   handleDrag: HandleDrag;
   handleDragStart: HandleDragStart;
@@ -44,6 +45,7 @@ function TasksContainer({
   toContainer,
   nextIndex,
   dragging,
+  currentlyDragging,
   dispatch,
   handleDrag,
   handleDragStart,
@@ -124,6 +126,7 @@ function TasksContainer({
               container={containerId}
               nextIndex={nextIndex}
               toContainer={toContainer}
+              currentlyDragging={currentlyDragging}
               dispatch={dispatch}
               handleDragStart={handleDragStart}
               handleMouseDown={handleMouseDown}

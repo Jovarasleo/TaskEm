@@ -219,5 +219,6 @@ export const useDragAndDrop = (
     dragging,
     toContainer,
     nextIndex,
+    currentlyDragging: savedTaskId.current,
   };
 };
