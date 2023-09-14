@@ -8,6 +8,8 @@ import { AiOutlineDelete } from "react-icons/ai";
 
 import styles from "./styles.module.scss";
 import Button from "../../../../components/button/Button";
+import { createTask } from "../../../../db";
+import { removeTask } from "../../../../store/slices/taskReducer";
 
 interface TaskProps {
   dataTestId?: string;
@@ -140,14 +142,11 @@ function TaskCard({
               type="button"
               className={styles.confirmationButton}
               onClick={() =>
-                dispatch({
-                  type: "DELETE_TASK",
-                  payload: {
-                    projectId: projectId,
-                    taskId: taskId,
-                    containerName: container,
-                  },
-                })
+                dispatch(
+                  removeTask({
+                    taskId,
+                  })
+                )
               }
             >
               <BsCheckLg />

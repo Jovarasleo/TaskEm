@@ -26,13 +26,33 @@ module.exports = {
     ],
   },
   output: {
-    filename: "index.[fullhash].js",
+    filename: "index.[hash].js",
     asyncChunks: true,
     path: path.resolve(__dirname, "../build"),
     clean: true,
   },
-  plugins: [new MiniCssExtractPlugin({ filename: "[fullhash].css" })],
   optimization: {
+    runtimeChunk: false,
+  },
+  entry: {
+    serviceWorker: {
+      import: "./src/serviceWorker.js",
+      filename: "serviceWorker.js", // Set a specific filename
+    },
+  },
+  plugins: [new MiniCssExtractPlugin({ filename: "[fullhash].css" })],
+
+  optimization: {
+    // splitChunks: {
+    //   chunks: "all",
+    //   cacheGroups: {
+    //     serviceWorker: {
+    //       test: /service-worker.js/,
+    //       name: "service-worker",
+    //       chunks: "all",
+    //     },
+    //   },
+    // },
     minimize: true,
     minimizer: [
       new TerserPlugin({

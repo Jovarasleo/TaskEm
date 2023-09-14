@@ -7,6 +7,7 @@ import {
 import { useRef, useState, useCallback } from "react";
 import autoScroll from "../util/autoScroll";
 import { Actions } from "../model/task";
+import { moveTask } from "../../../store/slices/taskReducer";
 
 export const useDragAndDrop = (
   dispatch: (action: Actions) => void,
@@ -59,7 +60,7 @@ export const useDragAndDrop = (
   const handleMouseDown = (
     e: React.MouseEvent<HTMLLIElement>,
     taskItem: HTMLLIElement | null,
-    container: string,
+    containerId: string,
     index: number,
     taskId: string
   ) => {
@@ -70,7 +71,7 @@ export const useDragAndDrop = (
 
     dragItemNode.current = taskItem;
     isDragging.current = true;
-    handleDragStart(container, index, taskId);
+    handleDragStart(containerId, index, taskId);
 
     const { left, top, width } = taskItem.getBoundingClientRect();
     const offsetX = left - e.clientX;
@@ -154,17 +155,26 @@ export const useDragAndDrop = (
         return;
       }
 
-      dispatch({
-        type: "MOVE_TASK",
-        payload: {
-          projectId,
+      dispatch(
+        moveTask({
           taskId: savedTaskId.current,
-          fromContainer: dragItemPosition.current?.container,
-          toContainer: container,
+          fromContainerId: dragItemPosition.current?.container,
+          toContainerId: container,
           fromIndex: dragItemPosition.current?.index,
           toIndex: index,
-        },
-      });
+        })
+      );
+      // dispatch({
+      //   type: "MOVE_TASK",
+      //   payload: {
+      //     projectId,
+      //     taskId: savedTaskId.current,
+      //     fromContainer: dragItemPosition.current?.container,
+      //     toContainer: container,
+      //     fromIndex: dragItemPosition.current?.index,
+      //     toIndex: index,
+      //   },
+      // });
       dragItemPosition.current = { container, index };
     },
     [projectId]
@@ -176,17 +186,17 @@ export const useDragAndDrop = (
     const { container, index } = originalPosition.current;
     setToContainer(container);
     setNextIndex(index);
-    dispatch({
-      type: "MOVE_TASK",
-      payload: {
-        projectId,
-        taskId: savedTaskId.current,
-        fromContainer: dragItemPosition.current?.container,
-        toContainer: container,
-        fromIndex: dragItemPosition.current?.index,
-        toIndex: index,
-      },
-    });
+    // dispatch({
+    //   type: "MOVE_TASK",
+    //   payload: {
+    //     projectId,
+    //     taskId: savedTaskId.current,
+    //     fromContainer: dragItemPosition.current?.container,
+    //     toContainer: container,
+    //     fromIndex: dragItemPosition.current?.index,
+    //     toIndex: index,
+    //   },
+    // });
     dragItemPosition.current = { container, index };
   };
 

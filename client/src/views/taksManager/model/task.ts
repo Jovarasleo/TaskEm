@@ -54,18 +54,22 @@ export type Actions =
 export interface Task {
   value: string;
   taskId: string;
+  projectId: string;
+  containerId: string;
+  position: number;
   count: number;
 }
 
 export interface TaskContainer {
+  projectId: string;
+  containerId: string;
   containerName: string;
-  tasks: Task[];
 }
 
 export interface Project {
-  projectName: string;
   projectId: string;
-  containers: TaskContainer[];
+  projectName: string;
+  containerOrder: string[];
   count: number;
 }
 

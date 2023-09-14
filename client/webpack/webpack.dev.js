@@ -1,10 +1,15 @@
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const fs = require("fs");
 
 module.exports = {
   mode: "development",
   devServer: {
     hot: true,
     historyApiFallback: true,
+    https: {
+      key: fs.readFileSync("./ssl/localhost-key.pem"),
+      cert: fs.readFileSync("./ssl/localhost.pem"),
+    },
   },
   module: {
     rules: [
