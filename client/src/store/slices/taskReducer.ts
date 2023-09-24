@@ -1,116 +1,45 @@
-import { createSlice, current, createAsyncThunk } from "@reduxjs/toolkit";
-import { Actions, Project, Task } from "../../views/taksManager/model/task";
-import { Reducer } from "react";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { getTasks, putTask, setTask } from "../../db";
+import { Task } from "../../views/taksManager/model/task";
+import { RootState } from "../configureStore";
 
-const fetchUserFromAPI = async () => {
+export const updateDataToIndexedDb = createAsyncThunk(
+  "task/updateData",
+  async (taskId: string, { getState }) => {
+    const currentState = getState() as RootState;
+    const foundTask = currentState.task.data.find((task) => task.taskId === taskId);
+    if (!foundTask) {
+      return;
+    }
+
+    try {
+      const data = await putTask(foundTask);
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
+export const setDataToIndexedDB = createAsyncThunk("task/setData", async (task: Task) => {
+  // Implement your logic to fetch data from IndexedDB here
   try {
-    // Simulated async operation (replace with actual API call)
-    const response = await fetch("/api/user");
-    const userData = await response.json();
-    return userData;
+    const data = await setTask(task);
+    return data;
   } catch (error) {
     throw error;
   }
-};
+});
 
-// const taskReducer: Reducer<Task[], Actions> = (state, action) => {
-//   switch (action.type) {
-//     case "CREATE_TASK": {
-//       const { projectId, containerName, value, taskId } = action.payload;
-
-//       return [
-//         ...state,
-//         {
-//           value,
-//           taskId,
-//           projectId,
-//           containerName,
-//           count: state.length + 1,
-//         },
-//       ];
-//     }
-
-//     case "REMOVE_TASK": {
-//       const { taskId } = action.payload;
-//       const newState = state.filter((task) => task.taskId !== taskId);
-
-//       return newState;
-//     }
-
-//     case "EDIT_TASK": {
-//       const { taskId, value } = action.payload;
-
-//       const newState = state.map((task) => {
-//         if (task.taskId === taskId) {
-//           return { ...task, value };
-//         }
-
-//         return task;
-//       });
-
-//       return newState;
-//     }
-
-//     case "MOVE_TASK": {
-//       const { toContainer, fromContainer, toIndex, fromIndex } = action.payload;
-
-//       if (!fromContainer || !toContainer) return state;
-//       if (toContainer === fromContainer && toIndex === fromIndex) return state;
-
-//       return {
-//         ...state,
-//         position: toIndex,
-//         container: toContainer,
-//       };
-//     }
-
-//     default:
-//       return state;
-//   }
-// };
-
-const testData = [
-  {
-    value: "ass",
-    taskId: "123a",
-    projectId: "123",
-    containerId: "1234",
-    position: 1694368555425,
-    count: 1,
-  },
-  {
-    value: "benis",
-    taskId: "123b",
-    projectId: "123",
-    containerId: "1234",
-    position: 1694368556915,
-    count: 2,
-  },
-  {
-    value: "hussy",
-    taskId: "123c",
-    projectId: "123",
-    containerId: "1234",
-    position: 1694368555892,
-    count: 3,
-  },
-  {
-    value: "Whatsup",
-    taskId: "123c2",
-    projectId: "123",
-    containerId: "1",
-    position: 1694368555900,
-    count: 4,
-  },
-  {
-    value: "Whatsdown",
-    taskId: "123c3",
-    projectId: "123",
-    containerId: "1",
-    position: 1694368455892,
-    count: 5,
-  },
-];
+export const fetchDataFromIndexedDB = createAsyncThunk("task/getData", async () => {
+  // Implement your logic to fetch data from IndexedDB here
+  try {
+    const data = (await getTasks()) as Task[];
+    return data;
+  } catch (error) {
+    throw error;
+  }
+});
 
 const filteredData = (tasks: Task[]) => {
   return tasks.sort((a, b) => {
@@ -133,20 +62,20 @@ interface InitialTaskState {
   error: null | string;
 }
 
-export const fetchUserAsync = createAsyncThunk("user/fetchUser", async () => {
-  return fetchUserFromAPI();
-});
+// export const fetchUserAsync = createAsyncThunk("user/fetchUser", async () => {
+//   return fetchUserFromAPI();
+// });
 
 const taskSlice = createSlice({
   name: "task",
   initialState: {
-    status: "",
+    data: [],
+    status: "idle",
     error: "",
-    data: filteredData(testData),
   } as InitialTaskState,
   reducers: {
     createTask: (state, action) => {
-      const { projectId, containerId, value, taskId } = action.payload;
+      const { projectId, containerId, value, taskId, count } = action.payload;
 
       const positionValuesList = state.data.map((item) => item.position);
       const smallestValue = positionValuesList.length
@@ -163,7 +92,7 @@ const taskSlice = createSlice({
             projectId,
             containerId,
             position: smallestValue,
-            count: state.data.length + 1,
+            count,
           },
         ].sort((a, b) => a.position - b.position),
       };
@@ -181,7 +110,6 @@ const taskSlice = createSlice({
 
     editTask: (state, action) => {
       const { taskId, value } = action.payload;
-
       const newState = state.data.map((task) => {
         if (task.taskId === taskId) {
           return { ...task, value };
@@ -197,18 +125,12 @@ const taskSlice = createSlice({
     },
 
     moveTask: (state, action) => {
-      const { toContainerId, fromContainerId, toIndex, fromIndex, taskId } =
-        action.payload;
+      const { toContainerId, fromContainerId, toIndex, fromIndex, taskId } = action.payload;
 
       if (!toContainerId || !fromContainerId) return state;
-      if (toContainerId === fromContainerId && toIndex === fromIndex)
-        return state;
+      if (toContainerId === fromContainerId && toIndex === fromIndex) return state;
 
-      const tasksInContainer = state.data.filter(
-        (task) => task.containerId === toContainerId
-      );
-
-      console.log(toIndex);
+      const tasksInContainer = state.data.filter((task) => task.containerId === toContainerId);
 
       const taskAbove = tasksInContainer[toIndex - 1]?.position;
       const taskBelow = tasksInContainer[toIndex + 1]?.position;
@@ -259,7 +181,7 @@ const taskSlice = createSlice({
           console.log("IF 3.5");
           return (taskAtIndex + taskAbove) / 2;
         }
-        console.log({ taskAbove, taskBelow, taskAtIndex });
+
         return position;
       };
 
@@ -282,22 +204,23 @@ const taskSlice = createSlice({
       };
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchDataFromIndexedDB.pending, (state) => {
+        console.log("pending");
+        state.status = "loading";
+      })
+      .addCase(fetchDataFromIndexedDB.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        console.log("payload", action.payload);
+        state.data = filteredData(action.payload);
+      })
+      .addCase(fetchDataFromIndexedDB.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message ?? "";
+      });
+  },
 });
-
-// extraReducers: (builder) => {
-//   builder
-//     .addCase(fetchUserAsync.pending, (state) => {
-//       state.status = "loading";
-//     })
-//     .addCase(fetchUserAsync.fulfilled, (state, action) => {
-//       state.status = "succeeded";
-//       state.data = action.payload;
-//     })
-//     .addCase(fetchUserAsync.rejected, (state, action) => {
-//       state.status = "failed";
-//       state.error = action.error.message;
-//     });
-// },
 
 export const { createTask, removeTask, editTask, moveTask } = taskSlice.actions;
 export default taskSlice.reducer;

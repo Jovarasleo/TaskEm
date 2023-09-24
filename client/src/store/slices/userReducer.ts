@@ -1,43 +1,14 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { Project, TaskContainer } from "../../views/taksManager/model/task";
+import { getContainers, setContainers } from "../../db";
+import { uid } from "../../util/uid";
 
-export function createUser({ email, password, name }: any) {
-  const { mutate, error, data, isLoading } = useMutation({
-    mutationFn: () =>
-      fetch(`http://localhost:3000/user/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          name,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => data),
-  });
-
-  return { mutate, error, data, isLoading };
-}
-
-export function login(token: any) {
-  const { error, data } = useQuery({
-    queryKey: ["project"],
-    queryFn: () =>
-      fetch(`http://localhost:3000/project`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => data),
-  });
-
-  return { error, data };
+interface InitialUserState {
+  data: { name: string };
+  loading: boolean;
+  signed: boolean;
+  error: null | string;
 }
 
 interface User {
@@ -48,15 +19,14 @@ interface User {
 
 const userApi = createApi({
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3000/user",
+    baseUrl: "http://localhost:3000/user/",
   }),
-  reducerPath: "user",
   tagTypes: ["Post"],
   endpoints: (build) => ({
     createUser: build.mutation({
       query(user) {
         return {
-          url: `/`,
+          url: `register`,
           method: "POST",
           body: user,
         };
@@ -68,7 +38,7 @@ const userApi = createApi({
     updateUser: build.mutation({
       // note: an optional `queryFn` may be used in place of `query`
       query: (user) => ({
-        url: `/login`,
+        url: `/register`,
         method: "PATCH",
         body: user,
       }),
@@ -92,5 +62,40 @@ const userApi = createApi({
   }),
 });
 
-export { userApi };
 export const { useUpdateUserMutation, useCreateUserMutation } = userApi;
+
+// export const registerUser = createAsyncThunk("user/createUser", async (userData: User) => {
+//   const { email, username, password } = userData;
+//   const getUserData = createUser({ email, username, password });
+//   return getUserData;
+// });
+
+// const userReducer = createSlice({
+//   name: "task",
+//   initialState: {
+//     data: {},
+//     loading: false,
+//     signed: false,
+//     error: "",
+//   } as InitialUserState,
+//   reducers: {},
+//   extraReducers(builder) {
+//     builder
+//       .addCase(registerUser.pending, (state) => {
+//         state.loading = true;
+//       })
+//       .addCase(registerUser.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.signed = true;
+//         state.data = action.payload;
+//       })
+//       .addCase(registerUser.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.error.message ?? "";
+//       });
+//   },
+// });
+
+// // export const { createContainer } = userReducer.actions;
+
+// export default userReducer.reducer;

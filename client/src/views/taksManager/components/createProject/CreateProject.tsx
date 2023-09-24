@@ -1,29 +1,42 @@
 import Button from "@components/button/Button";
 import styles from "./styles.module.scss";
-import useCreateProject from "../../hooks/useCreateProject";
+import { useDispatch, useSelector } from "react-redux";
 import { Project } from "../../model/task";
+import { AppDispatch, RootState } from "../../../../store/configureStore";
+import {
+  getProjectFromIdb,
+  selectProject,
+  setProjectToIdb,
+} from "../../../../store/slices/projectReducer";
+import { uid } from "../../../../util/uid";
+import {
+  getContainersFromIdb,
+  setContainersToIdb,
+} from "../../../../store/slices/containerReducer";
+import { useState } from "react";
 
 function CreateProject() {
-  const {
-    state,
-    projectName,
-    projectIndex,
-    handleProjectName,
-    setSelectedProjectId,
-    handleAddProject,
-  } = useCreateProject();
+  const dispatch: AppDispatch = useDispatch();
+  const projects = useSelector((state: RootState) => state.project);
+  const [projectName, setProjectName] = useState("");
+
+  const handleProjectName = (value: string) => {
+    setProjectName(value);
+  };
 
   return (
     <section className={styles.createProjectWrapper}>
       <h3>Select project:</h3>
-      {state.map((project: Project, index) => {
+      {projects.data.map((project: Project, index) => {
         return (
           <Button
             key={project.projectId}
             type="select"
-            className={index === projectIndex ? styles.selectedProject : ""}
+            className={
+              project.projectId === projects.selected.projectId ? styles.selectedProject : ""
+            }
             onClick={() => {
-              setSelectedProjectId(project.projectId);
+              dispatch(selectProject(project));
             }}
           >
             {project.projectName}
@@ -36,7 +49,17 @@ function CreateProject() {
           onChange={(e) => handleProjectName(e.target.value)}
           value={projectName}
         />
-        <Button onClick={() => handleAddProject()}>Create Project</Button>
+        <Button
+          onClick={() => {
+            const projectId = uid();
+            dispatch(setProjectToIdb({ projectId: projectId, projectName }));
+            dispatch(setContainersToIdb(projectId));
+            dispatch(getProjectFromIdb());
+            dispatch(getContainersFromIdb());
+          }}
+        >
+          Create Project
+        </Button>
       </div>
     </section>
   );

@@ -14,7 +14,9 @@ let userOnline = "onLine" in navigator ? navigator.onLine : true;
 
 function ready() {
   if (!userOnline) {
-    console.log("user is offline", { userOnline });
+    console.log("user is", { userOnline });
+  } else {
+    console.log("user is", { userOnline });
   }
 
   window.addEventListener("online", function online() {

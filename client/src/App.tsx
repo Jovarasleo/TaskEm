@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import TaskManager from "./views/taksManager/TaskManager";
 import Login from "./views/login/Login";
+import Register from "./views/login/Register";
 import Layout from "./components/layout/Layout";
 import { AuthProvider } from "./context/authContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -26,6 +27,7 @@ function App(): JSX.Element {
               }
             />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </Provider>
       </AuthProvider>

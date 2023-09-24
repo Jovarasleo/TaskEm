@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { TaskContainer } from "../../views/taksManager/model/task";
+import { Project, TaskContainer } from "../../views/taksManager/model/task";
+import { getContainers, setContainers } from "../../db";
+import { uid } from "../../util/uid";
 
 const fetchUserFromAPI = async () => {
   try {
@@ -32,7 +34,7 @@ const testData = [
 
 interface InitialContainerState {
   data: TaskContainer[] | [];
-  status: string; // 'idle', 'loading', 'succeeded', or 'failed'
+  loading: boolean;
   error: null | string;
 }
 
@@ -40,17 +42,75 @@ export const fetchUserAsync = createAsyncThunk("user/fetchUser", async () => {
   return fetchUserFromAPI();
 });
 
+export const setContainersToIdb = createAsyncThunk(
+  "container/setData",
+  async (projectId: string) => {
+    const position = new Date().getTime();
+    const containers = [
+      {
+        containerId: uid(),
+        containerName: "Todo",
+        position: position - 1000,
+        projectId,
+      },
+      {
+        containerId: uid(),
+        containerName: "In Progress",
+        position: position,
+        projectId,
+      },
+      {
+        containerId: uid(),
+        containerName: "Done",
+        position: position + 1000,
+        projectId,
+      },
+    ];
+
+    try {
+      const data = await setContainers(projectId, containers);
+      console.log(data);
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
+export const getContainersFromIdb = createAsyncThunk("container/getData", async () => {
+  try {
+    const data = await getContainers();
+    return data as TaskContainer[];
+  } catch (error) {
+    throw error;
+  }
+});
+
 const containerReducer = createSlice({
   name: "task",
   initialState: {
-    status: "",
-    error: "",
     data: testData,
+    loading: false,
+    error: "",
   } as InitialContainerState,
   reducers: {
-    createContainer: (state, action) => {
+    createContainer: (state) => {
       return state;
     },
+  },
+  extraReducers(builder) {
+    builder
+      .addCase(getContainersFromIdb.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getContainersFromIdb.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload;
+      })
+      .addCase(getContainersFromIdb.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message ?? "";
+      });
   },
 });
 

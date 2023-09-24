@@ -23,10 +23,7 @@ const Dropdown = ({ options }: any) => {
       <Button
         type="button"
         onClick={() => handleDropdown()}
-        className={clsx(
-          styles.projectSettingsGear,
-          showOptions && styles.activeGear
-        )}
+        className={clsx(styles.projectSettingsGear, showOptions && styles.activeGear)}
       >
         <GoGear />
       </Button>

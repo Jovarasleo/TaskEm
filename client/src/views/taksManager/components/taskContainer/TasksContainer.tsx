@@ -11,21 +11,22 @@ import { uid } from "../../../../util/uid";
 import TaskCard from "../taskCard/TaskCard";
 import styles from "./styles.module.scss";
 import clsx from "clsx";
-import { createTask as CreateNewTask } from "../../../../db";
 import { BsPlusCircle } from "react-icons/bs";
 import { createTask } from "../../../../store/slices/taskReducer";
+import { AppDispatch } from "../../../../store/configureStore";
 
 interface TaskContainer {
   dataTestId?: string;
   projectId: string;
   tasks: TaskModel[];
+  tasksCount: number;
   containerId: string;
   containerName: string;
   dragging: boolean;
   toContainer: string;
   nextIndex: null | number;
   currentlyDragging: string;
-  dispatch: (action: Actions) => void;
+  dispatch: AppDispatch;
   handleDrag: HandleDrag;
   handleDragStart: HandleDragStart;
   handleMouseDown: (
@@ -40,6 +41,7 @@ interface TaskContainer {
 function TasksContainer({
   projectId,
   tasks,
+  tasksCount,
   containerId,
   containerName,
   toContainer,
@@ -57,12 +59,14 @@ function TasksContainer({
   const [addTask, setAddTask] = useState(false);
   const [input, setInput] = useState("");
 
-  const todoContainer = containerName === "todo";
+  const todoContainer = containerName === "Todo";
 
   const createNewTask = () => {
     if (input.length) {
       const id = uid();
-      dispatch(createTask({ projectId, containerId, value: input, taskId: id }));
+      dispatch(
+        createTask({ projectId, containerId, value: input, taskId: id, count: tasksCount + 1 })
+      );
     }
     setAddTask(false);
     setInput("");
@@ -78,10 +82,8 @@ function TasksContainer({
 
   return (
     <section
-      className={clsx(
-        styles.tasksContainerWrapper,
-        dragging && styles.containerHover
-      )}
+      key={containerId}
+      className={clsx(styles.tasksContainerWrapper, dragging && styles.containerHover)}
       role={containerName}
       onMouseOver={(e) => handleDrag(e, containerRef, containerId)}
       ref={containerRef}
@@ -114,13 +116,12 @@ function TasksContainer({
         ) : null}
       </div>
       <ul className={clsx(styles.tasksContainer)}>
-        {tasks?.map((task, index) => {
+        {tasks.map((task, index) => {
           return (
             <TaskCard
-              key={task?.taskId}
+              key={task.taskId}
               task={task}
               index={index}
-              projectId={projectId}
               arrayLength={tasks.length}
               dragging={dragging}
               container={containerId}

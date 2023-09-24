@@ -88,13 +88,13 @@ function TaskProvider({ children }: any) {
     setSelectedProjectId(initialProject.projectId);
   };
 
-  useEffect(() => {
-    console.log(selectedProjectId);
-    if (loading) {
-      returnProjects();
-    }
-    // selectProject(selectedProjectId);
-  }, [state, selectedProjectId, loading]);
+  // useEffect(() => {
+  //   console.log(selectedProjectId);
+  //   if (loading) {
+  //     returnProjects();
+  //   }
+  //   // selectProject(selectedProjectId);
+  // }, [state, selectedProjectId, loading]);
 
   return (
     <TaskContext.Provider

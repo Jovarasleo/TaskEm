@@ -25,7 +25,7 @@ async function AuthenticateUser(
   }
 
   const foundUser = await findUserGateway(email);
-  if (!foundUser) {
+  if (!foundUser?.length) {
     return { error: "incorrect email or password" };
   }
 
@@ -36,6 +36,8 @@ async function AuthenticateUser(
     const myToken = generateToken(foundUser[0]);
 
     return { token: myToken, user: { username: foundUser[0].username } };
+  } else {
+    return { error: "incorrect email or password" };
   }
 }
 
