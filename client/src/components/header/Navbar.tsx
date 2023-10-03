@@ -1,10 +1,11 @@
+import clsx from "clsx";
+import { useRef } from "react";
+import { CSSTransition } from "react-transition-group";
 import CreateProject from "../../views/taksManager/components/createProject/CreateProject";
 import NavButton from "./NavButton";
-import clsx from "clsx";
 import styles from "./styles.module.scss";
-import { CSSTransition } from "react-transition-group";
-import { useRef } from "react";
-import Modal from "../modal/Modal";
+import { useSelector } from "react-redux";
+import { RootState } from "store/configureStore";
 
 interface NavbarProps {
   visible: boolean;
@@ -13,6 +14,10 @@ interface NavbarProps {
 }
 
 function Navbar({ visible, handleNavigation, handleButton }: NavbarProps) {
+  const { loading, userData, error, message, userToken, success } = useSelector(
+    (state: RootState) => state.auth
+  );
+
   const nodeRef = useRef(null);
 
   const handleShowButton = (visible: boolean) => {
@@ -39,13 +44,11 @@ function Navbar({ visible, handleNavigation, handleButton }: NavbarProps) {
         onTransitionEnd={() => handleShowButton(visible)}
       >
         <div className={styles.titleWrapper}>
-          <h1 className={styles.title}>Task'Em!</h1>
-          <NavButton
-            onClick={() => handleNavigation()}
-            className={styles.active}
-            visible={true}
-          />
+          <h1 className={styles.title}>Task&apos;Em!</h1>
+
+          <NavButton onClick={() => handleNavigation()} className={styles.active} visible={true} />
         </div>
+        {userData ? <div>user: {userData.username}</div> : null}
         <CreateProject />
 
         {/* <Modal /> */}

@@ -3,10 +3,8 @@ import NavButton from "./NavButton";
 import Navbar from "./Navbar";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import styles from "./styles.module.scss";
-import { login } from "../../api/user";
 
-function Header({ token }: { token: string }) {
-  const { data: userData } = login(token);
+function Header() {
   const [showNav, setShowNav] = useState(false);
   const [showButton, setShowButton] = useState(true);
 
@@ -17,8 +15,6 @@ function Header({ token }: { token: string }) {
     setShowNav((prevState) => !prevState);
     setShowButton(false);
   };
-
-  console.log(userData);
 
   return (
     <>

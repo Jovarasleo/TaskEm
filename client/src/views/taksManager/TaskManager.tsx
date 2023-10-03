@@ -1,7 +1,7 @@
 import Dropdown from "@components/dropdown/Dropdown";
 import Modal from "@components/modal/Modal";
-import { FiEdit3 } from "react-icons/fi";
 import { useEffect, useState } from "react";
+import { FiEdit3 } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store/configureStore";
 import { getContainersFromIdb } from "../../store/slices/containerReducer";
@@ -12,12 +12,11 @@ import {
   renameProject,
   updateProjectToIdb,
 } from "../../store/slices/projectReducer";
-import { fetchDataFromIndexedDB, updateDataToIndexedDb } from "../../store/slices/taskReducer";
+import { fetchDataFromIndexedDB } from "../../store/slices/taskReducer";
 import TasksContainer from "./components/taskContainer/TasksContainer";
 import { useDragAndDrop } from "./hooks/useDragAndDrop";
 import { Task, TaskContainer } from "./model/task";
 import styles from "./styles.module.scss";
-import { putProject } from "../../db";
 
 function TaskManager() {
   const {

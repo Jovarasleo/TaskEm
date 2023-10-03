@@ -12,9 +12,11 @@ export async function createUserGateway(user: IUser) {
   console.log(values);
 
   try {
-    const [newUser] = await db.execute(sql, values);
+    const newUser = await db.execute(sql, values);
 
-    return newUser;
+    if (newUser) {
+      return await findUserGateway(email);
+    }
   } catch (error) {
     console.log(error);
   }

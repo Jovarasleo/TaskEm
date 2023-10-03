@@ -4,7 +4,7 @@ import { IUser } from "../../entities/userEntity";
 export const generateToken = (user: IUser) => {
   const myToken = process.env.TOKEN_SECRET as string;
   const getToken = jwt.sign(
-    { userId: user.uuid, username: user.username },
+    { userId: user.uuid, username: user.password },
     myToken,
     {
       expiresIn: 2000,

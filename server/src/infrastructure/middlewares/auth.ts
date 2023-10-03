@@ -14,6 +14,8 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
     return next();
   }
 
+  //Missing token decoder
+
   if (!req.headers.authorization) {
     res
       .status(401)
@@ -26,11 +28,13 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
   try {
     const myToken = process.env.TOKEN_SECRET as string;
     const isTokenValid = jwt.verify(token, myToken);
+    console.log({ myToken, isTokenValid });
     if (isTokenValid) {
       const tokenData = <Token>jwt.decode(token);
-      req.body = { uuid: tokenData.userId };
-      next();
-      return;
+      console.log({ tokenData });
+      req.body = { ...req.body, uuid: tokenData.userId };
+
+      return next();
     }
   } catch (e) {
     res.status(401).send({ success: false, error: "invalid token" });

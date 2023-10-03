@@ -40,10 +40,9 @@ export const initDB = (): Promise<boolean> => {
 
       if (!db.objectStoreNames.contains(Stores.Containers)) {
         console.log("Creating containers store");
-        const objectStore = db.createObjectStore(Stores.Containers, {
+        db.createObjectStore(Stores.Containers, {
           autoIncrement: false,
         });
-        objectStore.createIndex("orderIndex", "order", { unique: false });
       }
       // no need to resolve here
     };
@@ -66,8 +65,6 @@ export async function setProject(Project: Project) {
     await initDB();
 
     const transaction = db.transaction([Stores.Projects], "readwrite");
-    // console.log(db, transaction);
-    console.log(Project);
 
     const objectStore = transaction.objectStore(Stores.Projects);
     const id = Project.projectId;
@@ -90,8 +87,6 @@ export async function setContainers(projectId: string, containers: TaskContainer
     console.log({ projectId, containers });
 
     const objectStore = transaction.objectStore(Stores.Containers);
-
-    const id = projectId;
 
     containers.forEach((container) => {
       const request = objectStore.put(container, container.containerId);

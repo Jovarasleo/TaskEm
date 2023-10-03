@@ -8,7 +8,7 @@ interface Props {
 
 async function createUser(
   { findUserGateway, createUserGateway }: any,
-  { generateId, hashPassword }: any,
+  { generateId, hashPassword, generateToken }: any,
   { username, password, email }: Props
 ) {
   if (!username || !password || !email) {
@@ -29,7 +29,11 @@ async function createUser(
     return { error: validatedUser.error };
   } else {
     const newUser = await createUserGateway(validatedUser);
-    return newUser;
+    const myToken = generateToken(newUser[0]);
+    return {
+      user: { username: newUser[0].name, email: newUser[0].email },
+      myToken,
+    };
   }
 }
 

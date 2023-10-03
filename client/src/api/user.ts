@@ -1,50 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-export function createUser({ email, password, name }: any) {
-  const { mutate, error, data, isLoading } = useMutation({
-    mutationFn: () =>
-      fetch(`http://localhost:3000/user/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          name,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => data),
-  });
-
-  return { mutate, error, data, isLoading };
-}
-
-export function login(token: any) {
-  const { error, data } = useQuery({
-    queryKey: ["project"],
-    queryFn: () =>
-      fetch(`http://localhost:3000/project`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => data),
-  });
-
-  return { error, data };
-}
-
-interface User {
-  username: string;
-  password: string;
-  email: string;
-}
 
 const userApi = createApi({
   baseQuery: fetchBaseQuery({
@@ -79,15 +33,6 @@ const userApi = createApi({
       invalidatesTags: ["Post"],
       // onQueryStarted is useful for optimistic updates
       // The 2nd parameter is the destructured `MutationLifecycleApi`
-      async onQueryStarted(
-        arg,
-        { dispatch, getState, queryFulfilled, requestId, extra, getCacheEntry }
-      ) {},
-      // The 2nd parameter is the destructured `MutationCacheLifecycleApi`
-      async onCacheEntryAdded(
-        arg,
-        { dispatch, getState, extra, requestId, cacheEntryRemoved, cacheDataLoaded, getCacheEntry }
-      ) {},
     }),
   }),
 });

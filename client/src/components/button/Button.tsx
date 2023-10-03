@@ -14,7 +14,7 @@ function Button({ className, disabled, type, children, onClick, ref, ...rest }: 
   return (
     <button
       className={clsx(styles.button, type && styles[type], disabled && styles.disabled, className)}
-      onClick={onClick}
+      onClick={disabled ? () => null : onClick}
       ref={ref}
       {...rest}
     >

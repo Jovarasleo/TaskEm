@@ -1,16 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../../components/button/Button";
 import styles from "./authenticate.module.scss";
-import { useCreateUserMutation } from "../../api/user";
+import { useDispatch, useSelector } from "react-redux";
+import { RegisterUser, registerUser } from "../../store/slices/authSlice";
+import type { AppDispatch, RootState } from "../../store/configureStore";
+import { useNavigate } from "react-router-dom";
+
 function Register() {
+  const dispatch: AppDispatch = useDispatch();
+  const { loading, userData, error, message, userToken, success } = useSelector(
+    (state: RootState) => state.auth
+  );
+
+  const navigate = useNavigate();
+
   const [user, setUser] = useState({
     email: "",
     username: "",
     password: "",
-    repeatPassword: "",
+    confirmPassword: "",
   });
 
-  const [createUser, result] = useCreateUserMutation();
+  const submitForm = (data: RegisterUser) => {
+    dispatch(
+      registerUser({
+        username: data.username,
+        email: data.email.toLowerCase(),
+        password: data.password,
+      })
+    );
+  };
+
+  useEffect(() => {
+    if (success && userToken) {
+      navigate("/");
+    }
+  }, [userToken, success, navigate]);
 
   const handleUserChange = (stat: string, value: string) => {
     setUser((prevState) => {
@@ -18,8 +43,7 @@ function Register() {
     });
   };
 
-  const missmatch = user.password !== user.repeatPassword;
-  console.log({ result });
+  const missmatch = user.password !== user.confirmPassword;
 
   return (
     <main
@@ -58,9 +82,9 @@ function Register() {
               onChange={(e) => handleUserChange(e.target.name, e.target.value)}
             />
             <input
-              name="repeatPassword"
+              name="confirmPassword"
               type="password"
-              placeholder="Repeat Password"
+              placeholder="Confirm Password"
               onChange={(e) => handleUserChange(e.target.name, e.target.value)}
             />
           </div>
@@ -68,7 +92,7 @@ function Register() {
             type="submit"
             disabled={missmatch}
             onClick={() =>
-              createUser({
+              submitForm({
                 username: user.username,
                 password: user.password,
                 email: user.email,
@@ -78,9 +102,8 @@ function Register() {
             Register
           </Button>
         </form>
-        {result.error ? <div>{result.error?.data.error}</div> : null}
-        {result.data?.message ? <div>{result.data.message}</div> : null}
-        {/* {result.error ? <div>{result.error}</div> : null} */}
+        {error ? <div>{error}</div> : null}
+        {message ? <div>{message}</div> : null}
       </h1>
     </main>
   );

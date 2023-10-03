@@ -1,5 +1,5 @@
 import * as bcrypt from "bcrypt";
-import { IUserFromDb } from "../gateway/user.gateway";
+import { IUserFromDb } from "../gateways/user.gateway";
 import { IUser } from "../entities/userEntity";
 interface Props {
   email: string;
@@ -25,6 +25,7 @@ async function AuthenticateUser(
   }
 
   const foundUser = await findUserGateway(email);
+
   if (!foundUser?.length) {
     return { error: "incorrect email or password" };
   }
@@ -35,7 +36,10 @@ async function AuthenticateUser(
   if (passwordMatch) {
     const myToken = generateToken(foundUser[0]);
 
-    return { token: myToken, user: { username: foundUser[0].username } };
+    return {
+      token: myToken,
+      user: { username: foundUser[0].name, email: foundUser[0].email },
+    };
   } else {
     return { error: "incorrect email or password" };
   }

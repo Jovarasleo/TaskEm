@@ -22,12 +22,16 @@ function App(): JSX.Element {
                 <Layout>
                   <Routes>
                     <Route path="/" element={<TaskManager />} />
+                    {!store.getState().auth.userToken && (
+                      <Route path="/login" element={<Login />} />
+                    )}
+                    {!store.getState().auth.userToken && (
+                      <Route path="/register" element={<Register />} />
+                    )}
                   </Routes>
                 </Layout>
               }
             />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
           </Routes>
         </Provider>
       </AuthProvider>
