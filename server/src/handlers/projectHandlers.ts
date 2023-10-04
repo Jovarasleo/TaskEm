@@ -1,15 +1,13 @@
 import Project, { IProject } from "../entities/projectEntity";
 
+type SetProjectGateway = ({
+  projectId,
+  projectName,
+  uuid,
+}: IProject) => Promise<string>;
+
 export async function createProject(
-  {
-    setProjectGateway,
-  }: {
-    setProjectGateway: ({
-      projectId,
-      projectName,
-      uuid,
-    }: IProject) => Promise<string>;
-  },
+  setProjectGateway: SetProjectGateway,
   { projectId, projectName, uuid }: IProject
 ) {
   const project = new Project(projectId, projectName);

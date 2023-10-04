@@ -1,3 +1,4 @@
+import { FieldPacket, RowDataPacket } from "mysql2";
 import Task, { ITask } from "../entities/taskEntity";
 
 type SetTaskGateway = ({
@@ -8,6 +9,12 @@ type SetTaskGateway = ({
   count,
   position,
 }: ITask) => Promise<{ success: boolean; message: string[] }>;
+
+type GetTasksGateway = (projectId: string) => Promise<{
+  success: boolean;
+  message: string[];
+  data: RowDataPacket[];
+}>;
 
 export async function createTaskHandler(
   setTaskGateway: SetTaskGateway,
@@ -22,4 +29,17 @@ export async function createTaskHandler(
 
   const newTask = await setTaskGateway(validatedTask);
   return newTask;
+}
+
+export async function getTasksHandler(
+  getTasksGateway: GetTasksGateway,
+  projectId: string
+) {
+  const tasks = await getTasksGateway(projectId);
+
+  if (!tasks.success) {
+    return { success: false, error: "", data: null };
+  }
+
+  return tasks;
 }

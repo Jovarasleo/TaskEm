@@ -8,7 +8,10 @@ export async function userAccess(
   res: Response,
   next: NextFunction
 ) {
-  if (req.method === "POST" && req.baseUrl === "/project") {
+  if (
+    (req.method === "POST" || req.method === "GET") &&
+    req.baseUrl === "/project"
+  ) {
     return next();
   }
 

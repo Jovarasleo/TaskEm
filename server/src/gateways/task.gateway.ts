@@ -1,3 +1,4 @@
+import { RowDataPacket } from "mysql2";
 import { ITask } from "../entities/taskEntity";
 import db from "../interface/data.access";
 
@@ -18,6 +19,24 @@ export async function setTaskGateway({
     console.log("Task inserted successfully:", result);
 
     return { success: true, message: ["Task inserted successfully"] };
+  } catch (error) {
+    console.error("Error inserting task:", error);
+    throw new Error("Failed to insert task");
+  }
+}
+
+export async function getTasksGateway(projectId: string) {
+  const sql = "SELECT * FROM tasks WHERE projectId = ?";
+  const values = [projectId];
+
+  try {
+    const [result] = await db.execute<RowDataPacket[]>(sql, values);
+
+    return {
+      success: true,
+      message: ["Tasks retrieved successfully"],
+      data: result,
+    };
   } catch (error) {
     console.error("Error inserting task:", error);
     throw new Error("Failed to insert task");

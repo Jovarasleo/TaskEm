@@ -10,7 +10,6 @@ export async function userHasProjectAccessGateway(
   const values = [projectId, uuid];
   try {
     const [result] = await db.execute<RowDataPacket[]>(sql, values);
-
     const accessCount = result[0].accessCount;
     return accessCount > 0; // Return true if the count is greater than 0 (user has access)
   } catch (error) {

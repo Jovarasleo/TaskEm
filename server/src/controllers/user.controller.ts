@@ -1,16 +1,27 @@
-import createUser from "../handlers/userHandler";
+import { createUserHandler, getUserDataHandler } from "../handlers/userHandler";
 import AuthenticateUser from "../handlers/authHandler";
-import { createUserGateway, findUserGateway } from "../gateways/user.gateway";
+import {
+  createUserGateway,
+  findUserGateway,
+  getUserDataGateway,
+} from "../gateways/user.gateway";
 import generateId from "../infrastructure/utils/uuidGenerator";
 import hashPassword from "../infrastructure/utils/passwordHash";
 import { generateToken } from "../infrastructure/utils/jwtGenerator";
 import { Request, Response, NextFunction } from "express";
 
-export const getUserByUuid = async (req: Request, res: Response) => {
+export const getUserData = async (req: Request, res: Response) => {
   try {
     const { uuid } = req.body;
 
-    res.status(200).send("get user by uid");
+    const data = getUserDataHandler(getUserDataGateway, uuid);
+    const response = await data;
+
+    if (!response.success) {
+      return res.status(400).send({ success: false, error: response.error });
+    }
+
+    return res.status(200).send({ success: true, user: response.user });
   } catch (error) {
     res.status(500).send("Internal Server Error");
   }
@@ -19,7 +30,7 @@ export const getUserByUuid = async (req: Request, res: Response) => {
 export const setUser = async (req: Request, res: Response) => {
   try {
     const { username, password, email } = req.body;
-    const user = createUser(
+    const user = createUserHandler(
       { findUserGateway, createUserGateway },
       { generateId, hashPassword, generateToken },
       { username, password, email }
@@ -30,7 +41,7 @@ export const setUser = async (req: Request, res: Response) => {
       return res.status(400).send({ success: false, error: response?.error });
     }
 
-    res.status(201).send({
+    return res.status(201).send({
       success: true,
       message: `user ${username} has been created`,
       token: response.myToken,

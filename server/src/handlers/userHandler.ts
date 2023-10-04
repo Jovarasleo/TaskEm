@@ -1,4 +1,5 @@
-import User from "../entities/userEntity";
+import User, { IUser } from "../entities/userEntity";
+import { IUserFromDb } from "../gateways/user.gateway";
 
 interface Props {
   username: string;
@@ -6,8 +7,15 @@ interface Props {
   email: string;
 }
 
-async function createUser(
-  { findUserGateway, createUserGateway }: any,
+interface createUserGateways {
+  findUserGateway(email: string): Promise<IUserFromDb[]>;
+  createUserGateway(user: IUser): Promise<IUserFromDb[]>;
+}
+
+type GetUserDataGateway = (uuid: string) => Promise<IUserFromDb[]>;
+
+export async function createUserHandler(
+  { findUserGateway, createUserGateway }: createUserGateways,
   { generateId, hashPassword, generateToken }: any,
   { username, password, email }: Props
 ) {
@@ -19,7 +27,7 @@ async function createUser(
   const isUserFound = await foundUser;
 
   if (isUserFound.length) {
-    return { error: "Email is already being used" };
+    return { error: "Email is already in use" };
   }
 
   const user = new User(username, password, email);
@@ -37,4 +45,22 @@ async function createUser(
   }
 }
 
-export default createUser;
+export async function getUserDataHandler(
+  getUserDataGateway: GetUserDataGateway,
+  uuid: string
+) {
+  if (!uuid) {
+    return { success: false, error: "missing uuid" };
+  }
+
+  const userData = await getUserDataGateway(uuid);
+
+  if (!userData.length) {
+    return { error: "User Not Found" };
+  }
+
+  return {
+    success: true,
+    user: { username: userData[0].name, email: userData[0].email },
+  };
+}

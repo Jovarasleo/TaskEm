@@ -21,10 +21,11 @@ export const setProject = async (req: Request, res: Response) => {
   const { projectId, projectName, uuid } = req.body;
 
   try {
-    const projects = createProject(
-      { setProjectGateway },
-      { projectId, projectName, uuid }
-    );
+    const projects = createProject(setProjectGateway, {
+      projectId,
+      projectName,
+      uuid,
+    });
     const response = await projects;
     res.status(200).send(response);
   } catch (error) {
