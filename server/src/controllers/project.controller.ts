@@ -3,13 +3,16 @@ import {
   setProjectGateway,
 } from "../gateways/project.gateway";
 import { Request, Response, NextFunction } from "express";
-import { createProject, getProjects } from "../handlers/projectHandlers";
+import {
+  createProjectHandler,
+  getProjectsHandler,
+} from "../handlers/projectHandlers";
 
-export const getAllUserProjects = async (req: Request, res: Response) => {
+export const getProjects = async (req: Request, res: Response) => {
   const { uuid } = req.body;
 
   try {
-    const projects = getProjects({ getUserProjectsGateway }, uuid);
+    const projects = getProjectsHandler({ getUserProjectsGateway }, uuid);
     const response = await projects;
     res.status(200).send(response);
   } catch (error) {
@@ -21,7 +24,7 @@ export const setProject = async (req: Request, res: Response) => {
   const { projectId, projectName, uuid } = req.body;
 
   try {
-    const projects = createProject(setProjectGateway, {
+    const projects = createProjectHandler(setProjectGateway, {
       projectId,
       projectName,
       uuid,

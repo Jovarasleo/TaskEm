@@ -1,6 +1,6 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { Actions, Project, Task } from "../../views/taksManager/model/task";
-import { getProjects, setProject, removeProject, putProject } from "../../db";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { getProjects, putProject, removeProject, setProject } from "../../db";
+import { Project } from "../../views/taksManager/model/task";
 import { RootState } from "../configureStore";
 
 interface InitialProjectState {
@@ -27,12 +27,8 @@ export const removeProjectFromIdb = createAsyncThunk(
   "project/removeData",
 
   async (projectId: string) => {
-    try {
-      const data = await removeProject(projectId);
-      return data;
-    } catch (error) {
-      throw error;
-    }
+    const data = await removeProject(projectId);
+    return data;
   }
 );
 
@@ -48,12 +44,8 @@ export const updateProjectToIdb = createAsyncThunk(
       return;
     }
 
-    try {
-      const data = await putProject(foundProject);
-      return data;
-    } catch (error) {
-      throw error;
-    }
+    const data = await putProject(foundProject);
+    return data;
   }
 );
 
@@ -61,25 +53,21 @@ export const setProjectToIdb = createAsyncThunk(
   "project/setData",
 
   async (project: { projectId: string; projectName: string }) => {
-    console.log("setting");
     const newProject = { ...project, count: 0, containerOrder: [] };
-    try {
-      const data = await setProject(newProject);
-      return data;
-    } catch (error) {
-      throw error;
-    }
+    const data = await setProject(newProject);
+    return data;
   }
 );
 
 export const getProjectFromIdb = createAsyncThunk("project/getData", async () => {
-  try {
-    const data = await getProjects();
-    return data as Project[];
-  } catch (error) {
-    throw error;
-  }
+  const data = await getProjects();
+  return data as Project[];
 });
+
+// export const getProjectFromBE = createAsyncThunk("http://localhost:3000/project", async () => {
+//   const data = await getProjects();
+//   return data as Project[];
+// });
 
 const projectSlice = createSlice({
   name: "project",

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "../../store/configureStore";
-import { registerUser, loginUser } from "../../store/slices/authSlice";
+import { loginUser } from "../../store/slices/authSlice";
 
 function Login() {
   const [user, setUser] = useState({

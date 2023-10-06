@@ -3,9 +3,9 @@ import { RootState } from "store/configureStore";
 import { Project } from "views/taksManager/model/task";
 
 const projectsApi = createApi({
-  reducerPath: "projectApi",
+  reducerPath: "projectsApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://127.0.0.1:3000/",
+    baseUrl: "http://127.0.0.1:3000/project",
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.userToken;
       if (token) {
@@ -17,12 +17,11 @@ const projectsApi = createApi({
   }),
   tagTypes: ["POST", "GET", "PUT"],
   endpoints: (build) => ({
-    getProjects: build.mutation({
-      query(project: Project) {
+    getProjects: build.query({
+      query() {
         return {
-          url: `/project`,
+          url: `/`,
           method: "GET",
-          body: project,
         };
       },
       // Invalidates all Post-type queries providing the `LIST` id - after all, depending of the sort order,
@@ -32,7 +31,7 @@ const projectsApi = createApi({
     setProject: build.mutation({
       // note: an optional `queryFn` may be used in place of `query`
       query: (project: Project) => ({
-        url: `/project`,
+        url: `/`,
         method: "POST",
         body: project,
       }),
@@ -47,4 +46,4 @@ const projectsApi = createApi({
 });
 
 export { projectsApi };
-export const { useGetProjectsMutation, useSetProjectMutation } = projectsApi;
+export const { useGetProjectsQuery, useSetProjectMutation } = projectsApi;

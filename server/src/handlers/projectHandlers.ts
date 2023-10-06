@@ -6,7 +6,7 @@ type SetProjectGateway = ({
   uuid,
 }: IProject) => Promise<string>;
 
-export async function createProject(
+export async function createProjectHandler(
   setProjectGateway: SetProjectGateway,
   { projectId, projectName, uuid }: IProject
 ) {
@@ -21,7 +21,7 @@ export async function createProject(
   return newProject;
 }
 
-export async function getProjects(
+export async function getProjectsHandler(
   { getUserProjectsGateway }: any,
   uuid: string
 ) {

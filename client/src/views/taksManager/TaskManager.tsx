@@ -17,6 +17,7 @@ import TasksContainer from "./components/taskContainer/TasksContainer";
 import { useDragAndDrop } from "./hooks/useDragAndDrop";
 import { Task, TaskContainer } from "./model/task";
 import styles from "./styles.module.scss";
+import { useGetProjectsQuery } from "../../api/project";
 
 function TaskManager() {
   const {
@@ -30,13 +31,20 @@ function TaskManager() {
   const { data: tasks } = useSelector((state: RootState) => state.task);
   const dispatch: AppDispatch = useDispatch();
 
+  const { data } = useGetProjectsQuery("projectDetails", {
+    // perform a refetch every 15mins
+    pollingInterval: 900000,
+  });
+
+  console.log({ data });
+
   const currentProject = selectedProject ?? projects[0];
 
   useEffect(() => {
     dispatch(fetchDataFromIndexedDB());
     dispatch(getProjectFromIdb());
     dispatch(getContainersFromIdb());
-  }, []);
+  }, [dispatch]);
 
   const {
     handleDrag,

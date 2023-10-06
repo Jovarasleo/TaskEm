@@ -4,6 +4,7 @@ import taskReducer from "./slices/taskReducer";
 import containerReducer from "./slices/containerReducer";
 import authReducer from "./slices/authSlice";
 import { userApi } from "../api/user";
+import { projectsApi } from "../api/project";
 
 const store = configureStore({
   reducer: {
@@ -12,8 +13,9 @@ const store = configureStore({
     container: containerReducer,
     project: projectReducer,
     [userApi.reducerPath]: userApi.reducer,
+    [projectsApi.reducerPath]: projectsApi.reducer,
   },
-  middleware: (gDM) => gDM().concat(userApi.middleware),
+  middleware: (gDM) => gDM().concat(userApi.middleware, projectsApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

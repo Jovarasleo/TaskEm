@@ -1,8 +1,8 @@
 .header {
-  max-width: 400px;
-  position: relative;
-  z-index: 1;
   color: var(--color-white-1);
+  background-color: #ffb070;
+  z-index: 2;
+  position: relative;
 }
 
 .navWrapper {
@@ -10,18 +10,24 @@
   max-width: 400px;
   background: linear-gradient(#424242, rgba(86, 86, 86, 0));
   position: fixed;
+  z-index: 1;
+  top: 0;
   width: 100%;
   transition-duration: 300ms;
   transition-property: transform;
-  transform: translateX(-400px);
+  transform: translateX(-334px);
+}
+
+.wrapper {
+  flex: 1;
 }
 
 .animate {
-  transform: translateX(0);
+  transform: translateX(66px);
 }
 
 .animateExit {
-  transform: translateX(-400px);
+  transform: translateX(-334px);
 }
 
 .titleWrapper {
@@ -35,7 +41,6 @@
 }
 
 .menuButton {
-  position: absolute;
   cursor: pointer;
   margin: 12px;
   width: 42px;
@@ -56,7 +61,6 @@
 }
 
 .active {
-  position: relative;
   margin-left: auto;
 
   & div {

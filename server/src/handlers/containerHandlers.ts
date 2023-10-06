@@ -1,3 +1,4 @@
+import { RowDataPacket } from "mysql2";
 import Container, { IContainer } from "../entities/containerEntity";
 
 type SetContainerGateway = ({
@@ -7,7 +8,9 @@ type SetContainerGateway = ({
   projectId,
 }: IContainer) => Promise<string>;
 
-export async function createContainer(
+type GetContainersGateway = (projectId: string) => Promise<RowDataPacket[]>;
+
+export async function createContainerHandler(
   setContainerGateway: SetContainerGateway,
   { containerId, containerName, position, projectId }: IContainer
 ) {
@@ -25,4 +28,12 @@ export async function createContainer(
 
   const newContainer = await setContainerGateway(validatedContainer);
   return newContainer;
+}
+
+export async function getContainersHandler(
+  getContainersGateway: GetContainersGateway,
+  projectId: string
+) {
+  const containers = await getContainersGateway(projectId);
+  return containers;
 }

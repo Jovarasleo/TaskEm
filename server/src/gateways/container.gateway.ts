@@ -1,3 +1,4 @@
+import { RowDataPacket } from "mysql2";
 import { IContainer } from "../entities/containerEntity";
 import db from "../interface/data.access";
 
@@ -21,5 +22,22 @@ export async function setContainerGateway({
     console.error("Error inserting container:", error);
     console.log({ values });
     throw new Error("Failed to insert container");
+  }
+}
+
+export async function getContainersGateway(projectId: string) {
+  const sql = "SELECT * FROM containers WHERE projectId = ?";
+  const values = [projectId];
+
+  try {
+    console.log(values);
+    const [result] = await db.execute<RowDataPacket[]>(sql, values);
+    console.log("Containers retrieved successfully:", result);
+
+    return result;
+  } catch (error) {
+    console.error("Error retrieving containers:", error);
+    console.log({ values });
+    throw new Error("Failed to retrieve containers");
   }
 }
