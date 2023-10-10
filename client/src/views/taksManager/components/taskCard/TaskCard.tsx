@@ -1,17 +1,17 @@
-import { FocusEvent, useState, useRef } from "react";
 import { clsx } from "clsx";
-import { DragItem, HandleDragStart, Task, Actions } from "../../model/task";
+import { FocusEvent, useRef, useState } from "react";
+import { AiOutlineDelete } from "react-icons/ai";
+import { BsCheckLg, BsXLg } from "react-icons/bs";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
 import useContainerHeight from "../../hooks/useContainerHeight";
-import { BsCheckLg, BsXLg } from "react-icons/bs";
-import { AiOutlineDelete } from "react-icons/ai";
-
-import styles from "./styles.module.scss";
+import { HandleDragStart, Task } from "../../model/task";
 import Button from "../../../../components/button/Button";
+import { AppDispatch } from "../../../../store/configureStore";
+import { removeTask, editTask } from "../../../../store/slices/taskReducer";
+import styles from "./styles.module.scss";
 
 interface TaskProps {
   dataTestId?: string;
-  projectId: string;
   task: Task;
   index: number;
   container: string;
@@ -19,7 +19,8 @@ interface TaskProps {
   nextIndex: null | number;
   arrayLength: number;
   toContainer: string;
-  dispatch: (action: Actions) => void;
+  currentlyDragging: string;
+  dispatch: AppDispatch;
   handleDragStart: HandleDragStart;
   handleMouseDown: (
     e: React.MouseEvent<HTMLLIElement>,
@@ -31,14 +32,12 @@ interface TaskProps {
 }
 
 function TaskCard({
-  projectId,
   task,
   dataTestId,
   index,
   container,
   dragging,
-  nextIndex,
-  toContainer,
+  currentlyDragging,
   dispatch,
   handleMouseDown,
 }: TaskProps) {
@@ -67,29 +66,23 @@ function TaskCard({
   };
 
   const closeTextBoxes = () => {
-    dispatch({
-      type: "SAVE_TASK",
-      payload: {
-        projectId: projectId,
-        containerName: container,
-        taskValue: input,
+    dispatch(
+      editTask({
+        value: input,
         taskId: taskId,
-      },
-    });
+      })
+    );
     setInputField(false);
   };
 
   const handleKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
     if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
-      dispatch({
-        type: "SAVE_TASK",
-        payload: {
-          projectId: projectId,
-          containerName: container,
-          taskValue: input,
+      dispatch(
+        editTask({
+          value: input,
           taskId: taskId,
-        },
-      });
+        })
+      );
       setInputField(false);
     }
   };
@@ -109,9 +102,7 @@ function TaskCard({
       ref={taskItem}
       className={clsx(
         styles.taskWrapper,
-        dragging && nextIndex === index && container === toContainer
-          ? styles.draggable
-          : ""
+        dragging && currentlyDragging === task.taskId ? styles.draggable : ""
       )}
       tabIndex={0}
       onMouseDown={(e) => {
@@ -122,10 +113,7 @@ function TaskCard({
       <span className={styles.taskIndex}>{`# ${task?.count}`}</span>
       <div
         role={"delete_task"}
-        className={clsx(
-          styles.deleteButton,
-          confirmDeletion && styles.confirmationView
-        )}
+        className={clsx(styles.deleteButton, confirmDeletion && styles.confirmationView)}
         ref={deleteButtonRef}
         tabIndex={0}
         onMouseDown={(e) => e.stopPropagation()}
@@ -140,14 +128,11 @@ function TaskCard({
               type="button"
               className={styles.confirmationButton}
               onClick={() =>
-                dispatch({
-                  type: "DELETE_TASK",
-                  payload: {
-                    projectId: projectId,
-                    taskId: taskId,
-                    containerName: container,
-                  },
-                })
+                dispatch(
+                  removeTask({
+                    taskId,
+                  })
+                )
               }
             >
               <BsCheckLg />

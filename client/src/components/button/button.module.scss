@@ -1,10 +1,9 @@
 @import "../../styles/variables.scss";
 
 .button {
-  padding: 0;
   margin: 0;
   border: none;
-  border-radius: $size-xs;
+  border-radius: $size-sm;
   cursor: pointer;
 }
 
@@ -23,4 +22,10 @@
   background-color: var(--theme-main);
   color: var(--color-white-1);
   border: 1px solid var(--color-white-1);
+}
+
+.disabled {
+  cursor: not-allowed;
+  color: var(--color-grey-1);
+  background-color: var(--color-white-2);
 }

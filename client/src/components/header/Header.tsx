@@ -1,31 +1,33 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "store/configureStore";
+import { useGetUserQuery } from "../../api/user";
 import NavButton from "./NavButton";
-import Navbar from "./Navbar";
-import useOutsideClick from "../../hooks/useOutsideClick";
+import Sidebar from "./Sidebar";
 import styles from "./styles.module.scss";
 
 function Header() {
-  const [showNav, setShowNav] = useState(false);
-  const [showButton, setShowButton] = useState(true);
+  const { userData } = useSelector((state) => (state as RootState).auth);
 
-  const outsideClickRef = useRef<HTMLTextAreaElement>(null);
-  useOutsideClick(() => setShowNav(false), outsideClickRef);
+  // automatically authenticate user if token is found
+  const { data } = useGetUserQuery("userDetails", {
+    // perform a refetch every 15mins
+    pollingInterval: 900000,
+  });
+
+  console.log({ data, userData });
+  const [showNav, setShowNav] = useState(false);
 
   const handleNavigation = () => {
     setShowNav((prevState) => !prevState);
-    setShowButton(false);
   };
 
   return (
     <>
-      <header className={styles.header} ref={outsideClickRef}>
-        <NavButton onClick={handleNavigation} visible={showButton} />
-        <Navbar
-          handleNavigation={handleNavigation}
-          handleButton={setShowButton}
-          visible={showNav}
-        />
+      <header className={styles.header}>
+        <NavButton onClick={() => handleNavigation()} visible />
       </header>
+      <Sidebar visible={showNav} />
     </>
   );
 }

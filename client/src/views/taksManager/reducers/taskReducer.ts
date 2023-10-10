@@ -1,6 +1,7 @@
 import { Actions, Project } from "../model/task";
 import deepCopy from "../../../util/deepCopy";
 import { Reducer } from "react";
+import { createTask } from "../../../db";
 
 export const taskReducer: Reducer<Project[], Actions> = (state, action) => {
   switch (action.type) {
@@ -136,6 +137,10 @@ export const taskReducer: Reducer<Project[], Actions> = (state, action) => {
 
     case "ADD_PROJECT": {
       return [...state, action.payload];
+    }
+
+    case "SET_DATA": {
+      return [...action.payload];
     }
 
     case "DELETE_PROJECT": {

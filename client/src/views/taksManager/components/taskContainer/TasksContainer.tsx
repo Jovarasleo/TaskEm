@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import {
   HandleDragStart,
   HandleDrag,
@@ -12,16 +12,21 @@ import TaskCard from "../taskCard/TaskCard";
 import styles from "./styles.module.scss";
 import clsx from "clsx";
 import { BsPlusCircle } from "react-icons/bs";
+import { createTask } from "../../../../store/slices/taskReducer";
+import { AppDispatch } from "../../../../store/configureStore";
 
 interface TaskContainer {
   dataTestId?: string;
   projectId: string;
   tasks: TaskModel[];
-  container: string;
+  tasksCount: number;
+  containerId: string;
+  containerName: string;
   dragging: boolean;
   toContainer: string;
   nextIndex: null | number;
-  dispatch: (action: Actions) => void;
+  currentlyDragging: string;
+  dispatch: AppDispatch;
   handleDrag: HandleDrag;
   handleDragStart: HandleDragStart;
   handleMouseDown: (
@@ -36,10 +41,13 @@ interface TaskContainer {
 function TasksContainer({
   projectId,
   tasks,
-  container,
+  tasksCount,
+  containerId,
+  containerName,
   toContainer,
   nextIndex,
   dragging,
+  currentlyDragging,
   dispatch,
   handleDrag,
   handleDragStart,
@@ -51,20 +59,14 @@ function TasksContainer({
   const [addTask, setAddTask] = useState(false);
   const [input, setInput] = useState("");
 
-  const todoContainer = container === "todo";
+  const todoContainer = containerName === "Todo";
 
-  const createTask = () => {
+  const createNewTask = () => {
     if (input.length) {
       const id = uid();
-      dispatch({
-        type: "ADD_TASK",
-        payload: {
-          projectId,
-          containerName: "todo",
-          value: input,
-          taskId: id,
-        },
-      });
+      dispatch(
+        createTask({ projectId, containerId, value: input, taskId: id, count: tasksCount + 1 })
+      );
     }
     setAddTask(false);
     setInput("");
@@ -72,25 +74,23 @@ function TasksContainer({
 
   const handleKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
     if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
-      createTask();
+      createNewTask();
     }
   };
 
-  useOutsideClick(createTask, outsideClickRef);
+  useOutsideClick(createNewTask, outsideClickRef);
 
   return (
     <section
-      className={clsx(
-        styles.tasksContainerWrapper,
-        dragging && styles.containerHover
-      )}
-      role={container}
-      onMouseOver={(e) => handleDrag(e, containerRef, container)}
+      key={containerId}
+      className={clsx(styles.tasksContainerWrapper, dragging && styles.containerHover)}
+      role={containerName}
+      onMouseOver={(e) => handleDrag(e, containerRef, containerId)}
       ref={containerRef}
     >
       <div>
         <div className={styles.newTaskContainer}>
-          <h3>{container}</h3>
+          <h3>{containerName}</h3>
           {todoContainer && (
             <button
               role={"create_task"}
@@ -116,18 +116,18 @@ function TasksContainer({
         ) : null}
       </div>
       <ul className={clsx(styles.tasksContainer)}>
-        {tasks?.map((task, index) => {
+        {tasks.map((task, index) => {
           return (
             <TaskCard
-              key={task?.taskId}
+              key={task.taskId}
               task={task}
               index={index}
-              projectId={projectId}
               arrayLength={tasks.length}
               dragging={dragging}
-              container={container}
+              container={containerId}
               nextIndex={nextIndex}
               toContainer={toContainer}
+              currentlyDragging={currentlyDragging}
               dispatch={dispatch}
               handleDragStart={handleDragStart}
               handleMouseDown={handleMouseDown}

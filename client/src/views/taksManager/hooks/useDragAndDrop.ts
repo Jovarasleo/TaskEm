@@ -1,17 +1,12 @@
-import {
-  DragItem,
-  HandleDrag,
-  HandleDragOver,
-  HandleDragStart,
-} from "../model/task";
+import { DragItem, HandleDrag, HandleDragOver, HandleDragStart } from "../model/task";
 import { useRef, useState, useCallback } from "react";
 import autoScroll from "../util/autoScroll";
 import { Actions } from "../model/task";
+import { moveTask, updateDataToIndexedDb } from "../../../store/slices/taskReducer";
+import type { AppDispatch, RootState } from "../../../store/configureStore";
+import { useSelector } from "react-redux";
 
-export const useDragAndDrop = (
-  dispatch: (action: Actions) => void,
-  projectId: string | null
-) => {
+export const useDragAndDrop = (dispatch: AppDispatch) => {
   const [dragging, setDragging] = useState(false);
   const [toContainer, setToContainer] = useState("");
   const [nextIndex, setNextIndex] = useState<null | number>(0);
@@ -24,6 +19,17 @@ export const useDragAndDrop = (
 
   const position = useRef({ left: 0, top: 0 });
   const cloneElement = useRef<HTMLElement | null>();
+
+  const initialCloneStyles = (top: number, left: number, width: number) => {
+    return {
+      position: "absolute",
+      top: `${top}px`,
+      left: `${left}px`,
+      width: `${width}px`,
+      boxShadow: `0px 0px 6px 2px rgb(84, 84, 84)`,
+      pointerEvents: "none",
+    };
+  };
 
   const handleMouseUp = () => {
     if (cloneElement.current) {
@@ -52,14 +58,11 @@ export const useDragAndDrop = (
       cloneElement.current.style.top = `${y}px`;
     }
   };
-  function callback(e: any) {
-    return handleMouseMove(e);
-  }
 
   const handleMouseDown = (
     e: React.MouseEvent<HTMLLIElement>,
     taskItem: HTMLLIElement | null,
-    container: string,
+    containerId: string,
     index: number,
     taskId: string
   ) => {
@@ -70,7 +73,7 @@ export const useDragAndDrop = (
 
     dragItemNode.current = taskItem;
     isDragging.current = true;
-    handleDragStart(container, index, taskId);
+    handleDragStart(containerId, index, taskId);
 
     const { left, top, width } = taskItem.getBoundingClientRect();
     const offsetX = left - e.clientX;
@@ -79,34 +82,26 @@ export const useDragAndDrop = (
 
     const clone = dragItemNode?.current.cloneNode(true) as HTMLLIElement;
 
-    clone.style.position = "absolute";
-    clone.style.width = `${width}px`;
-    clone.style.left = `${left}px`;
-    clone.style.top = `${top}px`;
-    clone.style.boxShadow = `0px 0px 6px 2px rgb(84, 84, 84)`;
-    clone.style.pointerEvents = "none";
+    Object.assign(clone.style, initialCloneStyles(top, left, width));
     document.body.style.cursor = "grabbing";
     document.body.appendChild(clone);
     cloneElement.current = clone;
 
     if (isDragging) {
-      document.addEventListener("mousemove", callback);
+      document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
     }
   };
 
-  const handleDragStart: HandleDragStart = useCallback(
-    (container, index, taskId) => {
-      originalPosition.current = { container, index };
-      dragItemPosition.current = { container, index };
-      savedTaskId.current = taskId;
+  const handleDragStart: HandleDragStart = useCallback((container, index, taskId) => {
+    originalPosition.current = { container, index };
+    dragItemPosition.current = { container, index };
+    savedTaskId.current = taskId;
 
-      setToContainer(container);
-      setNextIndex(index);
-      setDragging(true);
-    },
-    []
-  );
+    setToContainer(container);
+    setNextIndex(index);
+    setDragging(true);
+  }, []);
 
   const handleDrag: HandleDrag = (e, ref, container) => {
     if (!isDragging.current) {
@@ -144,60 +139,59 @@ export const useDragAndDrop = (
     handleDragOver(container, getIndex);
   };
 
-  const handleDragOver: HandleDragOver = useCallback(
-    (container, index) => {
-      if (
-        (dragItemPosition.current.container === container &&
-          dragItemPosition.current.index === index) ||
-        projectId === null
-      ) {
-        return;
-      }
+  const handleDragOver: HandleDragOver = useCallback((container, index) => {
+    if (
+      dragItemPosition.current.container === container &&
+      dragItemPosition.current.index === index
+    ) {
+      return;
+    }
 
-      dispatch({
-        type: "MOVE_TASK",
-        payload: {
-          projectId,
-          taskId: savedTaskId.current,
-          fromContainer: dragItemPosition.current?.container,
-          toContainer: container,
-          fromIndex: dragItemPosition.current?.index,
-          toIndex: index,
-        },
-      });
-      dragItemPosition.current = { container, index };
-    },
-    [projectId]
-  );
+    dispatch(
+      moveTask({
+        taskId: savedTaskId.current,
+        fromContainerId: dragItemPosition.current?.container,
+        toContainerId: container,
+        fromIndex: dragItemPosition.current?.index,
+        toIndex: index,
+      })
+    );
+    dragItemPosition.current = { container, index };
+  }, []);
 
   const handleDragCancel = () => {
-    if (!dragging || !projectId) return;
+    if (!dragging) return;
 
     const { container, index } = originalPosition.current;
     setToContainer(container);
     setNextIndex(index);
-    dispatch({
-      type: "MOVE_TASK",
-      payload: {
-        projectId,
+    dispatch(
+      moveTask({
         taskId: savedTaskId.current,
-        fromContainer: dragItemPosition.current?.container,
-        toContainer: container,
+        fromContainerId: dragItemPosition.current?.container,
+        toContainerId: container,
         fromIndex: dragItemPosition.current?.index,
         toIndex: index,
-      },
-    });
+      })
+    );
     dragItemPosition.current = { container, index };
   };
 
   const handleDragEnd = () => {
+    const { container: fromContainer, index: fromIndex } = originalPosition.current;
+    const { container: toContainer, index: toIndex } = dragItemPosition.current;
+
+    if (fromContainer !== toContainer || toIndex !== fromIndex) {
+      dispatch(updateDataToIndexedDb(savedTaskId.current));
+    }
+
     savedTaskId.current = "";
     isDragging.current = false;
     dragItemNode.current = null;
     setNextIndex(null);
     setDragging(false);
 
-    document.removeEventListener("mousemove", callback);
+    document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
   };
 
@@ -209,5 +203,6 @@ export const useDragAndDrop = (
     dragging,
     toContainer,
     nextIndex,
+    currentlyDragging: savedTaskId.current,
   };
 };

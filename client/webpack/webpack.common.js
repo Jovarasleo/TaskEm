@@ -1,13 +1,55 @@
 const path = require("path");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
+const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
+
+const options = {
+  generate: (file) => {
+    return {
+      ...file,
+      name: "Task'Em",
+      short_name: "TaskEm",
+      icons: [
+        {
+          src: "./mhm.png",
+          sizes: "32x32",
+          type: "image/png",
+        },
+      ],
+      display: "fullscreen",
+      start_url: "./build/index.html",
+      theme_color: "#B12A34",
+      background_color: "#B12A34",
+    };
+  },
+  path: "./manifest.json",
+};
 
 module.exports = {
-  entry: "./src/index.tsx",
+  entry: {
+    app: "./src/index.tsx",
+    // serviceWorker: "./src/serviceWorker.js",
+  },
   module: {
     rules: [
       {
         test: /\.(jpg|jpeg|png|gif|mp3|svg)$/,
         use: ["file-loader"],
+      },
+      {
+        test: /\.m?js$/,
+        enforce: "pre",
+        use: ["source-map-loader"],
+      },
+      {
+        test: /manifest\.json$/, // Match the manifest.json file
+        use: [
+          {
+            loader: "file-loader",
+            options: {
+              name: "manifest.json", // Output file name
+            },
+          },
+        ],
       },
     ],
   },
@@ -22,6 +64,8 @@ module.exports = {
   plugins: [
     new HTMLWebpackPlugin({
       template: "./src/index.html",
+      inject: true,
     }),
+    new WebpackManifestPlugin(options),
   ],
 };

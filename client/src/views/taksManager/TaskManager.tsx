@@ -1,19 +1,50 @@
-import { useDragAndDrop } from "./hooks/useDragAndDrop";
-import useLocalStorage from "./hooks/useLocalStorage";
-import TasksContainer from "./components/taskContainer/TasksContainer";
-import TaskContext, { TasksContext } from "../../context/taskContext";
-import { useContext, useState } from "react";
-import styles from "./styles.module.scss";
 import Dropdown from "@components/dropdown/Dropdown";
 import Modal from "@components/modal/Modal";
+import { useEffect, useState } from "react";
+import { FiEdit3 } from "react-icons/fi";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../../store/configureStore";
+import { getContainersFromIdb } from "../../store/slices/containerReducer";
+import {
+  deleteProject,
+  getProjectFromIdb,
+  removeProjectFromIdb,
+  renameProject,
+  updateProjectToIdb,
+} from "../../store/slices/projectReducer";
+import { fetchDataFromIndexedDB } from "../../store/slices/taskReducer";
+import TasksContainer from "./components/taskContainer/TasksContainer";
+import { useDragAndDrop } from "./hooks/useDragAndDrop";
+import { Task, TaskContainer } from "./model/task";
+import styles from "./styles.module.scss";
+import { useGetProjectsQuery } from "../../api/project";
 
 function TaskManager() {
-  const { state, dispatch, projectIndex } = useContext(
-    TaskContext
-  ) as TasksContext;
+  const {
+    data: projects,
+    selected: selectedProject,
+    loading: projectsLoading,
+  } = useSelector((state: RootState) => state.project);
+  const { data: containers, loading: containersLoading } = useSelector(
+    (state: RootState) => state.container
+  );
+  const { data: tasks } = useSelector((state: RootState) => state.task);
+  const dispatch: AppDispatch = useDispatch();
 
-  useLocalStorage(state);
-  const projectId = state.length ? state[projectIndex].projectId : null;
+  const { data } = useGetProjectsQuery("projectDetails", {
+    // perform a refetch every 15mins
+    pollingInterval: 900000,
+  });
+
+  console.log({ data });
+
+  const currentProject = selectedProject ?? projects[0];
+
+  useEffect(() => {
+    dispatch(fetchDataFromIndexedDB());
+    dispatch(getProjectFromIdb());
+    dispatch(getContainersFromIdb());
+  }, [dispatch]);
 
   const {
     handleDrag,
@@ -23,40 +54,96 @@ function TaskManager() {
     dragging,
     nextIndex,
     toContainer,
-  } = useDragAndDrop(dispatch, state[projectIndex]?.projectId);
+    currentlyDragging,
+  } = useDragAndDrop(dispatch);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [projectName, setProjectName] = useState("");
 
+  const containerTasks = (container: TaskContainer, tasks: Task[]) => {
+    return tasks.filter((task) => task.containerId === container.containerId);
+  };
+
+  const projectTasksCount = (projectId: string, tasks: Task[]) => {
+    return tasks.filter((task) => task.projectId === projectId).length;
+  };
+
+  const projectContainers = containers.filter(
+    (container) => container.projectId === currentProject.projectId
+  );
+
+  const [editName, setEditName] = useState(false);
+  if (projectsLoading) {
+    return <h3 style={{ color: "white", fontSize: "4rem" }}>Projects Loading...</h3>;
+  }
+  if (!projects.length) {
+    return <h3 style={{ color: "white", fontSize: "4rem" }}>No projects yet!</h3>;
+  }
+
   return (
     <>
       <span className={styles.projectNameWrapper}>
-        <h2 className={styles.projectName}>{state[projectIndex]?.projectName}</h2>
-        {state.length ? (
+        {editName ? (
+          <div className={styles.projectName}>
+            <input
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+              contentEditable
+            />
+            <FiEdit3
+              className={styles.editButton}
+              onClick={() => {
+                setEditName(false);
+                dispatch(renameProject(projectName));
+                dispatch(updateProjectToIdb(currentProject.projectId));
+              }}
+            />
+          </div>
+        ) : (
+          <h2 className={styles.projectName}>
+            {currentProject.projectName}
+            <FiEdit3
+              className={styles.editButton}
+              onClick={() => {
+                setEditName(true);
+                setProjectName(currentProject.projectName);
+              }}
+            />
+          </h2>
+        )}
+
+        {projects.length ? (
           <Dropdown
             options={[
               {
-                title: "rename",
-                onClick: () => setShowEditModal(true),
-              },
-              {
                 title: "delete",
-                onClick: () => setShowDeleteModal(true),
+                onClick: () => {
+                  dispatch(deleteProject());
+                  dispatch(removeProjectFromIdb(currentProject.projectId));
+                },
               },
             ]}
           />
         ) : null}
       </span>
-      <div className={styles.managerContainer} onMouseLeave={handleDragCancel}>
-        {!!projectId ? (
-          state[projectIndex].containers?.map((container, index) => {
+      <div
+        className={styles.managerContainer}
+        onMouseLeave={handleDragCancel}
+        key={currentProject.projectId}
+      >
+        {containersLoading ? (
+          <h2>Loading..</h2>
+        ) : (
+          projectContainers.map((container) => {
             return (
               <TasksContainer
-                key={projectId + index}
-                tasks={container.tasks}
-                projectId={projectId}
-                container={container.containerName}
+                key={container.containerId}
+                tasks={containerTasks(container, tasks)}
+                tasksCount={projectTasksCount(currentProject.projectId, tasks)}
+                projectId={currentProject.projectId}
+                containerName={container.containerName}
+                containerId={container.containerId}
                 dispatch={dispatch}
                 handleDrag={handleDrag}
                 handleDragStart={handleDragStart}
@@ -64,41 +151,36 @@ function TaskManager() {
                 dragging={dragging}
                 nextIndex={nextIndex}
                 toContainer={toContainer}
+                currentlyDragging={currentlyDragging}
               />
             );
           })
-        ) : (
-          <h3 style={{ color: "white", fontSize: "4rem" }}>No projects yet!</h3>
         )}
       </div>
       <Modal
         width={300}
         onCancel={() => setShowDeleteModal(false)}
         visible={showDeleteModal}
-        onConfirm={() =>
-          dispatch({
-            type: "DELETE_PROJECT",
-            payload: { projectId: state[projectIndex]?.projectId },
-          })
-        }
+        // onConfirm={() =>
+        //   dispatch({
+        //     type: "DELETE_PROJECT",
+        //     payload: { projectId: state[projectIndex]?.projectId },
+        //   })
+        // }
       />
-      <Modal
-        width={700}
-        onCancel={() => setShowEditModal(false)}
-        visible={showEditModal}
-      >
+      <Modal width={700} onCancel={() => setShowEditModal(false)} visible={showEditModal}>
         <div>
           <input onChange={(e) => setProjectName(e.target.value)} />
           <button
-            onClick={() => {
-              dispatch({
-                type: "RENAME_PROJECT",
-                payload: {
-                  projectId: state[projectIndex]?.projectId,
-                  projectName: projectName,
-                },
-              });
-            }}
+          // onClick={() => {
+          //   dispatch({
+          //     type: "RENAME_PROJECT",
+          //     payload: {
+          //       projectId: state[projectIndex]?.projectId,
+          //       projectName: projectName,
+          //     },
+          //   });
+          // }}
           >
             change Name
           </button>

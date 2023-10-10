@@ -1,7 +1,8 @@
-import { createContext, useEffect, useReducer, useState } from "react";
+import { createContext, useEffect, useReducer, useRef, useState } from "react";
 import { taskReducer } from "../views/taksManager/reducers/taskReducer";
 import { Actions, Project } from "../views/taksManager/model/task";
 import { uid } from "../util/uid";
+import { getProjects } from "../db";
 
 export const PROJECT_MANAGER = "PROJECT_MANAGER";
 
@@ -20,11 +21,28 @@ function findIndexById(projectId: string, array: Project[] | []) {
 const TaskContext = createContext<TasksContext | null>(null);
 
 function TaskProvider({ children }: any) {
-  const localStorage = window.localStorage.getItem(PROJECT_MANAGER);
-  const projects = localStorage ? JSON.parse(localStorage) : [];
+  // const localStorage = window.localStorage.getItem(PROJECT_MANAGER);
+  // const projects = localStorage ? JSON.parse(localStorage) : [];
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // console.log({ projects });
   const [state, dispatch] = useReducer(taskReducer, projects);
   const [selectedProjectId, setSelectedProjectId] = useState("");
   const [projectIndex, setProjectIndex] = useState(0);
+
+  const returnProjects = async () => {
+    try {
+      setLoading(true);
+      const value = await getProjects();
+      setProjects(value);
+      dispatch({ type: "SET_DATA", payload: value });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const selectProject = (projectId: string) => {
     const index = findIndexById(projectId, state);
@@ -70,9 +88,13 @@ function TaskProvider({ children }: any) {
     setSelectedProjectId(initialProject.projectId);
   };
 
-  useEffect(() => {
-    selectProject(selectedProjectId);
-  }, [state, selectedProjectId]);
+  // useEffect(() => {
+  //   console.log(selectedProjectId);
+  //   if (loading) {
+  //     returnProjects();
+  //   }
+  //   // selectProject(selectedProjectId);
+  // }, [state, selectedProjectId, loading]);
 
   return (
     <TaskContext.Provider
