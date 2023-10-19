@@ -6,7 +6,7 @@ export const setTask = async (req: Request, res: Response) => {
   const { taskId, projectId, containerId, value, count, position } = req.body;
 
   try {
-    const projects = createTaskHandler(setTaskGateway, {
+    const response = await createTaskHandler(setTaskGateway, {
       taskId,
       projectId,
       containerId,
@@ -14,8 +14,6 @@ export const setTask = async (req: Request, res: Response) => {
       count,
       position,
     });
-
-    const response = await projects;
 
     if (!response.success) {
       return res.status(400).send(response);
@@ -32,9 +30,7 @@ export const getTasks = async (req: Request, res: Response) => {
   const { projectId } = req.body;
 
   try {
-    const projects = getTasksHandler(getTasksGateway, projectId);
-
-    const response = await projects;
+    const response = await getTasksHandler(getTasksGateway, projectId);
 
     if (!response.success) {
       return res.status(400).send(response);
@@ -44,5 +40,36 @@ export const getTasks = async (req: Request, res: Response) => {
   } catch (error) {
     console.log({ error });
     res.status(500).send({ error: "Internal Server Error: get projects" });
+  }
+};
+
+export const setTaskSocketController = async (data: any) => {
+  const { taskId, projectId, containerId, value, count, position } = data;
+
+  try {
+    await createTaskHandler(setTaskGateway, {
+      taskId,
+      projectId,
+      containerId,
+      value,
+      count,
+      position,
+    });
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
+export const getTasksSocketController = async (projectId: any) => {
+  try {
+    const response = await getTasksHandler(getTasksGateway, projectId);
+
+    if (!response.success) {
+      return new Error("can't return tasks");
+    }
+
+    return response;
+  } catch (error) {
+    console.log({ error });
   }
 };

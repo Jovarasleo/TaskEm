@@ -39,7 +39,6 @@ export const initDB = (): Promise<boolean> => {
       }
 
       if (!db.objectStoreNames.contains(Stores.Containers)) {
-        console.log("Creating containers store");
         db.createObjectStore(Stores.Containers, {
           autoIncrement: false,
         });

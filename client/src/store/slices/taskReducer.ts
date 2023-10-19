@@ -75,12 +75,7 @@ const taskSlice = createSlice({
   } as InitialTaskState,
   reducers: {
     createTask: (state, action) => {
-      const { projectId, containerId, value, taskId, count } = action.payload;
-
-      const positionValuesList = state.data.map((item) => item.position);
-      const smallestValue = positionValuesList.length
-        ? Math.min(...positionValuesList) - 1000
-        : new Date().getTime();
+      const { projectId, containerId, value, taskId, count, position } = action.payload;
 
       return {
         ...state,
@@ -91,7 +86,7 @@ const taskSlice = createSlice({
             taskId,
             projectId,
             containerId,
-            position: smallestValue,
+            position,
             count,
           },
         ].sort((a, b) => a.position - b.position),
@@ -125,82 +120,24 @@ const taskSlice = createSlice({
     },
 
     moveTask: (state, action) => {
-      const { toContainerId, fromContainerId, toIndex, fromIndex, taskId } = action.payload;
-
-      if (!toContainerId || !fromContainerId) return state;
-      if (toContainerId === fromContainerId && toIndex === fromIndex) return state;
-
-      const tasksInContainer = state.data.filter((task) => task.containerId === toContainerId);
-
-      const taskAbove = tasksInContainer[toIndex - 1]?.position;
-      const taskBelow = tasksInContainer[toIndex + 1]?.position;
-      const taskAtIndex = tasksInContainer[toIndex]?.position;
-
-      const moveUp = toIndex < fromIndex;
-      const moveDn = toIndex > fromIndex;
-
-      // console.log({ taskAbove, taskBelow, tasksInContainer });
-      const sameContainer = toContainerId === fromContainerId;
-
-      const newPosition = (position: number) => {
-        if (!tasksInContainer.length) {
-          return position;
-        }
-        //first task in container
-        if (!taskAbove && taskAtIndex) {
-          console.log("IF 3");
-          return taskAtIndex - 1000;
-        }
-        //insert in between
-        if (sameContainer && moveUp && taskAbove && taskAtIndex) {
-          console.log("IF 4");
-          return (taskAtIndex + taskAbove) / 2;
-        }
-        //insert in between
-        if (sameContainer && moveDn && taskAtIndex && taskBelow) {
-          console.log("IF 5");
-          return (taskAtIndex + taskBelow) / 2;
-        }
-        //last task in another container
-        if (taskAbove && !taskBelow && !taskAtIndex) {
-          console.log("IF 1");
-          return taskAbove + 1000;
-        }
-        //last task in current container
-        if (!sameContainer && taskAbove && !taskBelow && taskAtIndex) {
-          console.log("IF 2");
-          return (taskAtIndex + taskAbove) / 2;
-        }
-        //last task in current container
-        if (sameContainer && taskAbove && !taskBelow && taskAtIndex) {
-          console.log("IF 2.5");
-          return taskAtIndex + 1000;
-        }
-        //insert between tasks in another container
-        if (!sameContainer && taskAbove && taskBelow && taskAtIndex) {
-          console.log("IF 3.5");
-          return (taskAtIndex + taskAbove) / 2;
-        }
-
-        return position;
-      };
-
-      const currentTask = state.data.find((task) => task.taskId === taskId);
-      const newTasksArray = state.data.filter((task) => task.taskId !== taskId);
-
-      if (!currentTask) {
+      const newTask = action.payload;
+      if (!newTask) {
         return state;
       }
 
-      const newTask = {
-        ...currentTask,
-        position: Math.floor(newPosition(currentTask.position)),
-        containerId: toContainerId as string,
-      };
+      const newTasksArray = state.data.filter((task) => task.taskId !== newTask.taskId);
 
       return {
         ...state,
         data: [...newTasksArray, newTask].sort((a, b) => a.position - b.position),
+      };
+    },
+
+    getSocketTasks: (state, action) => {
+      console.log({ action });
+      return {
+        ...state,
+        data: [...state.data, ...action.payload].sort((a, b) => a.position - b.position),
       };
     },
   },
@@ -222,5 +159,5 @@ const taskSlice = createSlice({
   },
 });
 
-export const { createTask, removeTask, editTask, moveTask } = taskSlice.actions;
+export const { createTask, removeTask, editTask, moveTask, getSocketTasks } = taskSlice.actions;
 export default taskSlice.reducer;

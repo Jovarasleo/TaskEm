@@ -3,6 +3,10 @@
   background-color: #ffb070;
   z-index: 2;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0px 0px 2px 1px #424242;
 }
 
 .navWrapper {
@@ -13,9 +17,11 @@
   z-index: 1;
   top: 0;
   width: 100%;
+  color: var(--color-white-1);
   transition-duration: 300ms;
   transition-property: transform;
   transform: translateX(-334px);
+  padding: 2em;
 }
 
 .wrapper {
@@ -33,11 +39,13 @@
 .titleWrapper {
   display: flex;
   align-items: center;
-  margin-left: 20px;
 }
 
 .title {
   font-size: 2.6em;
+  margin-bottom: 1em;
+  cursor: pointer;
+  user-select: none;
 }
 
 .menuButton {
@@ -58,6 +66,12 @@
     width: 100%;
     height: 100%;
   }
+}
+
+.userButton {
+  color: var(--color-grey-2);
+  font-size: 48px;
+  cursor: pointer;
 }
 
 .active {

@@ -79,8 +79,16 @@ const projectSlice = createSlice({
     error: null,
   } as InitialProjectState,
   reducers: {
-    createProject: (state) => {
+    syncProjects: (state) => {
       return state;
+    },
+    setProjects: (state, action) => {
+      const projects = action.payload;
+      return { ...state, data: projects };
+    },
+    createProject: (state, action) => {
+      const newProject = action.payload;
+      return { ...state, data: [...state.data, newProject] };
     },
     selectProject: (state, action) => {
       state.selected = action.payload;
@@ -134,6 +142,13 @@ const projectSlice = createSlice({
   },
 });
 
-export const { createProject, selectProject, renameProject, deleteProject } = projectSlice.actions;
+export const {
+  setProjects,
+  createProject,
+  selectProject,
+  renameProject,
+  deleteProject,
+  syncProjects,
+} = projectSlice.actions;
 
 export default projectSlice.reducer;

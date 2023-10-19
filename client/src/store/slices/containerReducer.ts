@@ -97,6 +97,9 @@ const containerReducer = createSlice({
     createContainer: (state) => {
       return state;
     },
+    setSocketContainers: (state, action) => {
+      return { ...state, data: action.payload };
+    },
   },
   extraReducers(builder) {
     builder
@@ -114,6 +117,6 @@ const containerReducer = createSlice({
   },
 });
 
-export const { createContainer } = containerReducer.actions;
+export const { createContainer, setSocketContainers } = containerReducer.actions;
 
 export default containerReducer.reducer;

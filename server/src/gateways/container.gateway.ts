@@ -13,14 +13,12 @@ export async function setContainerGateway({
   const values = [containerId, containerName, position, projectId];
 
   try {
-    console.log(values);
     const result = await db.execute(sql, values);
     console.log("Container inserted successfully:", result);
 
     return containerId;
   } catch (error) {
     console.error("Error inserting container:", error);
-    console.log({ values });
     throw new Error("Failed to insert container");
   }
 }

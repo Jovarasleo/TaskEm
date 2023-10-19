@@ -12,7 +12,7 @@ interface IUtils {
   generateToken: (user: IUser) => string;
 }
 
-async function AuthenticateUser(
+export async function authenticateUserHandler(
   { findUserGateway }: IGateways,
   { generateToken }: IUtils,
   { email, password }: Props
@@ -37,12 +37,11 @@ async function AuthenticateUser(
     const myToken = generateToken(foundUser[0]);
 
     return {
+      success: true,
       token: myToken,
       user: { username: foundUser[0].name, email: foundUser[0].email },
     };
   } else {
-    return { error: "incorrect email or password" };
+    return { success: false, error: "incorrect email or password" };
   }
 }
-
-export default AuthenticateUser;

@@ -4,7 +4,7 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { BsCheckLg, BsXLg } from "react-icons/bs";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
 import useContainerHeight from "../../hooks/useContainerHeight";
-import { HandleDragStart, Task } from "../../model/task";
+import { Task } from "../../model/task";
 import Button from "../../../../components/button/Button";
 import { AppDispatch } from "../../../../store/configureStore";
 import { removeTask, editTask } from "../../../../store/slices/taskReducer";
@@ -16,12 +16,8 @@ interface TaskProps {
   index: number;
   container: string;
   dragging: boolean;
-  nextIndex: null | number;
-  arrayLength: number;
-  toContainer: string;
   currentlyDragging: string;
   dispatch: AppDispatch;
-  handleDragStart: HandleDragStart;
   handleMouseDown: (
     e: React.MouseEvent<HTMLLIElement>,
     taskItem: HTMLLIElement | null,
@@ -32,8 +28,8 @@ interface TaskProps {
 }
 
 function TaskCard({
-  task,
   dataTestId,
+  task,
   index,
   container,
   dragging,

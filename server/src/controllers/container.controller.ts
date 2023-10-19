@@ -38,3 +38,18 @@ export const getContainers = async (req: Request, res: Response) => {
     res.status(500).send({ error: "Internal Server Error: get projects" });
   }
 };
+
+export const getContainersSocketController = async (data: any) => {
+  const { projectId } = data;
+
+  try {
+    const containers = await getContainersHandler(
+      getContainersGateway,
+      projectId
+    );
+
+    return containers;
+  } catch (error) {
+    console.log({ error });
+  }
+};

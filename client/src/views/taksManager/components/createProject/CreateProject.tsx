@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Project } from "../../model/task";
 import { AppDispatch, RootState } from "../../../../store/configureStore";
 import {
+  createProject,
   getProjectFromIdb,
   selectProject,
   setProjectToIdb,
@@ -55,6 +56,7 @@ function CreateProject() {
             dispatch(setProjectToIdb({ projectId: projectId, projectName }));
             dispatch(setContainersToIdb(projectId));
             dispatch(getProjectFromIdb());
+            dispatch(createProject({ projectId: projectId, projectName }));
             dispatch(getContainersFromIdb());
           }}
         >

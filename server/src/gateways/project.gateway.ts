@@ -9,7 +9,6 @@ export async function getUserProjectsGateway(uuid: string) {
   const values = [uuid];
   try {
     const [projects] = await db.execute(sql, values);
-    console.log(projects);
     return projects;
   } catch (error) {
     console.log(error);
@@ -39,7 +38,6 @@ export async function setProjectGateway({
     return projectId; // Return the generated project ID if needed
   } catch (error) {
     console.error("Error inserting project:", error);
-    console.log({ values });
     throw new Error("Failed to insert project");
   }
 }

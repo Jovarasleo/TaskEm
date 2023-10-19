@@ -17,8 +17,13 @@ type GetUserDataGateway = (uuid: string) => Promise<IUserFromDb[]>;
 export async function createUserHandler(
   { findUserGateway, createUserGateway }: createUserGateways,
   { generateId, hashPassword, generateToken }: any,
-  { username, password, email }: Props
+  data: Props
 ) {
+  if (!data) {
+    return { error: "Email is already in use" };
+  }
+
+  const { username, password, email } = data;
   if (!username || !password || !email) {
     return { error: "missing data" };
   }

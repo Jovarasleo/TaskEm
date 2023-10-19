@@ -10,14 +10,17 @@ import {
   getProjectFromIdb,
   removeProjectFromIdb,
   renameProject,
+  setProjects,
+  syncProjects,
   updateProjectToIdb,
 } from "../../store/slices/projectReducer";
 import { fetchDataFromIndexedDB } from "../../store/slices/taskReducer";
 import TasksContainer from "./components/taskContainer/TasksContainer";
-import { useDragAndDrop } from "./hooks/useDragAndDrop";
+import useDragAndDrop from "./hooks/useDragAndDrop";
 import { Task, TaskContainer } from "./model/task";
 import styles from "./styles.module.scss";
 import { useGetProjectsQuery } from "../../api/project";
+import { io } from "socket.io-client";
 
 function TaskManager() {
   const {
@@ -29,14 +32,8 @@ function TaskManager() {
     (state: RootState) => state.container
   );
   const { data: tasks } = useSelector((state: RootState) => state.task);
+  const { userToken } = useSelector((state: RootState) => state.auth);
   const dispatch: AppDispatch = useDispatch();
-
-  const { data } = useGetProjectsQuery("projectDetails", {
-    // perform a refetch every 15mins
-    pollingInterval: 900000,
-  });
-
-  console.log({ data });
 
   const currentProject = selectedProject ?? projects[0];
 
@@ -44,7 +41,23 @@ function TaskManager() {
     dispatch(fetchDataFromIndexedDB());
     dispatch(getProjectFromIdb());
     dispatch(getContainersFromIdb());
+    // dispatch(syncProjects());
   }, [dispatch]);
+
+  // useEffect(() => {
+  //   const socket = io("ws://127.0.0.1:3000", {
+  //     reconnection: true,
+  //     auth: {
+  //       token: userToken,
+  //     },
+  //   });
+
+  //   console.log("twice");
+
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
 
   const {
     handleDrag,
@@ -55,7 +68,7 @@ function TaskManager() {
     nextIndex,
     toContainer,
     currentlyDragging,
-  } = useDragAndDrop(dispatch);
+  } = useDragAndDrop(dispatch, tasks);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -146,11 +159,8 @@ function TaskManager() {
                 containerId={container.containerId}
                 dispatch={dispatch}
                 handleDrag={handleDrag}
-                handleDragStart={handleDragStart}
                 handleMouseDown={handleMouseDown}
                 dragging={dragging}
-                nextIndex={nextIndex}
-                toContainer={toContainer}
                 currentlyDragging={currentlyDragging}
               />
             );

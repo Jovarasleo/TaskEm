@@ -40,7 +40,7 @@ export type DeleteTask = (id: string, container: string) => void;
 
 export type HandleDragStart = (container: string, index: number, taskId: string) => void;
 
-export type HandleDragOver = (container: string, index: number) => void;
+export type HandleDragOver = (container: string, index: number, state: Task[]) => void;
 
 export type HandleDrag = (
   e: React.MouseEvent<HTMLElement>,
