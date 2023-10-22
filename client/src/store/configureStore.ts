@@ -1,38 +1,15 @@
-import { combineReducers, configureStore, createListenerMiddleware } from "@reduxjs/toolkit";
-import projectReducer, {
-  createProject,
-  selectProject,
-  setProjects,
-  syncProjects,
-} from "./slices/projectReducer";
-import taskReducer, { createTask, editTask, removeTask, moveTask } from "./slices/taskReducer";
-import containerReducer from "./slices/containerReducer";
-import authReducer, { loginUser } from "./slices/authSlice";
-import { userApi } from "../api/user";
+import { configureStore } from "@reduxjs/toolkit";
 import { projectsApi } from "../api/project";
+import { userApi } from "../api/user";
 import { socketMiddleware } from "./middleware/socketMiddleware";
-import { initializeSocket } from "./middleware/socketManager";
-
-// const rootReducer = combineReducers({
-//   auth: authReducer,
-//   task: taskReducer,
-//   container: containerReducer,
-//   project: projectReducer,
-// });
-
-// const listenerMiddleware = createListenerMiddleware();
-
-// listenerMiddleware.startListening({
-//   actionCreator: createTask,
-//   effect: async (action, listenerApi) => {
-//     // Run whatever additional side-effect-y logic you want here
-//     const socket = initializeSocket("cat");
-//     socket.on("connect", () => {
-//       console.log("this runs twice?", socket);
-//       console.log(socket?.id);
-//     });
-//   },
-// });
+import { onLoadMiddleware } from "./middleware/onLoadMiddleware";
+import authReducer from "./slices/authSlice";
+import containerReducer from "./slices/containerReducer";
+import projectReducer from "./slices/projectReducer";
+import taskReducer, { createTask, editTask, moveTask, removeTask } from "./slices/taskReducer";
+import { createProject, renameProject, deleteProject } from "./slices/projectReducer";
+import { createContainer, deleteContainers } from "./slices/containerReducer";
+import { storeEventsMiddleware } from "./middleware/storeEventsMiddleware";
 
 const store = configureStore({
   reducer: {
@@ -47,6 +24,18 @@ const store = configureStore({
     gDM().concat(
       userApi.middleware,
       projectsApi.middleware,
+      onLoadMiddleware,
+      storeEventsMiddleware({
+        createTask,
+        editTask,
+        removeTask,
+        moveTask,
+        createProject,
+        createContainer,
+        deleteContainers,
+        renameProject,
+        deleteProject,
+      }),
       socketMiddleware({ createTask, editTask, removeTask, moveTask })
     ),
 });

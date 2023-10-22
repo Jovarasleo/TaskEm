@@ -3,36 +3,7 @@ import { getTasks, putTask, setTask } from "../../db";
 import { Task } from "../../views/taksManager/model/task";
 import { RootState } from "../configureStore";
 
-export const updateDataToIndexedDb = createAsyncThunk(
-  "task/updateData",
-  async (taskId: string, { getState }) => {
-    const currentState = getState() as RootState;
-    const foundTask = currentState.task.data.find((task) => task.taskId === taskId);
-    if (!foundTask) {
-      return;
-    }
-
-    try {
-      const data = await putTask(foundTask);
-      return data;
-    } catch (error) {
-      throw error;
-    }
-  }
-);
-
-export const setDataToIndexedDB = createAsyncThunk("task/setData", async (task: Task) => {
-  // Implement your logic to fetch data from IndexedDB here
-  try {
-    const data = await setTask(task);
-    return data;
-  } catch (error) {
-    throw error;
-  }
-});
-
-export const fetchDataFromIndexedDB = createAsyncThunk("task/getData", async () => {
-  // Implement your logic to fetch data from IndexedDB here
+export const getDataFromIndexedDB = createAsyncThunk("task/getData", async () => {
   try {
     const data = (await getTasks()) as Task[];
     return data;
@@ -134,25 +105,22 @@ const taskSlice = createSlice({
     },
 
     getSocketTasks: (state, action) => {
-      console.log({ action });
       return {
         ...state,
-        data: [...state.data, ...action.payload].sort((a, b) => a.position - b.position),
+        data: [...action.payload].sort((a, b) => a.position - b.position),
       };
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchDataFromIndexedDB.pending, (state) => {
-        console.log("pending");
+      .addCase(getDataFromIndexedDB.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(fetchDataFromIndexedDB.fulfilled, (state, action) => {
+      .addCase(getDataFromIndexedDB.fulfilled, (state, action) => {
         state.status = "succeeded";
-        console.log("payload", action.payload);
         state.data = filteredData(action.payload);
       })
-      .addCase(fetchDataFromIndexedDB.rejected, (state, action) => {
+      .addCase(getDataFromIndexedDB.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message ?? "";
       });

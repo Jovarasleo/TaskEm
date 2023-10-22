@@ -13,10 +13,14 @@ import { ISession } from "../server";
 import { randomUUID } from "crypto";
 
 export const getUserData = async (req: Request, res: Response) => {
+  // console.log({ req });
   try {
-    const { uuid } = req.body;
+    const { userId } = req.session as ISession;
+    const { session, sessionID, sessionStore } = req;
+    console.log({ session });
+    // console.log((sessionStore as any).sessions);
 
-    const data = getUserDataHandler(getUserDataGateway, uuid);
+    const data = getUserDataHandler(getUserDataGateway, userId);
     const response = await data;
 
     if (!response.success) {
@@ -56,7 +60,6 @@ export const setUser = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  console.log({ email, password });
 
   try {
     const response = await authenticateUserHandler(
@@ -65,13 +68,13 @@ export const login = async (req: Request, res: Response) => {
       { email, password }
     );
 
-    if (response.success) {
-      (req.session as ISession).token = response.token;
-      const sessionId = randomUUID();
+    if (response.success && response.user) {
+      let session = req.session as ISession;
+      session.userId = response.user.userId;
+      session.authorized = true;
 
       return res
         .status(200)
-        .set("Set-Cookie", `session=${sessionId}`)
         .send({ success: true, token: response.token, user: response.user });
     }
 

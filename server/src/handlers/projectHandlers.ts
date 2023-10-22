@@ -3,12 +3,12 @@ import Project, { IProject } from "../entities/projectEntity";
 type SetProjectGateway = ({
   projectId,
   projectName,
-  uuid,
+  userId,
 }: IProject) => Promise<string>;
 
 export async function createProjectHandler(
   setProjectGateway: SetProjectGateway,
-  { projectId, projectName, uuid }: IProject
+  { projectId, projectName, userId }: IProject
 ) {
   const project = new Project(projectId, projectName);
   const validatedProject = await project.validateProject();
@@ -17,14 +17,14 @@ export async function createProjectHandler(
     return { error: validatedProject.error };
   }
 
-  const newProject = await setProjectGateway({ ...validatedProject, uuid });
+  const newProject = await setProjectGateway({ ...validatedProject, userId });
   return newProject;
 }
 
 export async function getProjectsHandler(
   { getUserProjectsGateway }: any,
-  uuid: string
+  userId: string
 ) {
-  const project = getUserProjectsGateway(uuid);
+  const project = getUserProjectsGateway(userId);
   return project;
 }

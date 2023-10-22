@@ -42,40 +42,40 @@ export const fetchUserAsync = createAsyncThunk("user/fetchUser", async () => {
   return fetchUserFromAPI();
 });
 
-export const setContainersToIdb = createAsyncThunk(
-  "container/setData",
-  async (projectId: string) => {
-    const position = new Date().getTime();
-    const containers = [
-      {
-        containerId: uid(),
-        containerName: "Todo",
-        position: position - 1000,
-        projectId,
-      },
-      {
-        containerId: uid(),
-        containerName: "In Progress",
-        position: position,
-        projectId,
-      },
-      {
-        containerId: uid(),
-        containerName: "Done",
-        position: position + 1000,
-        projectId,
-      },
-    ];
+// export const setContainersToIdb = createAsyncThunk(
+//   "container/setData",
+//   async (projectId: string) => {
+//     const position = new Date().getTime();
+//     const containers = [
+//       {
+//         containerId: uid(),
+//         containerName: "Todo",
+//         position: position - 1000,
+//         projectId,
+//       },
+//       {
+//         containerId: uid(),
+//         containerName: "In Progress",
+//         position: position,
+//         projectId,
+//       },
+//       {
+//         containerId: uid(),
+//         containerName: "Done",
+//         position: position + 1000,
+//         projectId,
+//       },
+//     ];
 
-    try {
-      const data = await setContainers(projectId, containers);
-      console.log(data);
-      return data;
-    } catch (error) {
-      throw error;
-    }
-  }
-);
+//     try {
+//       const data = await setContainers(containers);
+//       console.log(data);
+//       return data;
+//     } catch (error) {
+//       throw error;
+//     }
+//   }
+// );
 
 export const getContainersFromIdb = createAsyncThunk("container/getData", async () => {
   try {
@@ -87,15 +87,37 @@ export const getContainersFromIdb = createAsyncThunk("container/getData", async 
 });
 
 const containerReducer = createSlice({
-  name: "task",
+  name: "container",
   initialState: {
-    data: testData,
+    data: [],
     loading: false,
     error: "",
   } as InitialContainerState,
   reducers: {
-    createContainer: (state) => {
-      return state;
+    createContainer: (state, action) => {
+      return {
+        ...state,
+        data: [
+          ...state.data,
+          ...action.payload.sort((a: TaskContainer, b: TaskContainer) => a.position - b.position),
+        ],
+      };
+    },
+
+    deleteContainers: (state, action) => {
+      console.log(action.payload);
+      const filteredData = state.data.filter((container) => {
+        return action.payload.some(
+          (projectContainer: TaskContainer) =>
+            projectContainer.containerId !== container.containerId
+        );
+      });
+
+      console.log({ filteredData });
+      return {
+        ...state,
+        data: filteredData,
+      };
     },
     setSocketContainers: (state, action) => {
       return { ...state, data: action.payload };
@@ -108,7 +130,9 @@ const containerReducer = createSlice({
       })
       .addCase(getContainersFromIdb.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload;
+        state.data = action.payload.sort(
+          (a: TaskContainer, b: TaskContainer) => a.position - b.position
+        );
       })
       .addCase(getContainersFromIdb.rejected, (state, action) => {
         state.loading = false;
@@ -117,6 +141,6 @@ const containerReducer = createSlice({
   },
 });
 
-export const { createContainer, setSocketContainers } = containerReducer.actions;
+export const { createContainer, deleteContainers, setSocketContainers } = containerReducer.actions;
 
 export default containerReducer.reducer;

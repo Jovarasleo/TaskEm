@@ -1,26 +1,15 @@
 import Dropdown from "@components/dropdown/Dropdown";
 import Modal from "@components/modal/Modal";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FiEdit3 } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store/configureStore";
-import { getContainersFromIdb } from "../../store/slices/containerReducer";
-import {
-  deleteProject,
-  getProjectFromIdb,
-  removeProjectFromIdb,
-  renameProject,
-  setProjects,
-  syncProjects,
-  updateProjectToIdb,
-} from "../../store/slices/projectReducer";
-import { fetchDataFromIndexedDB } from "../../store/slices/taskReducer";
+import { deleteProject, renameProject } from "../../store/slices/projectReducer";
 import TasksContainer from "./components/taskContainer/TasksContainer";
 import useDragAndDrop from "./hooks/useDragAndDrop";
 import { Task, TaskContainer } from "./model/task";
 import styles from "./styles.module.scss";
-import { useGetProjectsQuery } from "../../api/project";
-import { io } from "socket.io-client";
+import { deleteContainers } from "../../store/slices/containerReducer";
 
 function TaskManager() {
   const {
@@ -32,47 +21,18 @@ function TaskManager() {
     (state: RootState) => state.container
   );
   const { data: tasks } = useSelector((state: RootState) => state.task);
-  const { userToken } = useSelector((state: RootState) => state.auth);
   const dispatch: AppDispatch = useDispatch();
 
   const currentProject = selectedProject ?? projects[0];
 
-  useEffect(() => {
-    dispatch(fetchDataFromIndexedDB());
-    dispatch(getProjectFromIdb());
-    dispatch(getContainersFromIdb());
-    // dispatch(syncProjects());
-  }, [dispatch]);
-
-  // useEffect(() => {
-  //   const socket = io("ws://127.0.0.1:3000", {
-  //     reconnection: true,
-  //     auth: {
-  //       token: userToken,
-  //     },
-  //   });
-
-  //   console.log("twice");
-
-  //   return () => {
-  //     socket.disconnect();
-  //   };
-  // }, []);
-
-  const {
-    handleDrag,
-    handleDragStart,
-    handleMouseDown,
-    handleDragCancel,
-    dragging,
-    nextIndex,
-    toContainer,
-    currentlyDragging,
-  } = useDragAndDrop(dispatch, tasks);
+  const { handleDrag, handleMouseDown, handleDragCancel, dragging, currentlyDragging } =
+    useDragAndDrop(dispatch, tasks);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [projectName, setProjectName] = useState("");
+
+  console.count("something changed");
 
   const containerTasks = (container: TaskContainer, tasks: Task[]) => {
     return tasks.filter((task) => task.containerId === container.containerId);
@@ -83,8 +43,10 @@ function TaskManager() {
   };
 
   const projectContainers = containers.filter(
-    (container) => container.projectId === currentProject.projectId
+    (container) => container.projectId === currentProject?.projectId
   );
+
+  console.log({ containers });
 
   const [editName, setEditName] = useState(false);
   if (projectsLoading) {
@@ -108,8 +70,7 @@ function TaskManager() {
               className={styles.editButton}
               onClick={() => {
                 setEditName(false);
-                dispatch(renameProject(projectName));
-                dispatch(updateProjectToIdb(currentProject.projectId));
+                dispatch(renameProject({ ...currentProject, projectName }));
               }}
             />
           </div>
@@ -132,8 +93,8 @@ function TaskManager() {
               {
                 title: "delete",
                 onClick: () => {
-                  dispatch(deleteProject());
-                  dispatch(removeProjectFromIdb(currentProject.projectId));
+                  dispatch(deleteProject(currentProject?.projectId));
+                  dispatch(deleteContainers(projectContainers));
                 },
               },
             ]}
@@ -143,7 +104,7 @@ function TaskManager() {
       <div
         className={styles.managerContainer}
         onMouseLeave={handleDragCancel}
-        key={currentProject.projectId}
+        key={currentProject?.projectId}
       >
         {containersLoading ? (
           <h2>Loading..</h2>
@@ -153,8 +114,8 @@ function TaskManager() {
               <TasksContainer
                 key={container.containerId}
                 tasks={containerTasks(container, tasks)}
-                tasksCount={projectTasksCount(currentProject.projectId, tasks)}
-                projectId={currentProject.projectId}
+                tasksCount={projectTasksCount(currentProject?.projectId, tasks)}
+                projectId={currentProject?.projectId}
                 containerName={container.containerName}
                 containerId={container.containerId}
                 dispatch={dispatch}

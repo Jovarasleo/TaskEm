@@ -39,7 +39,11 @@ export async function authenticateUserHandler(
     return {
       success: true,
       token: myToken,
-      user: { username: foundUser[0].name, email: foundUser[0].email },
+      user: {
+        userId: foundUser[0].uuid,
+        username: foundUser[0].name,
+        email: foundUser[0].email,
+      },
     };
   } else {
     return { success: false, error: "incorrect email or password" };

@@ -12,7 +12,7 @@ const root = createRoot(container!);
 
 // serviceWorker.LocalRegister();
 
-let userOnline = "onLine" in navigator ? navigator.onLine : true;
+export let userOnline = "onLine" in navigator ? navigator.onLine : true;
 
 function ready() {
   if (!userOnline) {

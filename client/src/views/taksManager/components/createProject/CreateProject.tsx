@@ -3,18 +3,11 @@ import styles from "./styles.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { Project } from "../../model/task";
 import { AppDispatch, RootState } from "../../../../store/configureStore";
-import {
-  createProject,
-  getProjectFromIdb,
-  selectProject,
-  setProjectToIdb,
-} from "../../../../store/slices/projectReducer";
+import { createProject, selectProject } from "../../../../store/slices/projectReducer";
 import { uid } from "../../../../util/uid";
-import {
-  getContainersFromIdb,
-  setContainersToIdb,
-} from "../../../../store/slices/containerReducer";
+import { createContainer } from "../../../../store/slices/containerReducer";
 import { useState } from "react";
+import { defaultContainers } from "../../model/containers";
 
 function CreateProject() {
   const dispatch: AppDispatch = useDispatch();
@@ -34,7 +27,7 @@ function CreateProject() {
             key={project.projectId}
             type="select"
             className={
-              project.projectId === projects.selected.projectId ? styles.selectedProject : ""
+              project.projectId === projects?.selected?.projectId ? styles.selectedProject : ""
             }
             onClick={() => {
               dispatch(selectProject(project));
@@ -53,11 +46,8 @@ function CreateProject() {
         <Button
           onClick={() => {
             const projectId = uid();
-            dispatch(setProjectToIdb({ projectId: projectId, projectName }));
-            dispatch(setContainersToIdb(projectId));
-            dispatch(getProjectFromIdb());
+            dispatch(createContainer(defaultContainers(projectId)));
             dispatch(createProject({ projectId: projectId, projectName }));
-            dispatch(getContainersFromIdb());
           }}
         >
           Create Project

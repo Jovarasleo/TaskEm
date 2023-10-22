@@ -20,28 +20,49 @@ import {
 import { getContainersSocketController } from "./controllers/container.controller";
 import WebSocket, { WebSocketServer } from "ws";
 import session, { Session } from "express-session";
+import User from "./entities/userEntity";
 
 export interface ISession extends Session {
-  token?: string;
-  Email?: string;
+  userId: string;
+  authorized: boolean;
 }
 
 const map = new Map();
 
 const app = express();
+const server = http.createServer(app);
+
+const store = new session.MemoryStore();
+
 const sessionParser = session({
   saveUninitialized: false,
-  secret: "$eCuRiTy",
+  secret: "LaputisForever",
   resave: false,
+  store: store,
+
+  cookie: {
+    sameSite: false,
+    secure: false,
+    httpOnly: true,
+    maxAge: 60000000,
+  },
 });
 
-app.use(sessionParser, json(), cors());
-app.use("/user", auth, sessionParser, usersRouters);
+app.use(
+  cors({
+    origin: "https://localhost:8080",
+    methods: ["POST", "GET"],
+    credentials: true,
+  }),
+  json()
+);
+
+app.use((req, res, next) => sessionParser(req, res, next));
+
+app.use("/user", auth, usersRouters);
 app.use("/task", auth, userAccess, taskRouters);
 app.use("/project", auth, userAccess, projectRouters);
 app.use("/container", auth, userAccess, containerRouters);
-
-const server = http.createServer(app);
 
 server.listen(3000, () => {
   console.log("Server is running on port 3000");
@@ -56,15 +77,15 @@ function onSocketError(err: any) {
 const wss = new WebSocketServer({ clientTracking: true, noServer: true });
 
 server.on("upgrade", function upgrade(request: any, socket, head) {
+  // console.log(request);
   socket.on("error", onSocketError as any);
   sessionParser(request, {} as any, () => {
-    // console.log(request);
-    // if (!(request.session as ISession)) {
-    //   // console.log({ request });
-    //   socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
-    //   socket.destroy();
-    //   return;
-    // }
+    console.log({ request: request.session });
+    if (!(request.session as ISession).authorized) {
+      socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+      socket.destroy();
+      return;
+    }
     // This function is not defined on purpose. Implement it with your own logic.
 
     wss.handleUpgrade(request, socket, head, function (ws) {
@@ -74,16 +95,23 @@ server.on("upgrade", function upgrade(request: any, socket, head) {
 });
 
 wss.on("connection", function connection(ws, request: any) {
-  const userId = (request.session as ISession)?.token;
+  const userId = (request.session as ISession).userId;
   console.log("user connects");
   map.set(userId, ws);
   ws.on("error", console.error);
 
+  ws.on("open", async function syncData() {
+    ws.send("syncing data");
+  });
+
   ws.on("message", async function message(data) {
-    const event = JSON.parse(data.toString());
-    if (event.event === "task/createTask") {
-      await setTaskSocketController(event.data);
-      const response = await getTasksSocketController(event.data.projectId);
+    const parsedData = JSON.parse(data.toString());
+    console.log(parsedData);
+    if (parsedData.type === "task/createTask") {
+      await setTaskSocketController(parsedData.payload);
+      const response = await getTasksSocketController(
+        parsedData.payload.projectId
+      );
       ws.send(JSON.stringify(response));
     }
 

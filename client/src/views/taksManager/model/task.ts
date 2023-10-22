@@ -13,6 +13,7 @@ export interface TaskContainer {
   projectId: string;
   containerId: string;
   containerName: string;
+  position: number;
 }
 
 export interface Project {

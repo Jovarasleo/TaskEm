@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import type { AppDispatch } from "../../../store/configureStore";
-import { moveTask, updateDataToIndexedDb } from "../../../store/slices/taskReducer";
+import { moveTask } from "../../../store/slices/taskReducer";
 import { getTaskPosition } from "../util/getTaskPosition";
 import { DragItem, HandleDrag, HandleDragOver, HandleDragStart, Task } from "../model/task";
 import autoScroll from "../util/autoScroll";
@@ -187,13 +187,6 @@ const useDragAndDrop = (dispatch: AppDispatch, tasks: any) => {
   };
 
   const handleDragEnd = () => {
-    const { container: fromContainer, index: fromIndex } = originalPosition.current;
-    const { container: toContainer, index: toIndex } = dragItemPosition.current;
-
-    if (fromContainer !== toContainer || toIndex !== fromIndex) {
-      dispatch(updateDataToIndexedDb(savedTaskId.current));
-    }
-
     savedTaskId.current = "";
     isDragging.current = false;
     dragItemNode.current = null;

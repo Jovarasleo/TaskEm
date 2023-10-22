@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import { NextFunction, Request, Response } from "express";
 import { userHasProjectAccessGateway } from "../../gateways/access.gateway";
+import { ISession } from "../../server";
 dotenv.config();
 
 export async function userAccess(
@@ -15,7 +16,8 @@ export async function userAccess(
     return next();
   }
 
-  const userId = req.body.uuid;
+  const userId = (req.session as ISession).userId;
+  console.log(userId);
   const projectId = req.body.projectId;
 
   const userHasAccess = await userHasProjectAccessGateway(userId, projectId);

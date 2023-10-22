@@ -1,7 +1,7 @@
 export interface IProject {
   projectId: string;
   projectName: string;
-  uuid: string;
+  userId: string;
 }
 
 class Project {

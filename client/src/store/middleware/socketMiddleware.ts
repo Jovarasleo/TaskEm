@@ -1,5 +1,6 @@
 import { Action, Dispatch, MiddlewareAPI } from "redux";
 import { getSocketTasks } from "../slices/taskReducer";
+import { deleteEvent, getEvents } from "../../db";
 
 interface ActionWithPayload<T> extends Action {
   payload: T;
@@ -23,8 +24,17 @@ export const socketMiddleware =
 
     ws = new WebSocket("ws://127.0.0.1:3000");
 
-    ws.addEventListener("open", (event) => {
+    ws.addEventListener("open", async (event) => {
       console.log("connection is open");
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        const allEvents: any = await getEvents();
+
+        allEvents.forEach((event: any, index: number) => {
+          console.log({ event });
+          ws?.send(JSON.stringify(event));
+          deleteEvent(index + 1);
+        });
+      }
     });
 
     ws.addEventListener("message", (event) => {
@@ -41,6 +51,7 @@ export const socketMiddleware =
 
     const sendToBackend = (eventType: string, eventPayload: any) => {
       if (ws && ws.readyState === WebSocket.OPEN) {
+        console.log("event sent");
         const message = {
           type: eventType,
           payload: eventPayload,

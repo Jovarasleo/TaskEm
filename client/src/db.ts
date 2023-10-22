@@ -9,6 +9,7 @@ export enum Stores {
   Projects = "Projects",
   Tasks = "Tasks",
   Containers = "Containers",
+  Events = "Events",
 }
 
 export const initDB = (): Promise<boolean> => {
@@ -43,11 +44,16 @@ export const initDB = (): Promise<boolean> => {
           autoIncrement: false,
         });
       }
-      // no need to resolve here
+
+      if (!db.objectStoreNames.contains(Stores.Events)) {
+        db.createObjectStore(Stores.Events, {
+          autoIncrement: true,
+        });
+      }
     };
 
     request.onsuccess = (event) => {
-      db = event?.target?.result;
+      db = (event.target as IDBOpenDBRequest).result;
       //   version = db.version;
       console.log("request.onsuccess - initDB", version);
       resolve(true);
@@ -67,7 +73,8 @@ export async function setProject(Project: Project) {
 
     const objectStore = transaction.objectStore(Stores.Projects);
     const id = Project.projectId;
-    console.log({ id });
+    console.log({ Project });
+
     const request = objectStore.put(Project, id);
     request.onsuccess = (event) => {
       // event.target.result === customer.ssn;
@@ -78,12 +85,11 @@ export async function setProject(Project: Project) {
   }
 }
 
-export async function setContainers(projectId: string, containers: TaskContainer[]) {
+export async function setContainers(containers: TaskContainer[]) {
   try {
     await initDB();
 
     const transaction = db.transaction([Stores.Containers], "readwrite");
-    console.log({ projectId, containers });
 
     const objectStore = transaction.objectStore(Stores.Containers);
 
@@ -95,7 +101,8 @@ export async function setContainers(projectId: string, containers: TaskContainer
       };
 
       request.onerror = (event) => {
-        console.error("Error storing item:", event.target.error);
+        const error = (event.target as IDBOpenDBRequest).error;
+        console.error("Error storing item:", error);
       };
     });
   } catch (error) {
@@ -108,18 +115,12 @@ export async function setTask(Task: Task) {
     await initDB();
 
     const transaction = db.transaction([Stores.Tasks], "readwrite");
-    // console.log(db, transaction);
-    console.log(Task);
 
     const objectStore = transaction.objectStore(Stores.Tasks);
     const id = Task.taskId;
 
-    console.log({ id });
     const request = objectStore.put(Task, id);
-    request.onsuccess = (event) => {
-      // event.target.result === customer.ssn;
-      console.log(event);
-    };
+    request.onsuccess = (event) => {};
   } catch (error) {
     console.log(error);
   }
@@ -128,14 +129,19 @@ export async function setTask(Task: Task) {
 export async function getTasks() {
   try {
     await initDB();
-    return new Promise((resolve) => {
-      const transaction = db.transaction(["Tasks"], "readwrite");
-      const objectStore = transaction.objectStore("Tasks");
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([Stores.Tasks], "readwrite");
+      const objectStore = transaction.objectStore(Stores.Tasks);
 
       const request = objectStore.getAll();
       request.onsuccess = (event) => {
         const result = (event.target as IDBOpenDBRequest).result;
         resolve(result); // Resolve the Promise with the data
+      };
+
+      request.onerror = (event) => {
+        const error = (event.target as IDBOpenDBRequest).error;
+        reject(error);
       };
     });
   } catch (error) {
@@ -148,17 +154,18 @@ export async function getProjects() {
     await initDB();
 
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction(["Projects"], "readwrite");
-      const objectStore = transaction.objectStore("Projects");
+      const transaction = db.transaction([Stores.Projects], "readwrite");
+      const objectStore = transaction.objectStore(Stores.Projects);
       const request = objectStore.getAll();
 
       request.onsuccess = (event) => {
         const result = (event.target as IDBOpenDBRequest).result;
-        resolve(result); // Resolve the Promise with the data
+        resolve(result);
       };
 
       request.onerror = (event) => {
-        reject(event.target.error); // Reject the Promise in case of an error
+        const error = (event.target as IDBOpenDBRequest).error;
+        reject(error);
       };
     });
   } catch (error) {
@@ -177,13 +184,13 @@ export async function getContainers() {
       const request = objectStore.getAll();
 
       request.onsuccess = (event) => {
-        const result = event.target.result;
-        const mappedContainers = result.sort((a, b) => a.position - b.position);
-        resolve(mappedContainers); // Resolve the Promise with the data
+        const result = (event.target as IDBOpenDBRequest).result;
+        resolve(result); // Resolve the Promise with the data
       };
 
       request.onerror = (event) => {
-        reject(event.target.error); // Reject the Promise in case of an error
+        const error = (event.target as IDBOpenDBRequest).error;
+        reject(error);
       };
     });
   } catch (error) {
@@ -197,14 +204,12 @@ export async function putTask(Task: Task) {
     await initDB();
 
     const transaction = db.transaction([Stores.Tasks], "readwrite");
-    // console.log(db, transaction);
 
     const objectStore = transaction.objectStore(Stores.Tasks);
     const id = Task.taskId;
-    console.log({ id });
+
     const request = objectStore.put(Task, id);
     request.onsuccess = (event) => {
-      // event.target.result === customer.ssn;
       console.log(event);
     };
   } catch (error) {
@@ -217,14 +222,12 @@ export async function putProject(project: Project) {
     await initDB();
 
     const transaction = db.transaction([Stores.Projects], "readwrite");
-    // console.log(db, transaction);
 
     const objectStore = transaction.objectStore(Stores.Projects);
     const id = project.projectId;
-    console.log({ id });
+
     const request = objectStore.put(project, id);
     request.onsuccess = (event) => {
-      // event.target.result === customer.ssn;
       console.log(event);
     };
   } catch (error) {
@@ -237,11 +240,90 @@ export async function removeProject(projectId: string) {
     await initDB();
 
     const transaction = db.transaction([Stores.Projects], "readwrite");
-
+    console.log({ projectId });
     const objectStore = transaction.objectStore(Stores.Projects);
     const request = objectStore.delete(projectId);
     request.onsuccess = (event) => {
-      // event.target.result === customer.ssn;
+      console.log(event);
+    };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function deleteContainers(containers: TaskContainer[]) {
+  try {
+    await initDB();
+
+    const transaction = db.transaction([Stores.Containers], "readwrite");
+    const objectStore = transaction.objectStore(Stores.Containers);
+
+    containers.forEach((container) => {
+      console.log(container);
+      const request = objectStore.delete(container.containerId);
+
+      request.onsuccess = (event) => {
+        console.log("Item deleted successfully:", event);
+      };
+
+      request.onerror = (event) => {
+        const error = (event.target as IDBOpenDBRequest).error;
+        console.error("Error storing item:", error);
+      };
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function storeEvents(eventData: any) {
+  try {
+    await initDB();
+
+    const transaction = db.transaction([Stores.Events], "readwrite");
+
+    const objectStore = transaction.objectStore(Stores.Events);
+    const request = objectStore.put(eventData);
+    request.onsuccess = (event) => {
+      console.log(event);
+    };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getEvents() {
+  try {
+    await initDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([Stores.Events], "readwrite");
+
+      const objectStore = transaction.objectStore(Stores.Events);
+      const request = objectStore.getAll();
+      request.onsuccess = (event) => {
+        const result = (event.target as IDBOpenDBRequest).result;
+        resolve(result);
+      };
+
+      request.onerror = (event) => {
+        reject(request);
+        console.log(event);
+      };
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function deleteEvent(eventId: number) {
+  try {
+    await initDB();
+
+    const transaction = db.transaction([Stores.Events], "readwrite");
+
+    const objectStore = transaction.objectStore(Stores.Events);
+    const request = objectStore.delete(eventId);
+    request.onsuccess = (event) => {
       console.log(event);
     };
   } catch (error) {
