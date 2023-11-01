@@ -1,6 +1,16 @@
-import { setTaskGateway, getTasksGateway } from "../gateways/task.gateway";
+import {
+  setTaskGateway,
+  getTasksGateway,
+  updateTaskPositionGateway,
+  deleteTaskGateway,
+} from "../gateways/task.gateway";
 import { Request, Response } from "express";
-import { createTaskHandler, getTasksHandler } from "../handlers/taskHandlers";
+import {
+  createTaskHandler,
+  deleteTaskHandler,
+  getTasksHandler,
+  updateTaskHandler,
+} from "../handlers/taskHandlers";
 
 export const setTask = async (req: Request, res: Response) => {
   const { taskId, projectId, containerId, value, count, position } = req.body;
@@ -47,7 +57,7 @@ export const setTaskSocketController = async (data: any) => {
   const { taskId, projectId, containerId, value, count, position } = data;
 
   try {
-    await createTaskHandler(setTaskGateway, {
+    const reponse = await createTaskHandler(setTaskGateway, {
       taskId,
       projectId,
       containerId,
@@ -55,6 +65,8 @@ export const setTaskSocketController = async (data: any) => {
       count,
       position,
     });
+
+    return reponse;
   } catch (error) {
     console.log({ error });
   }
@@ -69,6 +81,33 @@ export const getTasksSocketController = async (projectId: any) => {
     }
 
     return response;
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
+export const updateTaskPositionSocketController = async (data: any) => {
+  const { taskId, position } = data;
+
+  try {
+    const reponse = await updateTaskHandler(updateTaskPositionGateway, {
+      taskId,
+      position,
+    });
+
+    return reponse;
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
+export const deleteTaskSocketController = async (data: any) => {
+  const { taskId } = data;
+
+  try {
+    const reponse = await deleteTaskHandler(deleteTaskGateway, taskId);
+
+    return reponse;
   } catch (error) {
     console.log({ error });
   }

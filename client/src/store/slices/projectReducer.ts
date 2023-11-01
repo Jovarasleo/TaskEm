@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getProjects, putProject, removeProject, setProject } from "../../db";
+import { getProjects, putProject } from "../../db";
 import { Project } from "../../views/taksManager/model/task";
 import { RootState } from "../configureStore";
 

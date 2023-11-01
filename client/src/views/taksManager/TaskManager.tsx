@@ -10,6 +10,7 @@ import useDragAndDrop from "./hooks/useDragAndDrop";
 import { Task, TaskContainer } from "./model/task";
 import styles from "./styles.module.scss";
 import { deleteContainers } from "../../store/slices/containerReducer";
+import { deleteTask } from "../../store/slices/taskReducer";
 
 function TaskManager() {
   const {
@@ -32,21 +33,14 @@ function TaskManager() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [projectName, setProjectName] = useState("");
 
-  console.count("something changed");
-
   const containerTasks = (container: TaskContainer, tasks: Task[]) => {
     return tasks.filter((task) => task.containerId === container.containerId);
   };
 
-  const projectTasksCount = (projectId: string, tasks: Task[]) => {
-    return tasks.filter((task) => task.projectId === projectId).length;
-  };
-
+  const projectTasks = tasks.filter((task) => task.projectId === currentProject?.projectId);
   const projectContainers = containers.filter(
     (container) => container.projectId === currentProject?.projectId
   );
-
-  console.log({ containers });
 
   const [editName, setEditName] = useState(false);
   if (projectsLoading) {
@@ -95,6 +89,7 @@ function TaskManager() {
                 onClick: () => {
                   dispatch(deleteProject(currentProject?.projectId));
                   dispatch(deleteContainers(projectContainers));
+                  dispatch(deleteTask(projectTasks));
                 },
               },
             ]}
@@ -114,7 +109,7 @@ function TaskManager() {
               <TasksContainer
                 key={container.containerId}
                 tasks={containerTasks(container, tasks)}
-                tasksCount={projectTasksCount(currentProject?.projectId, tasks)}
+                tasksCount={projectTasks.length}
                 projectId={currentProject?.projectId}
                 containerName={container.containerName}
                 containerId={container.containerId}

@@ -12,13 +12,13 @@ export const setContainer = async (req: Request, res: Response) => {
   const { containerId, containerName, position, projectId } = req.body;
 
   try {
-    const projects = createContainerHandler(setContainerGateway, {
+    const response = await createContainerHandler(setContainerGateway, {
       containerId,
       containerName,
       position,
       projectId,
     });
-    const response = await projects;
+
     res.status(200).send(response);
   } catch (error) {
     console.log({ error });
@@ -39,16 +39,34 @@ export const getContainers = async (req: Request, res: Response) => {
   }
 };
 
+export const setContainerSocketHandler = async (data: any) => {
+  const { containerId, containerName, position, projectId } = data;
+
+  try {
+    const response = await createContainerHandler(setContainerGateway, {
+      containerId,
+      containerName,
+      position,
+      projectId,
+    });
+
+    return response;
+  } catch (error) {
+    console.log({ error });
+    return error;
+  }
+};
+
 export const getContainersSocketController = async (data: any) => {
   const { projectId } = data;
 
   try {
-    const containers = await getContainersHandler(
+    const response = await getContainersHandler(
       getContainersGateway,
       projectId
     );
 
-    return containers;
+    return response;
   } catch (error) {
     console.log({ error });
   }

@@ -1,10 +1,8 @@
-import { Action, Dispatch, MiddlewareAPI } from "redux";
+import { Dispatch, MiddlewareAPI } from "redux";
 import { getSocketTasks } from "../slices/taskReducer";
 import { deleteEvent, getEvents } from "../../db";
-
-interface ActionWithPayload<T> extends Action {
-  payload: T;
-}
+import { setSocketContainers } from "../slices/containerReducer";
+import { setProjects } from "../slices/projectReducer";
 
 const eventCallbacks: { [eventName: string]: (data: any) => void } = {
   "task/createTask": (data) => {
@@ -14,7 +12,7 @@ const eventCallbacks: { [eventName: string]: (data: any) => void } = {
   // Add more event callbacks as needed
 };
 
-let ws: WebSocket | null = null;
+export let ws: WebSocket | null = null;
 export const socketMiddleware =
   (subscribers: any) => (store: MiddlewareAPI<Dispatch>) => (next: Dispatch) => {
     if (!!ws) {
@@ -24,25 +22,33 @@ export const socketMiddleware =
 
     ws = new WebSocket("ws://127.0.0.1:3000");
 
-    ws.addEventListener("open", async (event) => {
+    ws.addEventListener("open", async () => {
       console.log("connection is open");
       if (ws && ws.readyState === WebSocket.OPEN) {
         const allEvents: any = await getEvents();
 
-        allEvents.forEach((event: any, index: number) => {
-          console.log({ event });
-          ws?.send(JSON.stringify(event));
-          deleteEvent(index + 1);
-        });
+        for (const userEvent of allEvents) {
+          ws?.send(JSON.stringify(userEvent));
+          deleteEvent(userEvent.id);
+        }
+
+        ws.send(JSON.stringify({ type: "syncData" }));
       }
     });
 
     ws.addEventListener("message", (event) => {
+      const parsedData = JSON.parse(event.data);
+      // console.log({ data });
+      const { type, payload } = parsedData;
       try {
-        const data = JSON.parse(event.data);
-        if (data.data) {
-          console.log("tasks", data.data);
-          store.dispatch(getSocketTasks(data.data));
+        if (type === "tasks/getTasks") {
+          store.dispatch(getSocketTasks(payload));
+        }
+        if (type === "container/getContainers") {
+          store.dispatch(setSocketContainers(payload));
+        }
+        if (type === "project/getProjects") {
+          store.dispatch(setProjects(payload));
         }
       } catch (error) {
         console.error("Error parsing message:", error);
@@ -67,166 +73,20 @@ export const socketMiddleware =
       if (action) {
         Object.keys(subscribers).forEach((key: any) => {
           const event = subscribers[key];
-          if (event.type === action.type) {
+          if (event.type === action.type && action.payload) {
             sendToBackend(action.type, action.payload);
           }
         });
+
+        //connect after login
+        if (action.type === "auth/login/fulfilled") {
+          console.log("try relogin");
+          ws = new WebSocket("ws://127.0.0.1:3000");
+        }
       }
+
+      console.log({ action });
 
       next(action);
     };
   };
-
-// if (!listenersAreMapped && socket) {
-//   config.listeners.map((listener) => {
-//     socket.on(listener.message, (message) => store.dispatch(listener.action(message)));
-//   });
-
-//   listenersAreapped = true;
-// }
-
-// import { Action, Dispatch, MiddlewareAPI } from "redux";
-// import { Socket, io } from "socket.io-client";
-// import { createProject, setProjects } from "../slices/projectReducer";
-// import { Project } from "../../views/taksManager/model/task";
-// import { setContainers } from "../../db";
-// import { setContainersToIdb, setSocketContainers } from "../slices/containerReducer";
-// import { getSocketTasks } from "../slices/taskReducer";
-// import { initializeSocket } from "./socketManager";
-
-// interface ActionWithPayload<T> extends Action {
-//   payload: T;
-// }
-
-// // const authToken = store.getState().auth.userToken;
-// const socket = initializeSocket("cat");
-
-// export const socketMiddleware =
-//   // ({ subscribers }: any) =>
-//   (store: MiddlewareAPI<Dispatch>) => (next: Dispatch) => (action: any) => {
-//     // Establish a WebSocket connection
-
-//     // socket = io("http://127.0.0.1:3000", {
-//     //   auth: {
-//     //     token: store.getState().auth.userToken,
-//     //   },
-//     // });
-
-//     socket.on("connect", () => {
-//       console.log("this runs twice?", socket);
-//       console.log(socket?.id);
-//     });
-
-//     socket.on("connect_error", (err) => {
-//       console.log(err instanceof Error); // true
-//       console.log(err.message); // not authorized
-//       console.log({ err }); // { content: "Please retry later" }
-//     });
-
-//     socket.on("project/syncProjects", (data) => {
-//       console.log("socketListner", { data });
-//       store.dispatch(setProjects(data));
-//     });
-
-//     socket.on("project/selectProject", (data) => {
-//       socket?.emit(action.payload);
-//       console.log({ data });
-//       store.dispatch(setSocketContainers(data.containers));
-//       store.dispatch(getSocketTasks(data.tasks));
-//     });
-
-//     // if (subscribers) {
-//     socket?.emit(action.type, action.payload);
-//     console.log(action);
-//     // subscribers.map((listener) => {
-//     //   console.log({ listener });
-//     //   socket.on(listener.type, (message) => {
-//     //     console.log(message);
-//     //     store.dispatch(listener.type(message));
-//     //   });
-//     // });
-//     // }
-
-//     next(action);
-//   };
-
-// if (!listenersAreMapped && socket) {
-//   config.listeners.map((listener) => {
-//     socket.on(listener.message, (message) => store.dispatch(listener.action(message)));
-//   });
-
-//   listenersAreMapped = true;
-// }
-
-// import { Action, Dispatch, MiddlewareAPI } from "redux";
-// import { Socket, io } from "socket.io-client";
-// import { createProject, setProjects } from "../slices/projectReducer";
-// import { Project } from "../../views/taksManager/model/task";
-// import { setContainers } from "../../db";
-// import { setContainersToIdb, setSocketContainers } from "../slices/containerReducer";
-// import { getSocketTasks } from "../slices/taskReducer";
-// import { initializeSocket } from "./socketManager";
-
-// interface ActionWithPayload<T> extends Action {
-//   payload: T;
-// }
-
-// const authToken = store.getState().auth.userToken;
-// const socket = initializeSocket("cat");
-
-// export const socketMiddleware =
-//   // ({ subscribers }: any) =>
-//   (store: MiddlewareAPI<Dispatch>) => (next: Dispatch) => (action: any) => {
-//     // Establish a WebSocket connection
-
-//     // socket = io("http://127.0.0.1:3000", {
-//     //   auth: {
-//     //     token: store.getState().auth.userToken,
-//     //   },
-//     // });
-
-//     socket.on("connect", () => {
-//       console.log("this runs twice?", socket);
-//       console.log(socket?.id);
-//     });
-
-//     socket.on("connect_error", (err) => {
-//       console.log(err instanceof Error); // true
-//       console.log(err.message); // not authorized
-//       console.log({ err }); // { content: "Please retry later" }
-//     });
-
-//     socket.on("project/syncProjects", (data) => {
-//       console.log("socketListner", { data });
-//       store.dispatch(setProjects(data));
-//     });
-
-//     socket.on("project/selectProject", (data) => {
-//       socket?.emit(action.payload);
-//       console.log({ data });
-//       store.dispatch(setSocketContainers(data.containers));
-//       store.dispatch(getSocketTasks(data.tasks));
-//     });
-
-//     // if (subscribers) {
-//     socket?.emit(action.type, action.payload);
-//     console.log(action);
-//     // subscribers.map((listener) => {
-//     //   console.log({ listener });
-//     //   socket.on(listener.type, (message) => {
-//     //     console.log(message);
-//     //     store.dispatch(listener.type(message));
-//     //   });
-//     // });
-//     // }
-
-//     next(action);
-//   };
-
-// // if (!listenersAreMapped && socket) {
-// //   config.listeners.map((listener) => {
-// //     socket.on(listener.message, (message) => store.dispatch(listener.action(message)));
-// //   });
-
-// //   listenersAreMapped = true;
-// // }

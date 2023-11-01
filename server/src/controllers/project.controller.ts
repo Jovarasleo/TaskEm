@@ -1,10 +1,12 @@
 import {
   getUserProjectsGateway,
   setProjectGateway,
+  deleteProjectGateway,
 } from "../gateways/project.gateway";
 import { Request, Response, NextFunction } from "express";
 import {
   createProjectHandler,
+  deleteProjectHandler,
   getProjectsHandler,
 } from "../handlers/projectHandlers";
 import { ISession } from "../server";
@@ -41,7 +43,7 @@ export const setProject = async (req: Request, res: Response) => {
 };
 
 export const setProjectSocketController = async (data: any, userId: string) => {
-  const { projectId, projectName, uuid } = data;
+  const { projectId, projectName } = data;
 
   try {
     const response = await createProjectHandler(setProjectGateway, {
@@ -49,20 +51,32 @@ export const setProjectSocketController = async (data: any, userId: string) => {
       projectName,
       userId,
     });
+    return response;
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const getProjectsSocketController = async (
-  data: any,
-  userId: string
-) => {
+export const getProjectsSocketController = async (userId: string) => {
   try {
     const response = await getProjectsHandler(
       { getUserProjectsGateway },
       userId
     );
+    return response;
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
+export const deleteProjectSocketController = async (projectId: string) => {
+  console.log(projectId);
+  try {
+    const response = await deleteProjectHandler(
+      { deleteProjectGateway },
+      projectId
+    );
+    console.log({ response });
     return response;
   } catch (error) {
     console.log({ error });

@@ -6,8 +6,13 @@ import { onLoadMiddleware } from "./middleware/onLoadMiddleware";
 import authReducer from "./slices/authSlice";
 import containerReducer from "./slices/containerReducer";
 import projectReducer from "./slices/projectReducer";
-import taskReducer, { createTask, editTask, moveTask, removeTask } from "./slices/taskReducer";
-import { createProject, renameProject, deleteProject } from "./slices/projectReducer";
+import taskReducer, { createTask, editTask, moveTask, deleteTask } from "./slices/taskReducer";
+import {
+  createProject,
+  renameProject,
+  deleteProject,
+  selectProject,
+} from "./slices/projectReducer";
 import { createContainer, deleteContainers } from "./slices/containerReducer";
 import { storeEventsMiddleware } from "./middleware/storeEventsMiddleware";
 
@@ -25,18 +30,25 @@ const store = configureStore({
       userApi.middleware,
       projectsApi.middleware,
       onLoadMiddleware,
+      socketMiddleware({
+        createTask,
+        editTask,
+        deleteTask,
+        moveTask,
+        selectProject,
+        deleteProject,
+      }),
       storeEventsMiddleware({
         createTask,
         editTask,
-        removeTask,
+        deleteTask,
         moveTask,
         createProject,
         createContainer,
         deleteContainers,
         renameProject,
         deleteProject,
-      }),
-      socketMiddleware({ createTask, editTask, removeTask, moveTask })
+      })
     ),
 });
 

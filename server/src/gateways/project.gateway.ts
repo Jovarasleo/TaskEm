@@ -41,3 +41,24 @@ export async function setProjectGateway({
     throw new Error("Failed to insert project");
   }
 }
+
+export async function deleteProjectGateway(projectId: string) {
+  const sql1 = "DELETE FROM projectaccess WHERE accessibleProjectId = ?";
+  const values1 = [projectId];
+  const sql = "DELETE FROM projects WHERE projectId = ?";
+  const values = [projectId];
+
+  try {
+    const [result1] = await db.execute(sql1, values1);
+    const [result] = await db.execute(sql, values);
+
+    return {
+      success: true,
+      message: ["Project deleted successfully"],
+      data: result,
+    };
+  } catch (error) {
+    console.error("Error deleting project:", error);
+    throw new Error("Failed to delete project");
+  }
+}

@@ -28,3 +28,11 @@ export async function getProjectsHandler(
   const project = getUserProjectsGateway(userId);
   return project;
 }
+
+export async function deleteProjectHandler(
+  { deleteProjectGateway }: any,
+  projectId: string
+) {
+  const project = deleteProjectGateway(projectId);
+  return project;
+}

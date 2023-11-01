@@ -47,7 +47,7 @@ export const initDB = (): Promise<boolean> => {
 
       if (!db.objectStoreNames.contains(Stores.Events)) {
         db.createObjectStore(Stores.Events, {
-          autoIncrement: true,
+          autoIncrement: false,
         });
       }
     };
@@ -149,6 +149,30 @@ export async function getTasks() {
   }
 }
 
+export async function deleteTask(tasks: Task[]) {
+  try {
+    await initDB();
+
+    const transaction = db.transaction([Stores.Tasks], "readwrite");
+    const objectStore = transaction.objectStore(Stores.Tasks);
+
+    tasks.forEach((task) => {
+      const request = objectStore.delete(task.taskId);
+
+      request.onsuccess = (event) => {
+        console.log("Item deleted successfully:", event);
+      };
+
+      request.onerror = (event) => {
+        const error = (event.target as IDBOpenDBRequest).error;
+        console.error("Error storing item:", error);
+      };
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export async function getProjects() {
   try {
     await initDB();
@@ -235,7 +259,7 @@ export async function putProject(project: Project) {
   }
 }
 
-export async function removeProject(projectId: string) {
+export async function deleteProject(projectId: string) {
   try {
     await initDB();
 
@@ -283,7 +307,7 @@ export async function storeEvents(eventData: any) {
     const transaction = db.transaction([Stores.Events], "readwrite");
 
     const objectStore = transaction.objectStore(Stores.Events);
-    const request = objectStore.put(eventData);
+    const request = objectStore.put(eventData, eventData.id);
     request.onsuccess = (event) => {
       console.log(event);
     };

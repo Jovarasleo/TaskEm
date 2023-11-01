@@ -7,7 +7,7 @@ import useContainerHeight from "../../hooks/useContainerHeight";
 import { Task } from "../../model/task";
 import Button from "../../../../components/button/Button";
 import { AppDispatch } from "../../../../store/configureStore";
-import { removeTask, editTask } from "../../../../store/slices/taskReducer";
+import { deleteTask, editTask } from "../../../../store/slices/taskReducer";
 import styles from "./styles.module.scss";
 
 interface TaskProps {
@@ -62,23 +62,13 @@ function TaskCard({
   };
 
   const closeTextBoxes = () => {
-    dispatch(
-      editTask({
-        value: input,
-        taskId: taskId,
-      })
-    );
+    dispatch(editTask({ ...task, value: input }));
     setInputField(false);
   };
 
   const handleKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
     if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
-      dispatch(
-        editTask({
-          value: input,
-          taskId: taskId,
-        })
-      );
+      dispatch(editTask({ ...task, value: input }));
       setInputField(false);
     }
   };
@@ -123,13 +113,7 @@ function TaskCard({
             <Button
               type="button"
               className={styles.confirmationButton}
-              onClick={() =>
-                dispatch(
-                  removeTask({
-                    taskId,
-                  })
-                )
-              }
+              onClick={() => dispatch(deleteTask([task]))}
             >
               <BsCheckLg />
             </Button>

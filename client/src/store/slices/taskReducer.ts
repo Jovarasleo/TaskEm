@@ -64,13 +64,14 @@ const taskSlice = createSlice({
       };
     },
 
-    removeTask: (state, action) => {
-      const { taskId } = action.payload;
-      const newState = state.data.filter((task) => task.taskId !== taskId);
+    deleteTask: (state, action) => {
+      const filteredData = state.data.filter((task) => {
+        return action.payload.some((currentTasks: Task) => currentTasks.taskId !== task.taskId);
+      });
 
       return {
         ...state,
-        data: newState,
+        data: filteredData,
       };
     },
 
@@ -107,7 +108,7 @@ const taskSlice = createSlice({
     getSocketTasks: (state, action) => {
       return {
         ...state,
-        data: [...action.payload].sort((a, b) => a.position - b.position),
+        data: [...action.payload.data].sort((a, b) => a.position - b.position),
       };
     },
   },
@@ -127,5 +128,5 @@ const taskSlice = createSlice({
   },
 });
 
-export const { createTask, removeTask, editTask, moveTask, getSocketTasks } = taskSlice.actions;
+export const { createTask, deleteTask, editTask, moveTask, getSocketTasks } = taskSlice.actions;
 export default taskSlice.reducer;
