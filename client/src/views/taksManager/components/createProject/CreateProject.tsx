@@ -46,8 +46,8 @@ function CreateProject() {
         <Button
           onClick={() => {
             const projectId = uid();
-            dispatch(createContainer(defaultContainers(projectId)));
             dispatch(createProject({ projectId: projectId, projectName }));
+            dispatch(createContainer(defaultContainers(projectId)));
           }}
         >
           Create Project

@@ -16,11 +16,19 @@ type GetTasksGateway = (projectId: string) => Promise<{
   data: RowDataPacket[];
 }>;
 
+type GetSingleTaskGateway = (taskId: string) => Promise<{
+  success: boolean;
+  message: string[];
+  data: RowDataPacket[];
+}>;
+
 type UpdateTaskPositionGateway = ({
   taskId,
+  containerId,
   position,
 }: {
   taskId: string;
+  containerId: string;
   position: bigint;
 }) => Promise<{ success: boolean; message: string[] }>;
 
@@ -56,11 +64,32 @@ export async function getTasksHandler(
   return tasks;
 }
 
+export async function getSingleTaskHandler(
+  getSingleTaskGateway: GetSingleTaskGateway,
+  taskId: string
+) {
+  const task = await getSingleTaskGateway(taskId);
+
+  if (!task.success) {
+    return { success: false, error: "", data: null };
+  }
+
+  return task;
+}
+
 export async function updateTaskHandler(
   updateTaskPositionGateway: UpdateTaskPositionGateway,
-  { taskId, position }: { taskId: string; position: bigint }
+  {
+    taskId,
+    containerId,
+    position,
+  }: { taskId: string; containerId: string; position: bigint }
 ) {
-  const task = await updateTaskPositionGateway({ taskId, position });
+  const task = await updateTaskPositionGateway({
+    taskId,
+    containerId,
+    position,
+  });
 
   if (!task.success) {
     return { success: false, error: "", data: null };

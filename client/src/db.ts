@@ -259,12 +259,13 @@ export async function putProject(project: Project) {
   }
 }
 
-export async function deleteProject(projectId: string) {
+export async function deleteProject(projectInfo: { projectId: string }) {
   try {
     await initDB();
 
+    const { projectId } = projectInfo;
+
     const transaction = db.transaction([Stores.Projects], "readwrite");
-    console.log({ projectId });
     const objectStore = transaction.objectStore(Stores.Projects);
     const request = objectStore.delete(projectId);
     request.onsuccess = (event) => {

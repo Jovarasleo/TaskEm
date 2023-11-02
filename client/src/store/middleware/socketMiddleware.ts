@@ -1,5 +1,5 @@
 import { Dispatch, MiddlewareAPI } from "redux";
-import { getSocketTasks } from "../slices/taskReducer";
+import { getSocketTasks, moveSocketTask, moveTask } from "../slices/taskReducer";
 import { deleteEvent, getEvents } from "../../db";
 import { setSocketContainers } from "../slices/containerReducer";
 import { setProjects } from "../slices/projectReducer";
@@ -38,11 +38,14 @@ export const socketMiddleware =
 
     ws.addEventListener("message", (event) => {
       const parsedData = JSON.parse(event.data);
-      // console.log({ data });
+      console.log({ parsedData });
       const { type, payload } = parsedData;
       try {
         if (type === "tasks/getTasks") {
           store.dispatch(getSocketTasks(payload));
+        }
+        if (type === "task/moveTask") {
+          store.dispatch(moveSocketTask(payload[0]));
         }
         if (type === "container/getContainers") {
           store.dispatch(setSocketContainers(payload));

@@ -30,14 +30,6 @@ const store = configureStore({
       userApi.middleware,
       projectsApi.middleware,
       onLoadMiddleware,
-      socketMiddleware({
-        createTask,
-        editTask,
-        deleteTask,
-        moveTask,
-        selectProject,
-        deleteProject,
-      }),
       storeEventsMiddleware({
         createTask,
         editTask,
@@ -47,6 +39,16 @@ const store = configureStore({
         createContainer,
         deleteContainers,
         renameProject,
+        deleteProject,
+      }),
+      socketMiddleware({
+        createTask,
+        editTask,
+        deleteTask,
+        moveTask,
+        createProject,
+        createContainer,
+        selectProject,
         deleteProject,
       })
     ),

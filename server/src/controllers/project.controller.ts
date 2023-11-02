@@ -69,8 +69,8 @@ export const getProjectsSocketController = async (userId: string) => {
   }
 };
 
-export const deleteProjectSocketController = async (projectId: string) => {
-  console.log(projectId);
+export const deleteProjectSocketController = async (data: any) => {
+  const { projectId } = data;
   try {
     const response = await deleteProjectHandler(
       { deleteProjectGateway },

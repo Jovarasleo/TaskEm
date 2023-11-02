@@ -87,7 +87,7 @@ function TaskManager() {
               {
                 title: "delete",
                 onClick: () => {
-                  dispatch(deleteProject(currentProject?.projectId));
+                  dispatch(deleteProject({ projectId: currentProject?.projectId }));
                   dispatch(deleteContainers(projectContainers));
                   dispatch(deleteTask(projectTasks));
                 },

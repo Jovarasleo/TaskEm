@@ -67,7 +67,10 @@ const containerReducer = createSlice({
     },
 
     setSocketContainers: (state, action) => {
-      return { ...state, data: action.payload };
+      return {
+        ...state,
+        data: action.payload.sort((a: TaskContainer, b: TaskContainer) => a.position - b.position),
+      };
     },
   },
   extraReducers(builder) {

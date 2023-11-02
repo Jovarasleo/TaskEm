@@ -38,20 +38,40 @@ export async function getTasksGateway(projectId: string) {
       data: result,
     };
   } catch (error) {
-    console.error("Error inserting task:", error);
-    throw new Error("Failed to insert task");
+    console.error("Error retrieving tasks:", error);
+    throw new Error("Failed to retrieve task");
+  }
+}
+
+export async function getSingleTaskGateway(taskId: string) {
+  const sql = "SELECT * FROM tasks WHERE taskId = ?";
+  const values = [taskId];
+
+  try {
+    const [result] = await db.execute<RowDataPacket[]>(sql, values);
+
+    return {
+      success: true,
+      message: ["Task retrieved successfully"],
+      data: result,
+    };
+  } catch (error) {
+    console.error("Error retrieving task:", error);
+    throw new Error("Failed to retrieve task");
   }
 }
 
 export async function updateTaskPositionGateway({
   taskId,
+  containerId,
   position,
 }: {
   taskId: string;
+  containerId: string;
   position: bigint;
 }) {
-  const sql = "UPDATE tasks SET position = ? WHERE taskId = ?";
-  const values = [position, taskId];
+  const sql = "UPDATE tasks SET position = ?, containerId = ? WHERE taskId = ?";
+  const values = [position, containerId, taskId];
 
   try {
     const [result] = await db.execute<RowDataPacket[]>(sql, values);

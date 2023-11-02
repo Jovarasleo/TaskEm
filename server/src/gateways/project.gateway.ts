@@ -43,13 +43,10 @@ export async function setProjectGateway({
 }
 
 export async function deleteProjectGateway(projectId: string) {
-  const sql1 = "DELETE FROM projectaccess WHERE accessibleProjectId = ?";
-  const values1 = [projectId];
   const sql = "DELETE FROM projects WHERE projectId = ?";
   const values = [projectId];
 
   try {
-    const [result1] = await db.execute(sql1, values1);
     const [result] = await db.execute(sql, values);
 
     return {

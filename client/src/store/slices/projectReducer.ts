@@ -82,10 +82,10 @@ const projectSlice = createSlice({
     deleteProject: (state, action) => {
       console.log(action.payload);
       const currentProjectIndex = state.data.findIndex(
-        (project) => project.projectId === action.payload
+        (project) => project.projectId === action.payload.projectId
       );
 
-      state.data = state.data.filter((project) => project.projectId !== action.payload);
+      state.data = state.data.filter((project) => project.projectId !== action.payload.projectId);
       state.selected = state.data[nextProject(currentProjectIndex, state.data.length)] ?? null;
     },
   },

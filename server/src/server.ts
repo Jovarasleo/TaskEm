@@ -15,6 +15,7 @@ import {
 } from "./controllers/project.controller";
 import {
   deleteTaskSocketController,
+  getSingleTaskSocketController,
   getTasks,
   getTasksSocketController,
   setTaskSocketController,
@@ -141,7 +142,10 @@ wss.on("connection", function connection(ws, request: any) {
           );
           break;
         case "container/createContainer":
-          await setContainerSocketHandler(payload);
+          for (const container of payload) {
+            await setContainerSocketHandler(container);
+          }
+
           break;
         case "container/deleteContainers":
           // implement container deletion
@@ -151,17 +155,33 @@ wss.on("connection", function connection(ws, request: any) {
           break;
         case "task/deleteTask":
           {
+            if (!payload.length) {
+              return;
+            }
+
             for (const task of payload) {
               const response = await deleteTaskSocketController(task);
             }
           }
           break;
-        case "task/moveTask":
-          // implement task deletion
+        case "task/moveTask": {
           console.log({ payload });
-          const response = await updateTaskPositionSocketController(payload);
-          console.log({ response });
+
+          await updateTaskPositionSocketController(payload);
+          const response = await getSingleTaskSocketController(payload.taskId);
+
+          if (response?.success) {
+            const message = {
+              type: "task/movedTask",
+              payload: response.data,
+            };
+
+            ws.send(JSON.stringify(message));
+          }
+
           break;
+        }
+
         case "syncData":
           const projects = await getProjectsSocketController(userId);
 

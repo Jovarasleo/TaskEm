@@ -2,12 +2,12 @@ import { RowDataPacket } from "mysql2";
 import db from "../interface/data.access";
 
 export async function userHasProjectAccessGateway(
-  uuid: string,
+  userId: string,
   projectId: string
 ) {
   const sql =
     "SELECT COUNT(*) AS accessCount FROM projectaccess WHERE accessibleProjectId = ? AND userId = ?";
-  const values = [projectId, uuid];
+  const values = [projectId, userId];
   try {
     const [result] = await db.execute<RowDataPacket[]>(sql, values);
     const accessCount = result[0].accessCount;

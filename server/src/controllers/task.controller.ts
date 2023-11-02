@@ -3,11 +3,13 @@ import {
   getTasksGateway,
   updateTaskPositionGateway,
   deleteTaskGateway,
+  getSingleTaskGateway,
 } from "../gateways/task.gateway";
 import { Request, Response } from "express";
 import {
   createTaskHandler,
   deleteTaskHandler,
+  getSingleTaskHandler,
   getTasksHandler,
   updateTaskHandler,
 } from "../handlers/taskHandlers";
@@ -86,12 +88,31 @@ export const getTasksSocketController = async (projectId: any) => {
   }
 };
 
+export const getSingleTaskSocketController = async (taskId: string) => {
+  try {
+    const response = await getSingleTaskHandler(getSingleTaskGateway, taskId);
+
+    if (!response.success) {
+      return {
+        error: new Error("can't retrieve task"),
+        success: false,
+        data: null,
+      };
+    }
+
+    return response;
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
 export const updateTaskPositionSocketController = async (data: any) => {
-  const { taskId, position } = data;
+  const { taskId, containerId, position } = data;
 
   try {
     const reponse = await updateTaskHandler(updateTaskPositionGateway, {
       taskId,
+      containerId,
       position,
     });
 

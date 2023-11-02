@@ -105,6 +105,20 @@ const taskSlice = createSlice({
       };
     },
 
+    moveSocketTask: (state, action) => {
+      const newTask = action.payload;
+      if (!newTask) {
+        return state;
+      }
+
+      const newTasksArray = state.data.filter((task) => task.taskId !== newTask.taskId);
+
+      return {
+        ...state,
+        data: [...newTasksArray, newTask].sort((a, b) => a.position - b.position),
+      };
+    },
+
     getSocketTasks: (state, action) => {
       return {
         ...state,
@@ -128,5 +142,6 @@ const taskSlice = createSlice({
   },
 });
 
-export const { createTask, deleteTask, editTask, moveTask, getSocketTasks } = taskSlice.actions;
+export const { createTask, deleteTask, editTask, moveTask, getSocketTasks, moveSocketTask } =
+  taskSlice.actions;
 export default taskSlice.reducer;
