@@ -16,7 +16,6 @@ import {
 import {
   deleteTaskSocketController,
   getSingleTaskSocketController,
-  getTasks,
   getTasksSocketController,
   setTaskSocketController,
   updateTaskPositionSocketController,
@@ -35,8 +34,11 @@ export interface ISession extends Session {
   userId: string;
   authorized: boolean;
 }
+type WebSocketRequest = http.IncomingMessage & {
+  session: ISession;
+};
 
-const map = new Map();
+const projectRooms = new Map();
 
 const app = express();
 const server = http.createServer(app);
@@ -51,7 +53,7 @@ const sessionParser = session({
   store: store,
 
   cookie: {
-    sameSite: false,
+    sameSite: "none",
     secure: false,
     httpOnly: true,
     maxAge: 60000000,
@@ -64,10 +66,9 @@ app.use(
     methods: ["POST", "GET"],
     credentials: true,
   }),
-  json()
+  json(),
+  sessionParser
 );
-
-app.use((req, res, next) => sessionParser(req, res, next));
 
 app.use("/user", auth, usersRouters);
 app.use("/task", auth, userAccess, taskRouters);
@@ -78,23 +79,22 @@ server.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
 
-function onSocketError(err: any) {
+function onSocketError(err: Error) {
   console.error(err);
 }
 
 const wss = new WebSocketServer({ clientTracking: true, noServer: true });
 
-server.on("upgrade", function upgrade(request: any, socket, head) {
-  // console.log(request);
-  socket.on("error", onSocketError as any);
-  sessionParser(request, {} as any, () => {
+server.on("upgrade", function upgrade(request: WebSocketRequest, socket, head) {
+  socket.on("error", onSocketError);
+
+  sessionParser(request as any, {} as any, () => {
     console.log({ request: request.session });
-    if (!(request.session as ISession).authorized) {
+    if (!request.session.authorized) {
       socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
       socket.destroy();
       return;
     }
-    // This function is not defined on purpose. Implement it with your own logic.
 
     wss.handleUpgrade(request, socket, head, function (ws) {
       wss.emit("connection", ws, request);
@@ -102,14 +102,13 @@ server.on("upgrade", function upgrade(request: any, socket, head) {
   });
 });
 
-wss.on("connection", function connection(ws, request: any) {
-  const userId = (request.session as ISession).userId;
-  console.log("user connects");
-  map.set(userId, ws);
-  ws.on("error", console.error);
+wss.on("connection", function connection(ws, request: WebSocketRequest) {
+  const userId = request.session.userId;
+  console.log("user connected!");
 
+  ws.on("error", console.error);
   ws.on("open", async function syncData() {
-    ws.send("syncing data");
+    ws.send("syncData");
   });
 
   ws.on("message", async function message(data) {
@@ -126,7 +125,6 @@ wss.on("connection", function connection(ws, request: any) {
           break;
         case "project/selectProject":
           const containers = await getContainersSocketController(payload);
-          console.log({ containers });
           ws.send(
             JSON.stringify({
               type: "container/getContainers",
@@ -140,6 +138,16 @@ wss.on("connection", function connection(ws, request: any) {
               payload: tasks,
             })
           );
+
+          const roomId = payload.projectId; // Use the project ID as the room name
+          if (!projectRooms.has(roomId)) {
+            projectRooms.set(roomId, { [userId]: ws });
+          }
+          const currentRoom = projectRooms.get(roomId);
+          if (currentRoom) {
+            projectRooms.set(roomId, { ...currentRoom, [userId]: ws });
+          }
+          console.log({ projectRooms });
           break;
         case "container/createContainer":
           for (const container of payload) {
@@ -165,18 +173,22 @@ wss.on("connection", function connection(ws, request: any) {
           }
           break;
         case "task/moveTask": {
-          console.log({ payload });
-
           await updateTaskPositionSocketController(payload);
           const response = await getSingleTaskSocketController(payload.taskId);
 
           if (response?.success) {
             const message = {
-              type: "task/movedTask",
+              type: "task/moveTask",
               payload: response.data,
             };
 
-            ws.send(JSON.stringify(message));
+            const currentRoom = projectRooms.get(payload.projectId);
+            if (currentRoom) {
+              Object.keys(currentRoom).forEach((key) => {
+                const webSocket = currentRoom[key];
+                webSocket.send(JSON.stringify(message));
+              });
+            }
           }
 
           break;

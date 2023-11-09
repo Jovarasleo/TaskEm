@@ -5,7 +5,7 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "./build",
-    "rootDir": "./",
+    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -15,6 +15,5 @@
     "esm": true,
     "experimentalSpecifierResolution": "node"
   },
-  "exclude": ["node_modules"],
-  "include": ["./src", "config"]
+  "include": ["./src/**/*.ts"]
 }

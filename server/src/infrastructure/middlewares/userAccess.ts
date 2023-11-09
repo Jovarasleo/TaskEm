@@ -36,7 +36,7 @@ export async function userAccessSocketMiddleware(
   userId: string,
   next: NextFunction
 ) {
-  const parsedData = JSON.parse(data.toString());
+  const parsedData = JSON.parse(data);
   const { type, payload } = parsedData;
 
   console.log("access middleware", { ...parsedData });
@@ -49,7 +49,6 @@ export async function userAccessSocketMiddleware(
     return next(parsedData);
   }
 
-  // console.log({ type, payload });
   const isPayloadArray = Array.isArray(payload);
   const projectId = isPayloadArray ? 0 : payload?.projectId;
 

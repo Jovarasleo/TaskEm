@@ -3,22 +3,20 @@ import {
   setProjectGateway,
   deleteProjectGateway,
 } from "../gateways/project.gateway";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import {
   createProjectHandler,
   deleteProjectHandler,
   getProjectsHandler,
 } from "../handlers/projectHandlers";
 import { ISession } from "../server";
+import Project from "../entities/projectEntity";
 
 export const getProjects = async (req: Request, res: Response) => {
   const { userId } = req.session as ISession;
 
   try {
-    const response = await getProjectsHandler(
-      { getUserProjectsGateway },
-      userId
-    );
+    const response = await getProjectsHandler(getUserProjectsGateway, userId);
     res.status(200).send(response);
   } catch (error) {
     res.status(500).send({ error: "Internal Server Error: get projects" });
@@ -42,7 +40,10 @@ export const setProject = async (req: Request, res: Response) => {
   }
 };
 
-export const setProjectSocketController = async (data: any, userId: string) => {
+export const setProjectSocketController = async (
+  data: Project,
+  userId: string
+) => {
   const { projectId, projectName } = data;
 
   try {
@@ -59,24 +60,23 @@ export const setProjectSocketController = async (data: any, userId: string) => {
 
 export const getProjectsSocketController = async (userId: string) => {
   try {
-    const response = await getProjectsHandler(
-      { getUserProjectsGateway },
-      userId
-    );
+    const response = await getProjectsHandler(getUserProjectsGateway, userId);
     return response;
   } catch (error) {
     console.log({ error });
   }
 };
 
-export const deleteProjectSocketController = async (data: any) => {
+export const deleteProjectSocketController = async (data: {
+  projectId: string;
+}) => {
   const { projectId } = data;
   try {
     const response = await deleteProjectHandler(
-      { deleteProjectGateway },
+      deleteProjectGateway,
       projectId
     );
-    console.log({ response });
+
     return response;
   } catch (error) {
     console.log({ error });

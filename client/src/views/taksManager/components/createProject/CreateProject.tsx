@@ -21,7 +21,7 @@ function CreateProject() {
   return (
     <section className={styles.createProjectWrapper}>
       <h3>Select project:</h3>
-      {projects.data.map((project: Project, index) => {
+      {projects.data.map((project: Project) => {
         return (
           <Button
             key={project.projectId}
@@ -46,7 +46,7 @@ function CreateProject() {
         <Button
           onClick={() => {
             const projectId = uid();
-            dispatch(createProject({ projectId: projectId, projectName }));
+            dispatch(createProject({ projectId, projectName }));
             dispatch(createContainer(defaultContainers(projectId)));
           }}
         >

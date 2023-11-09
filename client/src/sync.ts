@@ -1,1 +1,0 @@
-const syncProjects = (projects: any) => {};

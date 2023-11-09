@@ -28,9 +28,7 @@ export async function getContainersGateway(projectId: string) {
   const values = [projectId];
 
   try {
-    console.log(values);
     const [result] = await db.execute<RowDataPacket[]>(sql, values);
-    console.log("Containers retrieved successfully:", result);
 
     return result;
   } catch (error) {

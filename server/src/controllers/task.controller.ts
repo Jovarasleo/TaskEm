@@ -13,6 +13,7 @@ import {
   getTasksHandler,
   updateTaskHandler,
 } from "../handlers/taskHandlers";
+import Task from "../entities/taskEntity";
 
 export const setTask = async (req: Request, res: Response) => {
   const { taskId, projectId, containerId, value, count, position } = req.body;
@@ -55,7 +56,7 @@ export const getTasks = async (req: Request, res: Response) => {
   }
 };
 
-export const setTaskSocketController = async (data: any) => {
+export const setTaskSocketController = async (data: Task) => {
   const { taskId, projectId, containerId, value, count, position } = data;
 
   try {
@@ -74,7 +75,7 @@ export const setTaskSocketController = async (data: any) => {
   }
 };
 
-export const getTasksSocketController = async (projectId: any) => {
+export const getTasksSocketController = async (projectId: string) => {
   try {
     const response = await getTasksHandler(getTasksGateway, projectId);
 
@@ -106,7 +107,11 @@ export const getSingleTaskSocketController = async (taskId: string) => {
   }
 };
 
-export const updateTaskPositionSocketController = async (data: any) => {
+export const updateTaskPositionSocketController = async (data: {
+  taskId: string;
+  containerId: string;
+  position: bigint;
+}) => {
   const { taskId, containerId, position } = data;
 
   try {
@@ -122,7 +127,7 @@ export const updateTaskPositionSocketController = async (data: any) => {
   }
 };
 
-export const deleteTaskSocketController = async (data: any) => {
+export const deleteTaskSocketController = async (data: { taskId: string }) => {
   const { taskId } = data;
 
   try {

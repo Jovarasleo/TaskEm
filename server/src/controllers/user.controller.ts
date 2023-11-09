@@ -7,18 +7,12 @@ import {
 } from "../gateways/user.gateway";
 import generateId from "../infrastructure/utils/uuidGenerator";
 import hashPassword from "../infrastructure/utils/passwordHash";
-import { generateToken } from "../infrastructure/utils/jwtGenerator";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { ISession } from "../server";
-import { randomUUID } from "crypto";
 
 export const getUserData = async (req: Request, res: Response) => {
-  // console.log({ req });
   try {
     const { userId } = req.session as ISession;
-    const { session, sessionID, sessionStore } = req;
-    console.log({ session });
-    // console.log((sessionStore as any).sessions);
 
     const data = getUserDataHandler(getUserDataGateway, userId);
     const response = await data;
@@ -38,7 +32,7 @@ export const setUser = async (req: Request, res: Response) => {
     const { username, password, email } = req.body;
     const response = await createUserHandler(
       { findUserGateway, createUserGateway },
-      { generateId, hashPassword, generateToken },
+      { generateId, hashPassword },
       { username, password, email }
     );
 
@@ -49,7 +43,6 @@ export const setUser = async (req: Request, res: Response) => {
     return res.status(201).send({
       success: true,
       message: `user ${username} has been created`,
-      token: response.myToken,
       user: response.user,
     });
   } catch (error) {
@@ -64,7 +57,6 @@ export const login = async (req: Request, res: Response) => {
   try {
     const response = await authenticateUserHandler(
       { findUserGateway },
-      { generateToken },
       { email, password }
     );
 
@@ -73,9 +65,7 @@ export const login = async (req: Request, res: Response) => {
       session.userId = response.user.userId;
       session.authorized = true;
 
-      return res
-        .status(200)
-        .send({ success: true, token: response.token, user: response.user });
+      return res.status(200).send({ success: true, user: response.user });
     }
 
     return res
@@ -85,5 +75,17 @@ export const login = async (req: Request, res: Response) => {
     console.log(e);
     res.status(500).send({ success: false, error: "internal server error" });
     return;
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    req.session.destroy(() => {
+      return res.status(200).send({ success: true, message: "Logged Out" });
+    });
+  } catch (e) {
+    return res
+      .status(500)
+      .send({ success: false, error: "internal server error" });
   }
 };

@@ -11,12 +11,14 @@ import {
 import { userOnline } from "../..";
 import { uid } from "../../util/uid";
 import { ws } from "./socketMiddleware";
+import { Project, Task, TaskContainer } from "../../views/taksManager/model/task";
+import { setSocketContainers } from "../slices/containerReducer";
 
 export const storeEventsMiddleware =
   (subscribers: any) => (store: MiddlewareAPI<Dispatch>) => (next: Dispatch) => {
     return (action: any) => {
       if (action) {
-        Object.keys(subscribers).forEach((key: any) => {
+        Object.keys(subscribers).forEach((key: string) => {
           const event = subscribers[key];
           if (event.type === action.type) {
             const eventId = uid();
@@ -48,7 +50,15 @@ export const storeEventsMiddleware =
 
               case "project/createProject":
               case "project/renameProject":
-                setProject(action.payload);
+                break;
+              case "project/setProjects":
+                action.payload.forEach((project: Project) => setProject(project));
+                break;
+              case "container/setSocketContainers":
+                setContainers(action.payload);
+                break;
+              case "task/getSocketTasks":
+                action.payload.data.forEach((task: Task) => setTask(task));
                 break;
 
               case "project/deleteProject":

@@ -3,6 +3,7 @@ import { getSocketTasks, moveSocketTask, moveTask } from "../slices/taskReducer"
 import { deleteEvent, getEvents } from "../../db";
 import { setSocketContainers } from "../slices/containerReducer";
 import { setProjects } from "../slices/projectReducer";
+import { userLoggedIn } from "../slices/authSlice";
 
 const eventCallbacks: { [eventName: string]: (data: any) => void } = {
   "task/createTask": (data) => {
@@ -20,19 +21,23 @@ export const socketMiddleware =
       ws.close();
     }
 
+    const synchroniseData = async (ws: WebSocket) => {
+      const allEvents: any = await getEvents();
+
+      for (const userEvent of allEvents) {
+        ws.send(JSON.stringify(userEvent));
+        deleteEvent(userEvent.id);
+      }
+
+      ws.send(JSON.stringify({ type: "syncData" }));
+    };
+
     ws = new WebSocket("ws://127.0.0.1:3000");
 
     ws.addEventListener("open", async () => {
-      console.log("connection is open");
       if (ws && ws.readyState === WebSocket.OPEN) {
-        const allEvents: any = await getEvents();
-
-        for (const userEvent of allEvents) {
-          ws?.send(JSON.stringify(userEvent));
-          deleteEvent(userEvent.id);
-        }
-
-        ws.send(JSON.stringify({ type: "syncData" }));
+        synchroniseData(ws);
+        store.dispatch(userLoggedIn());
       }
     });
 
@@ -60,13 +65,12 @@ export const socketMiddleware =
 
     const sendToBackend = (eventType: string, eventPayload: any) => {
       if (ws && ws.readyState === WebSocket.OPEN) {
-        console.log("event sent");
         const message = {
           type: eventType,
           payload: eventPayload,
         };
-
-        ws.send(JSON.stringify(message));
+        const stingifiedMessage = JSON.stringify(message);
+        ws.send(stingifiedMessage);
       } else {
         console.error("WebSocket not open. Cannot send message.");
       }
@@ -74,7 +78,7 @@ export const socketMiddleware =
 
     return (action: any) => {
       if (action) {
-        Object.keys(subscribers).forEach((key: any) => {
+        Object.keys(subscribers).forEach((key: string) => {
           const event = subscribers[key];
           if (event.type === action.type && action.payload) {
             sendToBackend(action.type, action.payload);
@@ -85,10 +89,13 @@ export const socketMiddleware =
         if (action.type === "auth/login/fulfilled") {
           console.log("try relogin");
           ws = new WebSocket("ws://127.0.0.1:3000");
+          ws.addEventListener("open", async () => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+              synchroniseData(ws);
+            }
+          });
         }
       }
-
-      console.log({ action });
 
       next(action);
     };

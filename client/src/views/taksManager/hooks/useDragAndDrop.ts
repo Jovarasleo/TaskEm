@@ -5,7 +5,7 @@ import { getTaskPosition } from "../util/getTaskPosition";
 import { DragItem, HandleDrag, HandleDragOver, HandleDragStart, Task } from "../model/task";
 import autoScroll from "../util/autoScroll";
 
-const useDragAndDrop = (dispatch: AppDispatch, tasks: any) => {
+const useDragAndDrop = (dispatch: AppDispatch, tasks: Task[]) => {
   const [dragging, setDragging] = useState(false);
   const [toContainer, setToContainer] = useState("");
   const [nextIndex, setNextIndex] = useState<null | number>(0);
@@ -44,7 +44,7 @@ const useDragAndDrop = (dispatch: AppDispatch, tasks: any) => {
     handleDragEnd();
   };
 
-  const handleMouseMove = (event: any) => {
+  const handleMouseMove = (event: MouseEvent) => {
     if (!isDragging.current) {
       return;
     }

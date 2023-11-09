@@ -17,17 +17,17 @@ function Login() {
   };
 
   const dispatch: AppDispatch = useDispatch();
-  const { loading, userData, error, message, userToken, success } = useSelector(
+  const { loading, userData, error, message, success, loggedIn } = useSelector(
     (state: RootState) => state.auth
   );
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (success && userToken) {
+    if (loggedIn) {
       navigate("/");
     }
-  }, [navigate, success, userToken]);
+  }, [navigate, loggedIn]);
 
   const submitForm = (data: { email: string; password: string }) => {
     dispatch(

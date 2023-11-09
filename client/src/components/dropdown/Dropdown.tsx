@@ -6,7 +6,14 @@ import Button from "../button/Button";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import { GoGear } from "react-icons/go";
 
-const Dropdown = ({ options }: any) => {
+const Dropdown = ({
+  options,
+}: {
+  options: {
+    title: string;
+    onClick: () => void;
+  }[];
+}) => {
   const [showOptions, setShowOptions] = useState(false);
 
   const nodeRef = useRef(null);
@@ -39,7 +46,7 @@ const Dropdown = ({ options }: any) => {
       >
         <div ref={nodeRef} className={clsx(styles.dropdownWrapper)}>
           <ul>
-            {options?.map(({ title, onClick }: any) => {
+            {options?.map(({ title, onClick }) => {
               return (
                 <li key={title} className={styles.dropdownElement}>
                   <Button

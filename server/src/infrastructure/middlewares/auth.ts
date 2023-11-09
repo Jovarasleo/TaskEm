@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 import { NextFunction, Request, Response } from "express";
-import { Socket } from "socket.io";
 import { ISession } from "../../server";
 dotenv.config();
 
@@ -13,19 +12,25 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
   }
 
   if ((req.session as ISession).authorized) {
-    console.log("goes to next");
     return next();
   }
 
-  console.log("returns early", req.session);
-  res
+  return res
     .status(401)
     .send({ success: false, error: "Please provide authorization header" });
-  return;
 };
 
-export const authorizeSocket = (socket: Socket, next: NextFunction) => {
+export const authorizeSocket = (
+  req: Request,
+  res: Response,
+  socket: WebSocket,
+  next: NextFunction
+) => {
   // You can access the request object from the socket handshake
+
+  if ((req.session as ISession).authorized) {
+    return next();
+  }
 
   if (socket) {
     return next(new Error("Authentication failed. No token provided."));

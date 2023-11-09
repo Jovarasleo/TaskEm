@@ -2,10 +2,18 @@ import styles from "./modal.module.scss";
 import { createPortal } from "react-dom";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import { CSSTransition } from "react-transition-group";
-import { useRef } from "react";
+import { ReactNode, useRef } from "react";
 import Button from "../button/Button";
 
-const Modal = ({ children, width, onConfirm, onCancel, visible }: any) => {
+interface Props {
+  width?: number;
+  visible?: boolean;
+  onConfirm?: () => void;
+  onCancel: () => void;
+  children?: ReactNode;
+}
+
+const Modal = ({ children, width, visible, onConfirm, onCancel }: Props) => {
   const nodeRef = useRef<HTMLDivElement | null>(null);
 
   useOutsideClick(onCancel, nodeRef);
@@ -24,11 +32,7 @@ const Modal = ({ children, width, onConfirm, onCancel, visible }: any) => {
           unmountOnExit
         >
           <div className={styles.modalWrapper}>
-            <div
-              style={{ maxWidth: width }}
-              className={styles.modal}
-              ref={nodeRef}
-            >
+            <div style={{ maxWidth: width }} className={styles.modal} ref={nodeRef}>
               {children ? (
                 children
               ) : (
@@ -36,7 +40,7 @@ const Modal = ({ children, width, onConfirm, onCancel, visible }: any) => {
                   <Button
                     type="select"
                     onClick={() => {
-                      onConfirm();
+                      onConfirm && onConfirm();
                       onCancel();
                     }}
                   >

@@ -1,14 +1,13 @@
+import { RowDataPacket } from "mysql2";
 import { IProject } from "../entities/projectEntity";
 import db from "../interface/data.access";
 
-export async function getUserProjectsGateway(uuid: string) {
-  // const sql = `SELECT projectId, projectName FROM projects WHERE projects.uuid = ?`;
-  // const values = [uuid];
+export async function getUserProjectsGateway(userId: string) {
   const sql =
     "SELECT P.* FROM Projects P JOIN ProjectAccess PA ON P.projectId = PA.accessibleProjectId WHERE PA.userId = ?";
-  const values = [uuid];
+  const values = [userId];
   try {
-    const [projects] = await db.execute(sql, values);
+    const [projects] = await db.execute<RowDataPacket[]>(sql, values);
     return projects;
   } catch (error) {
     console.log(error);
@@ -30,9 +29,9 @@ export async function setProjectGateway({
 
   try {
     console.log(values);
-    const result = await db.execute(sql, values);
+    const result = await db.execute<RowDataPacket[]>(sql, values);
     console.log("Project inserted successfully:", result);
-    const result1 = await db.execute(projectAccess, values2);
+    const result1 = await db.execute<RowDataPacket[]>(projectAccess, values2);
     console.log("Access granted:", result1);
 
     return projectId; // Return the generated project ID if needed
@@ -43,11 +42,13 @@ export async function setProjectGateway({
 }
 
 export async function deleteProjectGateway(projectId: string) {
+  const accessSQL = "DELETE FROM projectaccess WHERE accessibleProjectId = ?";
   const sql = "DELETE FROM projects WHERE projectId = ?";
   const values = [projectId];
 
   try {
-    const [result] = await db.execute(sql, values);
+    await db.execute(accessSQL, values);
+    const [result] = await db.execute<RowDataPacket[]>(sql, values);
 
     return {
       success: true,

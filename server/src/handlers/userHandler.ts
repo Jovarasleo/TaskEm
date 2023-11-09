@@ -11,12 +11,16 @@ interface createUserGateways {
   findUserGateway(email: string): Promise<IUserFromDb[]>;
   createUserGateway(user: IUser): Promise<IUserFromDb[]>;
 }
+interface propFunctions {
+  generateId: () => string;
+  hashPassword: (password: string) => Promise<string>;
+}
 
 type GetUserDataGateway = (uuid: string) => Promise<IUserFromDb[]>;
 
 export async function createUserHandler(
   { findUserGateway, createUserGateway }: createUserGateways,
-  { generateId, hashPassword, generateToken }: any,
+  { generateId, hashPassword }: propFunctions,
   data: Props
 ) {
   if (!data) {
@@ -42,10 +46,9 @@ export async function createUserHandler(
     return { error: validatedUser.error };
   } else {
     const newUser = await createUserGateway(validatedUser);
-    const myToken = generateToken(newUser[0]);
+
     return {
       user: { username: newUser[0].name, email: newUser[0].email },
-      myToken,
     };
   }
 }

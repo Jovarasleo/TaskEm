@@ -1,3 +1,4 @@
+import { RowDataPacket } from "mysql2";
 import Project, { IProject } from "../entities/projectEntity";
 
 type SetProjectGateway = ({
@@ -5,6 +6,16 @@ type SetProjectGateway = ({
   projectName,
   userId,
 }: IProject) => Promise<string>;
+
+type GetUserProjectsGateway = (
+  userId: string
+) => Promise<RowDataPacket[] | undefined>;
+
+type DeleteProjectGateway = (projectId: string) => Promise<{
+  success: boolean;
+  message: string[];
+  data: RowDataPacket[];
+}>;
 
 export async function createProjectHandler(
   setProjectGateway: SetProjectGateway,
@@ -22,7 +33,7 @@ export async function createProjectHandler(
 }
 
 export async function getProjectsHandler(
-  { getUserProjectsGateway }: any,
+  getUserProjectsGateway: GetUserProjectsGateway,
   userId: string
 ) {
   const project = getUserProjectsGateway(userId);
@@ -30,7 +41,7 @@ export async function getProjectsHandler(
 }
 
 export async function deleteProjectHandler(
-  { deleteProjectGateway }: any,
+  deleteProjectGateway: DeleteProjectGateway,
   projectId: string
 ) {
   const project = deleteProjectGateway(projectId);

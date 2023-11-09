@@ -7,6 +7,7 @@ import {
   createContainerHandler,
   getContainersHandler,
 } from "../handlers/containerHandlers";
+import Container from "../entities/containerEntity";
 
 export const setContainer = async (req: Request, res: Response) => {
   const { containerId, containerName, position, projectId } = req.body;
@@ -39,7 +40,7 @@ export const getContainers = async (req: Request, res: Response) => {
   }
 };
 
-export const setContainerSocketHandler = async (data: any) => {
+export const setContainerSocketHandler = async (data: Container) => {
   const { containerId, containerName, position, projectId } = data;
 
   try {
@@ -57,7 +58,9 @@ export const setContainerSocketHandler = async (data: any) => {
   }
 };
 
-export const getContainersSocketController = async (data: any) => {
+export const getContainersSocketController = async (data: {
+  projectId: string;
+}) => {
   const { projectId } = data;
 
   try {

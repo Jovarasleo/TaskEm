@@ -29,8 +29,6 @@ function TaskManager() {
   const { handleDrag, handleMouseDown, handleDragCancel, dragging, currentlyDragging } =
     useDragAndDrop(dispatch, tasks);
 
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
   const [projectName, setProjectName] = useState("");
 
   const containerTasks = (container: TaskContainer, tasks: Task[]) => {
@@ -123,35 +121,10 @@ function TaskManager() {
           })
         )}
       </div>
-      <Modal
-        width={300}
-        onCancel={() => setShowDeleteModal(false)}
-        visible={showDeleteModal}
-        // onConfirm={() =>
-        //   dispatch({
-        //     type: "DELETE_PROJECT",
-        //     payload: { projectId: state[projectIndex]?.projectId },
-        //   })
-        // }
-      />
-      <Modal width={700} onCancel={() => setShowEditModal(false)} visible={showEditModal}>
-        <div>
-          <input onChange={(e) => setProjectName(e.target.value)} />
-          <button
-          // onClick={() => {
-          //   dispatch({
-          //     type: "RENAME_PROJECT",
-          //     payload: {
-          //       projectId: state[projectIndex]?.projectId,
-          //       projectName: projectName,
-          //     },
-          //   });
-          // }}
-          >
-            change Name
-          </button>
-        </div>
-      </Modal>
+      <div>
+        <input onChange={(e) => setProjectName(e.target.value)} />
+        <button>change Name</button>
+      </div>
     </>
   );
 }
