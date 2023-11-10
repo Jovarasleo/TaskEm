@@ -1,8 +1,6 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
-import { BrowserRouter } from "react-router-dom";
-// import * as serviceWorker from "./serviceWorker.js";
 import "./styles/global.scss";
 import { Provider } from "react-redux";
 import store from "./store/configureStore";
@@ -35,19 +33,16 @@ function ready() {
 ready();
 
 // async function initServiceWorker() {
-//   const swRegistration = await navigator.serviceWorker.register(
-//     "./serviceWorker.js"
-//   );
+//   const swRegistration = await navigator.serviceWorker.register("./serviceWorker.js", {
+//     scope: "./",
+//   });
 
 //   const { installing, waiting, active } = swRegistration;
 //   let svcworker = installing || waiting || active;
 
-//   navigator.serviceWorker.addEventListener(
-//     "controllerchange",
-//     async function onControllerChange() {
-//       svcworker = navigator.serviceWorker.controller;
-//     }
-//   );
+//   navigator.serviceWorker.addEventListener("controllerchange", async function onControllerChange() {
+//     svcworker = navigator.serviceWorker.controller;
+//   });
 // }
 
 // initServiceWorker().catch(console.error);

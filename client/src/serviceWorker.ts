@@ -1,10 +1,10 @@
 const version = 1;
 const CACHE_NAME = "version-1";
-const urlsToCache = ["index.html", "offline.html"];
+const cacheFiles = ["index.html"];
 
 // self.addEventListener("install", onInstall);
 // self.addEventListener("active", onActivate);
-// window.onload
+// // window.onload;
 
 // main().catch(console.error);
 
@@ -14,7 +14,14 @@ const urlsToCache = ["index.html", "offline.html"];
 
 // async function onInstall(e) {
 //   console.log(`Service worker version: ${version} is installed.`);
-//   self.skipwaiting();
+//   e.waitUntil(
+//     // Open the cache
+//     caches.open(CACHE_NAME).then(function (cache) {
+//       // Add all the default files to the cache
+//       console.log("[ServiceWorker] Caching cacheFiles");
+//       return cache.addAll(cacheFiles);
+//     })
+//   ); //
 // }
 
 // function onActivate(e) {
@@ -22,24 +29,7 @@ const urlsToCache = ["index.html", "offline.html"];
 // }
 
 // async function handleActivation() {
-//   await clients.claim();
 //   console.log(`Service worker version: ${version} is activated.`);
-// }
-
-// async function initServiceWorker() {
-//   const swRegistration = await navigator.serviceWorker.register(
-//     "./serviceWorker.js"
-//   );
-
-//   const { installing, waiting, active } = swRegistration;
-//   let svcworker = installing || waiting || active;
-
-//   navigator.serviceWorker.addEventListener(
-//     "controllerchange",
-//     async function onControllerChange() {
-//       svcworker = navigator.serviceWorker.controller;
-//     }
-//   );
 // }
 
 export async function LocalRegister() {
@@ -84,29 +74,29 @@ export async function LocalRegister() {
           console.log(error);
         });
 
-      // async function cacheThenNetwork(request) {
-      //   const cachedResponse = await caches.match(request);
-      //   if (cachedResponse) {
-      //     console.log("Found response in cache:", cachedResponse);
-      //     return cachedResponse;
-      //   }
-      //   console.log("Falling back to network");
-      //   return fetch(request);
-      // }
+      async function cacheThenNetwork(request) {
+        const cachedResponse = await caches.match(request);
+        if (cachedResponse) {
+          console.log("Found response in cache:", cachedResponse);
+          return cachedResponse;
+        }
+        console.log("Falling back to network");
+        return fetch(request);
+      }
 
-      // document.addEventListener("fetch", (event) => {
-      //   console.log(`Handling fetch event for ${event.request.url}`);
-      //   event.respondWith(cacheThenNetwork(event.request));
-      // });
+      document.addEventListener("fetch", (event) => {
+        console.log(`Handling fetch event for ${event.request.url}`);
+        event.respondWith(cacheThenNetwork(event.request));
+      });
     };
   }
 }
 
-// // Listen for requests
-// document.addEventListener("fetch", (event) => {
-//   event.respondWith(
-//     caches.match(event.request).then(() => {
-//       return fetch(event.request).catch(() => caches.match("offline.html"));
-//     })
-//   );
-// });
+// Listen for requests
+document.addEventListener("fetch", (event) => {
+  event.respondWith(
+    caches.match(event.request).then(async () => {
+      return fetch(event.request).catch(() => caches.match("offline.html"));
+    })
+  );
+});

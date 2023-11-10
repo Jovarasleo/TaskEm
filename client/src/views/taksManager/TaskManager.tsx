@@ -1,5 +1,4 @@
 import Dropdown from "@components/dropdown/Dropdown";
-import Modal from "@components/modal/Modal";
 import { useState } from "react";
 import { FiEdit3 } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
@@ -120,10 +119,6 @@ function TaskManager() {
             );
           })
         )}
-      </div>
-      <div>
-        <input onChange={(e) => setProjectName(e.target.value)} />
-        <button>change Name</button>
       </div>
     </>
   );
