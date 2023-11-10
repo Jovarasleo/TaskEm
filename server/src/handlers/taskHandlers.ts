@@ -1,4 +1,4 @@
-import { FieldPacket, RowDataPacket } from "mysql2";
+import { RowDataPacket } from "mysql2";
 import Task, { ITask } from "../entities/taskEntity";
 
 type SetTaskGateway = ({
@@ -15,6 +15,26 @@ type GetTasksGateway = (projectId: string) => Promise<{
   message: string[];
   data: RowDataPacket[];
 }>;
+
+type GetSingleTaskGateway = (taskId: string) => Promise<{
+  success: boolean;
+  message: string[];
+  data: RowDataPacket[];
+}>;
+
+type UpdateTaskPositionGateway = ({
+  taskId,
+  containerId,
+  position,
+}: {
+  taskId: string;
+  containerId: string;
+  position: bigint;
+}) => Promise<{ success: boolean; message: string[] }>;
+
+type DeleteTaskGateway = (
+  taskId: string
+) => Promise<{ success: boolean; message: string[] }>;
 
 export async function createTaskHandler(
   setTaskGateway: SetTaskGateway,
@@ -42,4 +62,51 @@ export async function getTasksHandler(
   }
 
   return tasks;
+}
+
+export async function getSingleTaskHandler(
+  getSingleTaskGateway: GetSingleTaskGateway,
+  taskId: string
+) {
+  const task = await getSingleTaskGateway(taskId);
+
+  if (!task.success) {
+    return { success: false, error: "", data: null };
+  }
+
+  return task;
+}
+
+export async function updateTaskHandler(
+  updateTaskPositionGateway: UpdateTaskPositionGateway,
+  {
+    taskId,
+    containerId,
+    position,
+  }: { taskId: string; containerId: string; position: bigint }
+) {
+  const task = await updateTaskPositionGateway({
+    taskId,
+    containerId,
+    position,
+  });
+
+  if (!task.success) {
+    return { success: false, error: "", data: null };
+  }
+
+  return task;
+}
+
+export async function deleteTaskHandler(
+  deleleTaskGateway: DeleteTaskGateway,
+  taskId: string
+) {
+  const task = await deleleTaskGateway(taskId);
+
+  if (!task.success) {
+    return { success: false, error: "", data: null };
+  }
+
+  return task;
 }

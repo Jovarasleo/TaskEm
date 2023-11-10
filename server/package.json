@@ -5,18 +5,28 @@
   "main": "src/server.ts",
   "type": "module",
   "scripts": {
-    "dev": "nodemon --watch src/**/*.ts --exec ts-node-esm src/server.ts"
+    "dev": "nodemon --watch src/**/*.ts --exec ts-node-esm src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node --experimental-specifier-resolution=node build/server.js"
   },
   "author": "Jovaras Leo",
   "license": "ISC",
   "dependencies": {
+    "@types/express-session": "^1.17.8",
+    "@types/ws": "^8.5.7",
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "express-session": "^1.17.3",
     "jsonwebtoken": "^9.0.0",
     "mysql2": "^2.3.3",
-    "uuid": "^9.0.0"
+    "tsc": "^2.0.4",
+    "typescript": "^5.2.2",
+    "uuid": "^9.0.0",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "ws": "^8.14.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",

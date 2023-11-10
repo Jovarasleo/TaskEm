@@ -1,11 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getProjects, putProject, removeProject, setProject } from "../../db";
+import { getProjects, putProject } from "../../db";
 import { Project } from "../../views/taksManager/model/task";
 import { RootState } from "../configureStore";
 
 interface InitialProjectState {
   data: Project[] | [];
-  selected: Project;
+  selected: Project | null;
   status: string; // 'idle', 'loading', 'succeeded', or 'failed'
   loading: boolean;
   error: null | string;
@@ -22,15 +22,6 @@ const nextProject = (currentIndex: number, projectsCount: number) => {
 
   return currentIndex - 1;
 };
-
-export const removeProjectFromIdb = createAsyncThunk(
-  "project/removeData",
-
-  async (projectId: string) => {
-    const data = await removeProject(projectId);
-    return data;
-  }
-);
 
 export const updateProjectToIdb = createAsyncThunk(
   "project/updateData",
@@ -49,72 +40,57 @@ export const updateProjectToIdb = createAsyncThunk(
   }
 );
 
-export const setProjectToIdb = createAsyncThunk(
-  "project/setData",
-
-  async (project: { projectId: string; projectName: string }) => {
-    const newProject = { ...project, count: 0, containerOrder: [] };
-    const data = await setProject(newProject);
-    return data;
-  }
-);
-
 export const getProjectFromIdb = createAsyncThunk("project/getData", async () => {
   const data = await getProjects();
   return data as Project[];
 });
 
-// export const getProjectFromBE = createAsyncThunk("http://localhost:3000/project", async () => {
-//   const data = await getProjects();
-//   return data as Project[];
-// });
-
 const projectSlice = createSlice({
   name: "project",
   initialState: {
     data: [],
-    selected: {},
+    selected: null,
     loading: false,
     status: "idle",
     error: null,
   } as InitialProjectState,
   reducers: {
-    createProject: (state) => {
+    syncProjects: (state) => {
       return state;
+    },
+    setProjects: (state, action) => {
+      const projects = action.payload;
+      return { ...state, data: projects };
+    },
+    createProject: (state, action) => {
+      const newProject = action.payload;
+      return { ...state, data: [...state.data, newProject] };
     },
     selectProject: (state, action) => {
       state.selected = action.payload;
     },
     renameProject: (state, action) => {
+      console.log(action.payload);
       const editableProject = state.data.find(
-        (project) => project.projectId === state.selected.projectId
+        (project) => project.projectId === action.payload.projectId
       );
       if (editableProject) {
-        editableProject.projectName = action.payload;
+        editableProject.projectName = action.payload.projectName;
         state.selected = editableProject;
       }
     },
-    deleteProject: (state) => {
+    deleteProject: (state, action) => {
+      console.log(action.payload);
       const currentProjectIndex = state.data.findIndex(
-        (project) => project.projectId === state.selected.projectId
+        (project) => project.projectId === action.payload.projectId
       );
 
-      state.data = state.data.filter((project) => project.projectId !== state.selected.projectId);
-      state.selected = state.data[nextProject(currentProjectIndex, state.data.length)] ?? {};
+      state.data = state.data.filter((project) => project.projectId !== action.payload.projectId);
+      state.selected = state.data[nextProject(currentProjectIndex, state.data.length)] ?? null;
     },
   },
   extraReducers(builder) {
     builder
-      .addCase(setProjectToIdb.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(setProjectToIdb.fulfilled, (state) => {
-        state.status = "succeeded";
-      })
-      .addCase(setProjectToIdb.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message ?? "";
-      })
       .addCase(getProjectFromIdb.pending, (state) => {
         state.status = "loading";
         state.loading = true;
@@ -134,6 +110,13 @@ const projectSlice = createSlice({
   },
 });
 
-export const { createProject, selectProject, renameProject, deleteProject } = projectSlice.actions;
+export const {
+  setProjects,
+  createProject,
+  selectProject,
+  renameProject,
+  deleteProject,
+  syncProjects,
+} = projectSlice.actions;
 
 export default projectSlice.reducer;

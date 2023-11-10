@@ -1,10 +1,27 @@
 import { configureStore } from "@reduxjs/toolkit";
-import projectReducer from "./slices/projectReducer";
-import taskReducer from "./slices/taskReducer";
-import containerReducer from "./slices/containerReducer";
-import authReducer from "./slices/authSlice";
-import { userApi } from "../api/user";
 import { projectsApi } from "../api/project";
+import { userApi } from "../api/user";
+import { socketMiddleware } from "./middleware/socketMiddleware";
+import { onLoadMiddleware } from "./middleware/onLoadMiddleware";
+import authReducer from "./slices/authSlice";
+import containerReducer from "./slices/containerReducer";
+import projectReducer from "./slices/projectReducer";
+import taskReducer, {
+  createTask,
+  editTask,
+  moveTask,
+  deleteTask,
+  getSocketTasks,
+} from "./slices/taskReducer";
+import {
+  createProject,
+  renameProject,
+  deleteProject,
+  selectProject,
+  setProjects,
+} from "./slices/projectReducer";
+import { createContainer, deleteContainers, setSocketContainers } from "./slices/containerReducer";
+import { storeEventsMiddleware } from "./middleware/storeEventsMiddleware";
 
 const store = configureStore({
   reducer: {
@@ -15,11 +32,39 @@ const store = configureStore({
     [userApi.reducerPath]: userApi.reducer,
     [projectsApi.reducerPath]: projectsApi.reducer,
   },
-  middleware: (gDM) => gDM().concat(userApi.middleware, projectsApi.middleware),
+  middleware: (gDM) =>
+    gDM().concat(
+      userApi.middleware,
+      projectsApi.middleware,
+      onLoadMiddleware,
+      storeEventsMiddleware({
+        createTask,
+        editTask,
+        deleteTask,
+        moveTask,
+        getSocketTasks,
+        createProject,
+        createContainer,
+        deleteContainers,
+        setProjects,
+        renameProject,
+        deleteProject,
+        setSocketContainers,
+      }),
+      socketMiddleware({
+        createTask,
+        editTask,
+        deleteTask,
+        moveTask,
+        createProject,
+        createContainer,
+        selectProject,
+        deleteProject,
+      })
+    ),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch;
 
 export default store;

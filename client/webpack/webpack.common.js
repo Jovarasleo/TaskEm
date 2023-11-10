@@ -10,7 +10,7 @@ const options = {
       short_name: "TaskEm",
       icons: [
         {
-          src: "./mhm.png",
+          src: path.resolve(__dirname, "../src/mhm.png"),
           sizes: "32x32",
           type: "image/png",
         },
@@ -27,7 +27,10 @@ const options = {
 module.exports = {
   entry: {
     app: "./src/index.tsx",
-    // serviceWorker: "./src/serviceWorker.js",
+    // serviceWorker: {
+    //   import: path.resolve(__dirname, "../src/serviceWorker.ts"),
+    //   filename: "serviceWorker.js",
+    // },
   },
   module: {
     rules: [

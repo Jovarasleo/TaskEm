@@ -5,15 +5,15 @@ import { CSSTransition } from "react-transition-group";
 import { RootState } from "store/configureStore";
 import CreateProject from "../../views/taksManager/components/createProject/CreateProject";
 import styles from "./styles.module.scss";
+import { useNavigate } from "react-router-dom";
 
 interface NavbarProps {
   visible: boolean;
 }
 
 function Sidebar({ visible }: NavbarProps) {
-  const { userData } = useSelector((state: RootState) => state.auth);
-
   const nodeRef = useRef(null);
+  const navigate = useNavigate();
 
   return (
     <CSSTransition
@@ -28,9 +28,10 @@ function Sidebar({ visible }: NavbarProps) {
     >
       <nav role="navigation" className={clsx(styles.navWrapper)} ref={nodeRef}>
         <div className={styles.titleWrapper}>
-          <h1 className={styles.title}>Task&apos;Em!</h1>
+          <h1 className={styles.title} onClick={() => navigate("/")}>
+            {"Task'Em!"}
+          </h1>
         </div>
-        {userData ? <div>user: {userData.username}</div> : null}
         <CreateProject />
       </nav>
     </CSSTransition>

@@ -1,16 +1,16 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
-import { BrowserRouter } from "react-router-dom";
-// import * as serviceWorker from "./serviceWorker.js";
 import "./styles/global.scss";
+import { Provider } from "react-redux";
+import store from "./store/configureStore";
 
 const container = document.getElementById("app");
 const root = createRoot(container!);
 
 // serviceWorker.LocalRegister();
 
-let userOnline = "onLine" in navigator ? navigator.onLine : true;
+export let userOnline = "onLine" in navigator ? navigator.onLine : true;
 
 function ready() {
   if (!userOnline) {
@@ -33,27 +33,24 @@ function ready() {
 ready();
 
 // async function initServiceWorker() {
-//   const swRegistration = await navigator.serviceWorker.register(
-//     "./serviceWorker.js"
-//   );
+//   const swRegistration = await navigator.serviceWorker.register("./serviceWorker.js", {
+//     scope: "./",
+//   });
 
 //   const { installing, waiting, active } = swRegistration;
 //   let svcworker = installing || waiting || active;
 
-//   navigator.serviceWorker.addEventListener(
-//     "controllerchange",
-//     async function onControllerChange() {
-//       svcworker = navigator.serviceWorker.controller;
-//     }
-//   );
+//   navigator.serviceWorker.addEventListener("controllerchange", async function onControllerChange() {
+//     svcworker = navigator.serviceWorker.controller;
+//   });
 // }
 
 // initServiceWorker().catch(console.error);
 
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <Provider store={store}>
       <App />
-    </BrowserRouter>
+    </Provider>
   </React.StrictMode>
 );

@@ -8,13 +8,9 @@ interface Props {
 interface IGateways {
   findUserGateway: (email: string) => Promise<IUserFromDb[] | undefined>;
 }
-interface IUtils {
-  generateToken: (user: IUser) => string;
-}
 
-async function AuthenticateUser(
+export async function authenticateUserHandler(
   { findUserGateway }: IGateways,
-  { generateToken }: IUtils,
   { email, password }: Props
 ) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -34,15 +30,15 @@ async function AuthenticateUser(
   const passwordMatch = await bcrypt.compare(password, userPassword);
 
   if (passwordMatch) {
-    const myToken = generateToken(foundUser[0]);
-
     return {
-      token: myToken,
-      user: { username: foundUser[0].name, email: foundUser[0].email },
+      success: true,
+      user: {
+        userId: foundUser[0].uuid,
+        username: foundUser[0].name,
+        email: foundUser[0].email,
+      },
     };
   } else {
-    return { error: "incorrect email or password" };
+    return { success: false, error: "incorrect email or password" };
   }
 }
-
-export default AuthenticateUser;

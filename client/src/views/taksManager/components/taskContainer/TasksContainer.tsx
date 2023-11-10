@@ -1,11 +1,5 @@
 import React, { useState, useRef } from "react";
-import {
-  HandleDragStart,
-  HandleDrag,
-  DragItem,
-  Task as TaskModel,
-  Actions,
-} from "../../model/task";
+import { HandleDragStart, HandleDrag, Task as TaskModel } from "../../model/task";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
 import { uid } from "../../../../util/uid";
 import TaskCard from "../taskCard/TaskCard";
@@ -14,6 +8,7 @@ import clsx from "clsx";
 import { BsPlusCircle } from "react-icons/bs";
 import { createTask } from "../../../../store/slices/taskReducer";
 import { AppDispatch } from "../../../../store/configureStore";
+import { useSelector } from "react-redux";
 
 interface TaskContainer {
   dataTestId?: string;
@@ -23,12 +18,9 @@ interface TaskContainer {
   containerId: string;
   containerName: string;
   dragging: boolean;
-  toContainer: string;
-  nextIndex: null | number;
   currentlyDragging: string;
   dispatch: AppDispatch;
   handleDrag: HandleDrag;
-  handleDragStart: HandleDragStart;
   handleMouseDown: (
     e: React.MouseEvent<HTMLLIElement>,
     taskItem: HTMLLIElement | null,
@@ -44,13 +36,10 @@ function TasksContainer({
   tasksCount,
   containerId,
   containerName,
-  toContainer,
-  nextIndex,
   dragging,
   currentlyDragging,
   dispatch,
   handleDrag,
-  handleDragStart,
   handleMouseDown,
 }: TaskContainer) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -62,10 +51,21 @@ function TasksContainer({
   const todoContainer = containerName === "Todo";
 
   const createNewTask = () => {
+    const positionValuesList = tasks.map((item) => item.position);
+    const smallestValue = positionValuesList.length
+      ? Math.min(...positionValuesList) - 1000
+      : new Date().getTime();
+
     if (input.length) {
-      const id = uid();
       dispatch(
-        createTask({ projectId, containerId, value: input, taskId: id, count: tasksCount + 1 })
+        createTask({
+          projectId,
+          containerId,
+          value: input,
+          taskId: uid(),
+          count: tasksCount + 1,
+          position: smallestValue,
+        })
       );
     }
     setAddTask(false);
@@ -122,14 +122,10 @@ function TasksContainer({
               key={task.taskId}
               task={task}
               index={index}
-              arrayLength={tasks.length}
               dragging={dragging}
               container={containerId}
-              nextIndex={nextIndex}
-              toContainer={toContainer}
               currentlyDragging={currentlyDragging}
               dispatch={dispatch}
-              handleDragStart={handleDragStart}
               handleMouseDown={handleMouseDown}
             />
           );

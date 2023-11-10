@@ -11,8 +11,6 @@ export interface RegisterUser extends LoginUser {
   username: string;
 }
 
-const userToken = localStorage.getItem("userToken");
-
 export const registerUser = createAsyncThunk(
   "auth/register",
 
@@ -22,7 +20,7 @@ export const registerUser = createAsyncThunk(
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         mode: "cors", // no-cors, *cors, same-origin
         cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: "same-origin", // include, *same-origin, omit
+        credentials: "include", // include, *same-origin, omit
         headers: {
           "Content-Type": "application/json",
           // 'Content-Type': 'application/x-www-form-urlencoded',
@@ -60,7 +58,8 @@ export const loginUser = createAsyncThunk(
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         mode: "cors", // no-cors, *cors, same-origin
         cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: "same-origin", // include, *same-origin, omit
+        // credentials: "same-origin", // include, *same-origin, omit
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           // 'Content-Type': 'application/x-www-form-urlencoded',
@@ -73,27 +72,59 @@ export const loginUser = createAsyncThunk(
       const data = await response.json();
 
       if (response.ok) {
-        // Successful response
-        localStorage.setItem("userToken", data.token);
         return data;
       } else {
         // Error response, handle it here
         if (data) {
-          return rejectWithValue(data);
+          return rejectWithValue({ error: data });
         } else {
-          return rejectWithValue("Unknown error occurred.");
+          return rejectWithValue({ error: "Unknown error occurred." });
         }
       }
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue({ error });
     }
   }
 );
 
+export const logoutUser = createAsyncThunk("auth/logout", async (_, { rejectWithValue }) => {
+  try {
+    const response = await fetch(`${backendURL}/user/logout`, {
+      method: "POST", // *GET, POST, PUT, DELETE, etc.
+      mode: "cors", // no-cors, *cors, same-origin
+      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+      // credentials: "same-origin", // include, *same-origin, omit
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      redirect: "follow", // manual, *follow, error
+      referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // Successful response
+      return data;
+    } else {
+      // Error response, handle it here
+      if (data) {
+        return rejectWithValue({ error: data });
+      } else {
+        return rejectWithValue({ error: "Unknown error occurred." });
+      }
+    }
+  } catch (error) {
+    return rejectWithValue({ error });
+  }
+});
+
 const initialState = {
   loading: false,
   userData: { username: "", email: "" }, // for user object
-  userToken: userToken, // for storing the JWT
+  loggedIn: false,
   message: null,
   error: null,
   success: false, // for monitoring the registration process.
@@ -102,7 +133,14 @@ const initialState = {
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    userLoggedIn: (state) => {
+      return {
+        ...state,
+        loggedIn: true,
+      };
+    },
+  },
   extraReducers(builder) {
     builder
       .addCase(registerUser.pending, (state) => {
@@ -112,14 +150,13 @@ const authSlice = createSlice({
         state.loading = false;
         state.success = true; // registration successful
         state.message = action.payload.message;
-        state.userToken = action.payload.token;
         state.userData = action.payload.user;
         state.error = null;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.message = null;
-        state.error = action.payload.error;
+        state.error = action.payload?.error;
         state.success = false; // registration successful
       })
       .addCase(loginUser.pending, (state) => {
@@ -128,8 +165,8 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true; // registration successful
+        state.loggedIn = true;
         state.message = action.payload.message;
-        state.userToken = action.payload.token;
         state.userData = action.payload.user;
         state.error = null;
       })
@@ -138,8 +175,26 @@ const authSlice = createSlice({
         state.message = null;
         state.error = action.payload.error;
         state.success = false; // registration successful
+      })
+      .addCase(logoutUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(logoutUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true; // registration
+        state.loggedIn = false;
+        state.message = action.payload.message;
+        state.error = null;
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.loading = false;
+        state.message = null;
+        state.error = action.payload.message;
+        state.success = false; // registration successful
       });
   },
 });
+
+export const { userLoggedIn } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -35,10 +35,10 @@ module.exports = {
     runtimeChunk: false,
   },
   entry: {
-    serviceWorker: {
-      import: "./src/serviceWorker.js",
-      filename: "serviceWorker.js", // Set a specific filename
-    },
+    // serviceWorker: {
+    //   import: "./src/serviceWorker.js",
+    //   filename: "serviceWorker.js", // Set a specific filename
+    // },
   },
   plugins: [new MiniCssExtractPlugin({ filename: "[fullhash].css" })],
 

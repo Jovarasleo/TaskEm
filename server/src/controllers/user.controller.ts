@@ -1,5 +1,5 @@
 import { createUserHandler, getUserDataHandler } from "../handlers/userHandler";
-import AuthenticateUser from "../handlers/authHandler";
+import { authenticateUserHandler } from "../handlers/authHandler";
 import {
   createUserGateway,
   findUserGateway,
@@ -7,14 +7,14 @@ import {
 } from "../gateways/user.gateway";
 import generateId from "../infrastructure/utils/uuidGenerator";
 import hashPassword from "../infrastructure/utils/passwordHash";
-import { generateToken } from "../infrastructure/utils/jwtGenerator";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
+import { ISession } from "../server";
 
 export const getUserData = async (req: Request, res: Response) => {
   try {
-    const { uuid } = req.body;
+    const { userId } = req.session as ISession;
 
-    const data = getUserDataHandler(getUserDataGateway, uuid);
+    const data = getUserDataHandler(getUserDataGateway, userId);
     const response = await data;
 
     if (!response.success) {
@@ -30,13 +30,12 @@ export const getUserData = async (req: Request, res: Response) => {
 export const setUser = async (req: Request, res: Response) => {
   try {
     const { username, password, email } = req.body;
-    const user = createUserHandler(
+    const response = await createUserHandler(
       { findUserGateway, createUserGateway },
-      { generateId, hashPassword, generateToken },
+      { generateId, hashPassword },
       { username, password, email }
     );
 
-    const response = await user;
     if (response.error) {
       return res.status(400).send({ success: false, error: response?.error });
     }
@@ -44,38 +43,49 @@ export const setUser = async (req: Request, res: Response) => {
     return res.status(201).send({
       success: true,
       message: `user ${username} has been created`,
-      token: response.myToken,
       user: response.user,
     });
   } catch (error) {
-    console.log(error);
+    console.log({ error });
     res.status(500).send({ success: false, error: "Internal Server Error" });
   }
 };
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  console.log({ email, password });
 
   try {
-    const user = AuthenticateUser(
+    const response = await authenticateUserHandler(
       { findUserGateway },
-      { generateToken },
       { email, password }
     );
-    const response = await user;
-    if (response) {
-      res
-        .status(200)
-        .send({ success: true, token: response.token, user: response.user });
+
+    if (response.success && response.user) {
+      let session = req.session as ISession;
+      session.userId = response.user.userId;
+      session.authorized = true;
+
+      return res.status(200).send({ success: true, user: response.user });
     }
-    if (!user) {
-      res.send({ success: false, error: "User not found" });
-      return;
-    }
+
+    return res
+      .status(401)
+      .send({ success: false, error: "incorrect credentials" });
   } catch (e) {
     console.log(e);
     res.status(500).send({ success: false, error: "internal server error" });
     return;
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    req.session.destroy(() => {
+      return res.status(200).send({ success: true, message: "Logged Out" });
+    });
+  } catch (e) {
+    return res
+      .status(500)
+      .send({ success: false, error: "internal server error" });
   }
 };

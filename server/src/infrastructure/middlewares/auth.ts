@@ -1,42 +1,42 @@
-import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
+import { ISession } from "../../server";
 dotenv.config();
 
-interface Token {
-  userId: string;
-  iat: number;
-  exp: number;
-}
-
 export const auth = (req: Request, res: Response, next: NextFunction) => {
-  if (req.method === "POST" && req.baseUrl === "/user") {
+  if (
+    req.method === "POST" &&
+    (req.originalUrl === "/user/login" || req.originalUrl === "/user")
+  ) {
     return next();
   }
 
-  //Missing token decoder
-
-  if (!req.headers.authorization) {
-    res
-      .status(401)
-      .send({ success: false, error: "Please provide authorization header" });
-    return;
+  if ((req.session as ISession).authorized) {
+    return next();
   }
 
-  const token = req.headers.authorization.split(" ")[1];
+  return res
+    .status(401)
+    .send({ success: false, error: "Please provide authorization header" });
+};
 
-  try {
-    const myToken = process.env.TOKEN_SECRET as string;
-    const isTokenValid = jwt.verify(token, myToken);
-    console.log({ myToken, isTokenValid });
-    if (isTokenValid) {
-      const tokenData = <Token>jwt.decode(token);
-      console.log({ tokenData });
-      req.body = { ...req.body, uuid: tokenData.userId };
+export const authorizeSocket = (
+  req: Request,
+  res: Response,
+  socket: WebSocket,
+  next: NextFunction
+) => {
+  // You can access the request object from the socket handshake
 
-      return next();
-    }
-  } catch (e) {
-    res.status(401).send({ success: false, error: "invalid token" });
+  if ((req.session as ISession).authorized) {
+    return next();
   }
+
+  if (socket) {
+    return next(new Error("Authentication failed. No token provided."));
+  }
+
+  // You can use your existing auth middleware to check if the user is authorized
+  const err = new Error("Authentication failed. Invalid token.");
+  return next(err);
 };

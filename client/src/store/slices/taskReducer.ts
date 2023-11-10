@@ -3,36 +3,7 @@ import { getTasks, putTask, setTask } from "../../db";
 import { Task } from "../../views/taksManager/model/task";
 import { RootState } from "../configureStore";
 
-export const updateDataToIndexedDb = createAsyncThunk(
-  "task/updateData",
-  async (taskId: string, { getState }) => {
-    const currentState = getState() as RootState;
-    const foundTask = currentState.task.data.find((task) => task.taskId === taskId);
-    if (!foundTask) {
-      return;
-    }
-
-    try {
-      const data = await putTask(foundTask);
-      return data;
-    } catch (error) {
-      throw error;
-    }
-  }
-);
-
-export const setDataToIndexedDB = createAsyncThunk("task/setData", async (task: Task) => {
-  // Implement your logic to fetch data from IndexedDB here
-  try {
-    const data = await setTask(task);
-    return data;
-  } catch (error) {
-    throw error;
-  }
-});
-
-export const fetchDataFromIndexedDB = createAsyncThunk("task/getData", async () => {
-  // Implement your logic to fetch data from IndexedDB here
+export const getDataFromIndexedDB = createAsyncThunk("task/getData", async () => {
   try {
     const data = (await getTasks()) as Task[];
     return data;
@@ -75,12 +46,7 @@ const taskSlice = createSlice({
   } as InitialTaskState,
   reducers: {
     createTask: (state, action) => {
-      const { projectId, containerId, value, taskId, count } = action.payload;
-
-      const positionValuesList = state.data.map((item) => item.position);
-      const smallestValue = positionValuesList.length
-        ? Math.min(...positionValuesList) - 1000
-        : new Date().getTime();
+      const { projectId, containerId, value, taskId, count, position } = action.payload;
 
       return {
         ...state,
@@ -91,20 +57,21 @@ const taskSlice = createSlice({
             taskId,
             projectId,
             containerId,
-            position: smallestValue,
+            position,
             count,
           },
         ].sort((a, b) => a.position - b.position),
       };
     },
 
-    removeTask: (state, action) => {
-      const { taskId } = action.payload;
-      const newState = state.data.filter((task) => task.taskId !== taskId);
+    deleteTask: (state, action) => {
+      const filteredData = state.data.filter((task) => {
+        return action.payload.some((currentTasks: Task) => currentTasks.taskId !== task.taskId);
+      });
 
       return {
         ...state,
-        data: newState,
+        data: filteredData,
       };
     },
 
@@ -125,102 +92,56 @@ const taskSlice = createSlice({
     },
 
     moveTask: (state, action) => {
-      const { toContainerId, fromContainerId, toIndex, fromIndex, taskId } = action.payload;
-
-      if (!toContainerId || !fromContainerId) return state;
-      if (toContainerId === fromContainerId && toIndex === fromIndex) return state;
-
-      const tasksInContainer = state.data.filter((task) => task.containerId === toContainerId);
-
-      const taskAbove = tasksInContainer[toIndex - 1]?.position;
-      const taskBelow = tasksInContainer[toIndex + 1]?.position;
-      const taskAtIndex = tasksInContainer[toIndex]?.position;
-
-      const moveUp = toIndex < fromIndex;
-      const moveDn = toIndex > fromIndex;
-
-      // console.log({ taskAbove, taskBelow, tasksInContainer });
-      const sameContainer = toContainerId === fromContainerId;
-
-      const newPosition = (position: number) => {
-        if (!tasksInContainer.length) {
-          return position;
-        }
-        //first task in container
-        if (!taskAbove && taskAtIndex) {
-          console.log("IF 3");
-          return taskAtIndex - 1000;
-        }
-        //insert in between
-        if (sameContainer && moveUp && taskAbove && taskAtIndex) {
-          console.log("IF 4");
-          return (taskAtIndex + taskAbove) / 2;
-        }
-        //insert in between
-        if (sameContainer && moveDn && taskAtIndex && taskBelow) {
-          console.log("IF 5");
-          return (taskAtIndex + taskBelow) / 2;
-        }
-        //last task in another container
-        if (taskAbove && !taskBelow && !taskAtIndex) {
-          console.log("IF 1");
-          return taskAbove + 1000;
-        }
-        //last task in current container
-        if (!sameContainer && taskAbove && !taskBelow && taskAtIndex) {
-          console.log("IF 2");
-          return (taskAtIndex + taskAbove) / 2;
-        }
-        //last task in current container
-        if (sameContainer && taskAbove && !taskBelow && taskAtIndex) {
-          console.log("IF 2.5");
-          return taskAtIndex + 1000;
-        }
-        //insert between tasks in another container
-        if (!sameContainer && taskAbove && taskBelow && taskAtIndex) {
-          console.log("IF 3.5");
-          return (taskAtIndex + taskAbove) / 2;
-        }
-
-        return position;
-      };
-
-      const currentTask = state.data.find((task) => task.taskId === taskId);
-      const newTasksArray = state.data.filter((task) => task.taskId !== taskId);
-
-      if (!currentTask) {
+      const newTask = action.payload;
+      if (!newTask) {
         return state;
       }
 
-      const newTask = {
-        ...currentTask,
-        position: Math.floor(newPosition(currentTask.position)),
-        containerId: toContainerId as string,
-      };
+      const newTasksArray = state.data.filter((task) => task.taskId !== newTask.taskId);
 
       return {
         ...state,
         data: [...newTasksArray, newTask].sort((a, b) => a.position - b.position),
       };
     },
+
+    moveSocketTask: (state, action) => {
+      const newTask = action.payload;
+      if (!newTask) {
+        return state;
+      }
+
+      const newTasksArray = state.data.filter((task) => task.taskId !== newTask.taskId);
+
+      return {
+        ...state,
+        data: [...newTasksArray, newTask].sort((a, b) => a.position - b.position),
+      };
+    },
+
+    getSocketTasks: (state, action) => {
+      return {
+        ...state,
+        data: [...action.payload.data].sort((a, b) => a.position - b.position),
+      };
+    },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchDataFromIndexedDB.pending, (state) => {
-        console.log("pending");
+      .addCase(getDataFromIndexedDB.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(fetchDataFromIndexedDB.fulfilled, (state, action) => {
+      .addCase(getDataFromIndexedDB.fulfilled, (state, action) => {
         state.status = "succeeded";
-        console.log("payload", action.payload);
         state.data = filteredData(action.payload);
       })
-      .addCase(fetchDataFromIndexedDB.rejected, (state, action) => {
+      .addCase(getDataFromIndexedDB.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message ?? "";
       });
   },
 });
 
-export const { createTask, removeTask, editTask, moveTask } = taskSlice.actions;
+export const { createTask, deleteTask, editTask, moveTask, getSocketTasks, moveSocketTask } =
+  taskSlice.actions;
 export default taskSlice.reducer;

@@ -3,15 +3,17 @@ import { RootState } from "store/configureStore";
 
 const userApi = createApi({
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3000/user",
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.userToken;
-      if (token) {
-        // include token in req header
-        headers.set("authorization", `Bearer ${token}`);
-        return headers;
-      }
-    },
+    credentials: "include",
+    baseUrl: "http://127.0.0.1:3000",
+    mode: "cors",
+    // prepareHeaders: (headers, { getState }) => {
+    //   const token = (getState() as RootState).auth.userToken;
+    //   if (token) {
+    //     // include token in req header
+    //     headers.set("authorization", `Bearer ${token}`);
+    //     return headers;
+    //   }
+    // },
   }),
   reducerPath: "user",
   tagTypes: ["Post"],
@@ -19,7 +21,7 @@ const userApi = createApi({
     createUser: build.mutation({
       query(user) {
         return {
-          url: "",
+          url: "/user",
           method: "POST",
           body: user,
         };
@@ -32,7 +34,7 @@ const userApi = createApi({
     getUser: build.query({
       query() {
         return {
-          url: "",
+          url: "/user",
           method: "GET",
         };
       },
@@ -40,7 +42,7 @@ const userApi = createApi({
     updateUser: build.mutation({
       // note: an optional `queryFn` may be used in place of `query`
       query: (user) => ({
-        url: "/login",
+        url: "/user/login",
         method: "POST",
         body: user,
       }),
