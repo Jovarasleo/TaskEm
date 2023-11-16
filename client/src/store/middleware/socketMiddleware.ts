@@ -1,5 +1,5 @@
 import { Dispatch, MiddlewareAPI } from "redux";
-import { getSocketTasks, moveSocketTask, moveTask } from "../slices/taskReducer";
+import { getSocketTasks, moveSocketTask } from "../slices/taskReducer";
 import { deleteEvent, getEvents } from "../../db";
 import { setSocketContainers } from "../slices/containerReducer";
 import { setProjects } from "../slices/projectReducer";

@@ -1,15 +1,31 @@
 {
   "name": "Task'Em",
   "short_name": "TaskEm",
+  "description": "Task management app",
   "icons": [
     {
-      "src": "./mhm.png",
+      "src": "./assets/images/icon-32.png",
       "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/images/icon-64.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/images/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/images/icon-512.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ],
   "display": "fullscreen",
-  "start_url": "./build/index.html",
+  "start_url": "./index.html",
   "theme_color": "#B12A34",
   "background_color": "#B12A34"
 }

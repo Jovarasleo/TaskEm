@@ -1,18 +1,16 @@
 import { Dispatch, MiddlewareAPI } from "redux";
 import {
+  deleteContainers,
   deleteProject,
+  deleteTask,
   setContainers,
   setProject,
   setTask,
   storeEvents,
-  deleteContainers,
-  deleteTask,
 } from "../../db";
-import { userOnline } from "../..";
 import { uid } from "../../util/uid";
+import { Project, Task } from "../../views/taksManager/model/task";
 import { ws } from "./socketMiddleware";
-import { Project, Task, TaskContainer } from "../../views/taksManager/model/task";
-import { setSocketContainers } from "../slices/containerReducer";
 
 export const storeEventsMiddleware =
   (subscribers: any) => (store: MiddlewareAPI<Dispatch>) => (next: Dispatch) => {
@@ -50,6 +48,7 @@ export const storeEventsMiddleware =
 
               case "project/createProject":
               case "project/renameProject":
+                setProject(action.payload);
                 break;
               case "project/setProjects":
                 action.payload.forEach((project: Project) => setProject(project));

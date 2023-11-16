@@ -1,4 +1,3 @@
-import Dropdown from "@components/dropdown/Dropdown";
 import { useState } from "react";
 import { FiEdit3 } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,6 +9,7 @@ import { Task, TaskContainer } from "./model/task";
 import styles from "./styles.module.scss";
 import { deleteContainers } from "../../store/slices/containerReducer";
 import { deleteTask } from "../../store/slices/taskReducer";
+import Dropdown from "../../components/dropdown/Dropdown";
 
 function TaskManager() {
   const {
@@ -34,9 +34,9 @@ function TaskManager() {
     return tasks.filter((task) => task.containerId === container.containerId);
   };
 
-  const projectTasks = tasks.filter((task) => task.projectId === currentProject?.projectId);
+  const projectTasks = tasks.filter((task: Task) => task.projectId === currentProject?.projectId);
   const projectContainers = containers.filter(
-    (container) => container.projectId === currentProject?.projectId
+    (container: TaskContainer) => container.projectId === currentProject?.projectId
   );
 
   const [editName, setEditName] = useState(false);

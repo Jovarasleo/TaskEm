@@ -32,10 +32,21 @@ function ready() {
 
 ready();
 
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/service-worker.js")
+      .then((registration) => {
+        console.log("Service Worker registered:", registration);
+      })
+      .catch((error) => {
+        console.log("Service Worker registration failed:", error);
+      });
+  });
+}
+
 // async function initServiceWorker() {
-//   const swRegistration = await navigator.serviceWorker.register("./serviceWorker.js", {
-//     scope: "./",
-//   });
+//   const swRegistration = await navigator.serviceWorker.register("/service-worker.js");
 
 //   const { installing, waiting, active } = swRegistration;
 //   let svcworker = installing || waiting || active;

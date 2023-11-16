@@ -1,4 +1,3 @@
-import Button from "@components/button/Button";
 import styles from "./styles.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { Project } from "../../model/task";
@@ -8,6 +7,7 @@ import { uid } from "../../../../util/uid";
 import { createContainer } from "../../../../store/slices/containerReducer";
 import { useState } from "react";
 import { defaultContainers } from "../../model/containers";
+import Button from "../../../../components/button/Button";
 
 function CreateProject() {
   const dispatch: AppDispatch = useDispatch();

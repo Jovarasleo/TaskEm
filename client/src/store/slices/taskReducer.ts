@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getTasks, putTask, setTask } from "../../db";
+import { getTasks } from "../../db";
 import { Task } from "../../views/taksManager/model/task";
-import { RootState } from "../configureStore";
 
 export const getDataFromIndexedDB = createAsyncThunk("task/getData", async () => {
   try {
