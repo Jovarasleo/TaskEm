@@ -1,6 +1,7 @@
 const path = require("path");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 const options = {
   generate: (file) => {
@@ -8,15 +9,36 @@ const options = {
       ...file,
       name: "Task'Em",
       short_name: "TaskEm",
+      description: "Task management app",
+      scope: "./",
       icons: [
         {
-          src: path.resolve(__dirname, "../src/mhm.png"),
+          src: "assets/icon-32.png",
           sizes: "32x32",
           type: "image/png",
+          purpose: "any maskable",
+        },
+        {
+          src: "assets/icon-64.png",
+          sizes: "64x64",
+          type: "image/png",
+          purpose: "any maskable",
+        },
+        {
+          src: "assets/icon-128.png",
+          sizes: "128x128",
+          type: "image/png",
+          purpose: "any maskable",
+        },
+        {
+          src: "assets/icon-512.png",
+          sizes: "512x512",
+          type: "image/png",
+          purpose: "any maskable",
         },
       ],
-      display: "fullscreen",
-      start_url: "./build/index.html",
+      display: "standalone",
+      start_url: "./index.html",
       theme_color: "#B12A34",
       background_color: "#B12A34",
     };
@@ -27,16 +49,16 @@ const options = {
 module.exports = {
   entry: {
     app: "./src/index.tsx",
-    // serviceWorker: {
-    //   import: path.resolve(__dirname, "../src/serviceWorker.ts"),
-    //   filename: "serviceWorker.js",
-    // },
+    sw: "./src/service-worker.ts",
+  },
+  output: {
+    assetModuleFilename: "[name][ext]",
   },
   module: {
     rules: [
       {
-        test: /\.(jpg|jpeg|png|gif|mp3|svg)$/,
-        use: ["file-loader"],
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: "asset/resource",
       },
       {
         test: /\.m?js$/,
@@ -65,6 +87,9 @@ module.exports = {
   },
 
   plugins: [
+    new CopyWebpackPlugin({
+      patterns: [{ from: "./src/assets/images", to: "assets" }],
+    }),
     new HTMLWebpackPlugin({
       template: "./src/index.html",
       inject: true,

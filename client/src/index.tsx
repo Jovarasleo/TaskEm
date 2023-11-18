@@ -8,8 +8,6 @@ import store from "./store/configureStore";
 const container = document.getElementById("app");
 const root = createRoot(container!);
 
-// serviceWorker.LocalRegister();
-
 export let userOnline = "onLine" in navigator ? navigator.onLine : true;
 
 function ready() {
@@ -32,20 +30,18 @@ function ready() {
 
 ready();
 
-// async function initServiceWorker() {
-//   const swRegistration = await navigator.serviceWorker.register("./serviceWorker.js", {
-//     scope: "./",
-//   });
+async function initServiceWorker() {
+  const swRegistration = await navigator.serviceWorker.register("./sw.js");
+  const { installing, waiting, active } = swRegistration;
+  let svcworker = installing || waiting || active;
 
-//   const { installing, waiting, active } = swRegistration;
-//   let svcworker = installing || waiting || active;
+  console.log({ svcworker });
+  navigator.serviceWorker.addEventListener("controllerchange", async function onControllerChange() {
+    svcworker = navigator.serviceWorker.controller;
+  });
+}
 
-//   navigator.serviceWorker.addEventListener("controllerchange", async function onControllerChange() {
-//     svcworker = navigator.serviceWorker.controller;
-//   });
-// }
-
-// initServiceWorker().catch(console.error);
+initServiceWorker().catch(console.error);
 
 root.render(
   <React.StrictMode>

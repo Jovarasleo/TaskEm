@@ -40,10 +40,6 @@ module.exports = {
           "sass-loader",
         ],
       },
-      {
-        test: /\.(jpg|jpeg|png|gif|mp3|svg)$/,
-        use: ["file-loader"],
-      },
     ],
   },
   plugins: [new ReactRefreshWebpackPlugin()],
