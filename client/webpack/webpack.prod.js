@@ -26,13 +26,17 @@ module.exports = {
     ],
   },
   output: {
-    filename: "index.[hash].js",
+    filename: (file) => {
+      if (file.runtime === "sw") {
+        return "[name].js";
+      } else return "[name].[hash].js";
+    },
     asyncChunks: true,
     path: path.resolve(__dirname, "../build"),
     clean: true,
   },
   optimization: {
-    runtimeChunk: false,
+    runtimeChunk: true,
   },
   entry: {
     // serviceWorker: {

@@ -50,6 +50,7 @@ export const storeEventsMiddleware =
 
               case "project/createProject":
               case "project/renameProject":
+                setProject(action.payload);
                 break;
               case "project/setProjects":
                 action.payload.forEach((project: Project) => setProject(project));

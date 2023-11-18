@@ -1,6 +1,7 @@
 node_modules
 build
 coverage
+/ssl/
 /test-results/
 /playwright-report/
 /playwright/.cache/
