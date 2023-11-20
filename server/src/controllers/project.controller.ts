@@ -2,15 +2,15 @@ import {
   getUserProjectsGateway,
   setProjectGateway,
   deleteProjectGateway,
-} from "../gateways/project.gateway";
+} from "../gateways/project.gateway.js";
 import { Request, Response } from "express";
 import {
   createProjectHandler,
   deleteProjectHandler,
   getProjectsHandler,
-} from "../handlers/projectHandlers";
-import { ISession } from "../server";
-import Project from "../entities/projectEntity";
+} from "../handlers/projectHandlers.js";
+import { ISession } from "../server.js";
+import Project from "../entities/projectEntity.js";
 
 export const getProjects = async (req: Request, res: Response) => {
   const { userId } = req.session as ISession;

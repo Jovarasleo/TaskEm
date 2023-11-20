@@ -4,7 +4,7 @@ import {
   updateTaskPositionGateway,
   deleteTaskGateway,
   getSingleTaskGateway,
-} from "../gateways/task.gateway";
+} from "../gateways/task.gateway.js";
 import { Request, Response } from "express";
 import {
   createTaskHandler,
@@ -12,8 +12,8 @@ import {
   getSingleTaskHandler,
   getTasksHandler,
   updateTaskHandler,
-} from "../handlers/taskHandlers";
-import Task from "../entities/taskEntity";
+} from "../handlers/taskHandlers.js";
+import Task from "../entities/taskEntity.js";
 
 export const setTask = async (req: Request, res: Response) => {
   const { taskId, projectId, containerId, value, count, position } = req.body;

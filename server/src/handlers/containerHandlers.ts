@@ -1,5 +1,5 @@
 import { RowDataPacket } from "mysql2";
-import Container, { IContainer } from "../entities/containerEntity";
+import Container, { IContainer } from "../entities/containerEntity.js";
 
 type SetContainerGateway = ({
   containerId,

@@ -1,6 +1,6 @@
 import { RowDataPacket } from "mysql2";
-import db from "../interface/data.access";
-import { IUser } from "../entities/userEntity";
+import db from "../interface/data.access.js";
+import { IUser } from "../entities/userEntity.js";
 
 export type IUserFromDb = IUser & RowDataPacket;
 

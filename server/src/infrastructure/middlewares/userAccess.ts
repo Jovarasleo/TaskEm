@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { NextFunction, Request, Response } from "express";
-import { userHasProjectAccessGateway } from "../../gateways/access.gateway";
-import { ISession } from "../../server";
+import { userHasProjectAccessGateway } from "../../gateways/access.gateway.js";
+import { ISession } from "../../server.js";
 
 dotenv.config();
 

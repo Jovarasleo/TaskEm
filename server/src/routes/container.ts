@@ -3,7 +3,7 @@ import express from "express";
 import {
   getContainers,
   setContainer,
-} from "../controllers/container.controller";
+} from "../controllers/container.controller.js";
 
 const router = express.Router();
 

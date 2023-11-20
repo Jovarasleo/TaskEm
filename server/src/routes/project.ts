@@ -1,7 +1,7 @@
 import express from "express";
 
-import { getProjects } from "../controllers/project.controller";
-import { setProject } from "../controllers/project.controller";
+import { getProjects } from "../controllers/project.controller.js";
+import { setProject } from "../controllers/project.controller.js";
 
 const router = express.Router();
 

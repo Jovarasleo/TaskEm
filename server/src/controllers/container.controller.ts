@@ -2,12 +2,12 @@ import { Request, Response } from "express";
 import {
   getContainersGateway,
   setContainerGateway,
-} from "../gateways/container.gateway";
+} from "../gateways/container.gateway.js";
 import {
   createContainerHandler,
   getContainersHandler,
-} from "../handlers/containerHandlers";
-import Container from "../entities/containerEntity";
+} from "../handlers/containerHandlers.js";
+import Container from "../entities/containerEntity.js";
 
 export const setContainer = async (req: Request, res: Response) => {
   const { containerId, containerName, position, projectId } = req.body;

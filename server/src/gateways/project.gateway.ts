@@ -1,6 +1,6 @@
 import { RowDataPacket } from "mysql2";
-import { IProject } from "../entities/projectEntity";
-import db from "../interface/data.access";
+import { IProject } from "../entities/projectEntity.js";
+import db from "../interface/data.access.js";
 
 export async function getUserProjectsGateway(userId: string) {
   const sql =

@@ -1,5 +1,5 @@
 import { RowDataPacket } from "mysql2";
-import Project, { IProject } from "../entities/projectEntity";
+import Project, { IProject } from "../entities/projectEntity.js";
 
 type SetProjectGateway = ({
   projectId,

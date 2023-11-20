@@ -5,9 +5,9 @@
   "main": "src/server.ts",
   "type": "module",
   "scripts": {
-    "dev": "nodemon --watch src/**/*.ts --exec ts-node-esm src/server.ts",
+    "dev": "nodemon --watch src/**/*.ts --exec node --no-warnings=ExperimentalWarning --loader ts-node/esm src/server.ts",
     "build": "tsc -p tsconfig.json",
-    "start": "node --experimental-specifier-resolution=node build/server.js"
+    "start": "node build/server.js"
   },
   "author": "Jovaras Leo",
   "license": "ISC",

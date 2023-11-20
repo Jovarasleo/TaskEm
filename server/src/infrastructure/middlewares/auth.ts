@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { NextFunction, Request, Response } from "express";
-import { ISession } from "../../server";
+import { ISession } from "../../server.js";
 dotenv.config();
 
 export const auth = (req: Request, res: Response, next: NextFunction) => {

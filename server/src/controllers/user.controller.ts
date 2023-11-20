@@ -1,14 +1,17 @@
-import { createUserHandler, getUserDataHandler } from "../handlers/userHandler";
-import { authenticateUserHandler } from "../handlers/authHandler";
+import {
+  createUserHandler,
+  getUserDataHandler,
+} from "../handlers/userHandler.js";
+import { authenticateUserHandler } from "../handlers/authHandler.js";
 import {
   createUserGateway,
   findUserGateway,
   getUserDataGateway,
-} from "../gateways/user.gateway";
-import generateId from "../infrastructure/utils/uuidGenerator";
-import hashPassword from "../infrastructure/utils/passwordHash";
+} from "../gateways/user.gateway.js";
+import generateId from "../infrastructure/utils/uuidGenerator.js";
+import hashPassword from "../infrastructure/utils/passwordHash.js";
 import { Request, Response } from "express";
-import { ISession } from "../server";
+import { ISession } from "../server.js";
 
 export const getUserData = async (req: Request, res: Response) => {
   try {
