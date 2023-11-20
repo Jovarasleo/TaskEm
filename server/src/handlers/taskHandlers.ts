@@ -1,5 +1,5 @@
 import { RowDataPacket } from "mysql2";
-import Task, { ITask } from "../entities/taskEntity";
+import Task, { ITask } from "../entities/taskEntity.js";
 
 type SetTaskGateway = ({
   taskId,

@@ -1,6 +1,6 @@
 import { RowDataPacket } from "mysql2";
-import { ITask } from "../entities/taskEntity";
-import db from "../interface/data.access";
+import { ITask } from "../entities/taskEntity.js";
+import db from "../interface/data.access.js";
 
 export async function setTaskGateway({
   taskId,

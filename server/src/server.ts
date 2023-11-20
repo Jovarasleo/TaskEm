@@ -7,28 +7,28 @@ import { WebSocketServer } from "ws";
 import {
   getContainersSocketController,
   setContainerSocketHandler,
-} from "./controllers/container.controller";
+} from "./controllers/container.controller.js";
 import {
   deleteProjectSocketController,
   getProjectsSocketController,
   setProjectSocketController,
-} from "./controllers/project.controller";
+} from "./controllers/project.controller.js";
 import {
   deleteTaskSocketController,
   getSingleTaskSocketController,
   getTasksSocketController,
   setTaskSocketController,
   updateTaskPositionSocketController,
-} from "./controllers/task.controller";
-import { auth } from "./infrastructure/middlewares/auth";
+} from "./controllers/task.controller.js";
+import { auth } from "./infrastructure/middlewares/auth.js";
 import {
   userAccess,
   userAccessSocketMiddleware,
-} from "./infrastructure/middlewares/userAccess";
-import containerRouters from "./routes/container";
-import projectRouters from "./routes/project";
-import taskRouters from "./routes/task";
-import usersRouters from "./routes/user";
+} from "./infrastructure/middlewares/userAccess.js";
+import containerRouters from "./routes/container.js";
+import projectRouters from "./routes/project.js";
+import taskRouters from "./routes/task.js";
+import usersRouters from "./routes/user.js";
 
 export interface ISession extends Session {
   userId: string;

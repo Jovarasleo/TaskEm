@@ -1,6 +1,5 @@
 import * as bcrypt from "bcrypt";
-import { IUserFromDb } from "../gateways/user.gateway";
-import { IUser } from "../entities/userEntity";
+import { IUserFromDb } from "../gateways/user.gateway.js";
 interface Props {
   email: string;
   password: string;

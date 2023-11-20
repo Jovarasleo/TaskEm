@@ -1,5 +1,5 @@
 import { RowDataPacket } from "mysql2";
-import db from "../interface/data.access";
+import db from "../interface/data.access.js";
 
 export async function userHasProjectAccessGateway(
   userId: string,
