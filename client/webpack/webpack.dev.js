@@ -1,15 +1,29 @@
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const fs = require("fs");
 
+const allowHttps = () => {
+  const keyFilePath = "./ssl/localhost-key.pem";
+  const certFilePath = "./ssl/localhost.pem";
+
+  if (fs.existsSync(keyFilePath) && fs.existsSync(certFilePath)) {
+    const key = fs.readFileSync("./ssl/localhost-key.pem");
+    const cert = fs.readFileSync("./ssl/localhost.pem");
+
+    return {
+      https: {
+        key,
+        cert,
+      },
+    };
+  } else return {};
+};
+
 module.exports = {
   mode: "development",
   devServer: {
     hot: true,
     historyApiFallback: true,
-    https: {
-      key: fs.readFileSync("./ssl/localhost-key.pem"),
-      cert: fs.readFileSync("./ssl/localhost.pem"),
-    },
+    ...allowHttps(),
   },
   module: {
     rules: [

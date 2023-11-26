@@ -38,25 +38,9 @@ module.exports = {
   optimization: {
     runtimeChunk: true,
   },
-  entry: {
-    // serviceWorker: {
-    //   import: "./src/serviceWorker.js",
-    //   filename: "serviceWorker.js", // Set a specific filename
-    // },
-  },
   plugins: [new MiniCssExtractPlugin({ filename: "[fullhash].css" })],
 
   optimization: {
-    // splitChunks: {
-    //   chunks: "all",
-    //   cacheGroups: {
-    //     serviceWorker: {
-    //       test: /service-worker.js/,
-    //       name: "service-worker",
-    //       chunks: "all",
-    //     },
-    //   },
-    // },
     minimize: true,
     minimizer: [
       new TerserPlugin({
