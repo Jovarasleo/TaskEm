@@ -37,9 +37,6 @@ jobs:
             sudo chmod -R 777 TaskEm
             sudo chmod -R 777 TaskEm/client
 
-            sudo mkdir TaskEm/server
-            sudo chmod -R 777 TaskEm/server
-
       - name: Deploy FE to Server
         uses: easingthemes/ssh-deploy@main
         env:
