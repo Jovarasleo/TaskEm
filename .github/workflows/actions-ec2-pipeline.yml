@@ -5,6 +5,12 @@ on:
   push:
     branches:
       - main
+      
+- name: Debug Directories
+  run: |
+    ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.USERNAME }}@${{ secrets.HOST_DNS }} "mkdir -p ${{ secrets.TARGET_DIR }}"
+    ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.USERNAME }}@${{ secrets.HOST_DNS }} "mkdir -p ${{ secrets.TARGET_DIR }}/client"
+    ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.USERNAME }}@${{ secrets.HOST_DNS }} "mkdir -p ${{ secrets.TARGET_DIR }}/server"
 
 jobs:
   deploy:
@@ -32,7 +38,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
           REMOTE_HOST: ${{ secrets.HOST_DNS }}
           REMOTE_USER: ${{ secrets.USERNAME }}
-          TARGET: ${{ secrets.TARGET_DIR }}
+          TARGET: ${{ secrets.TARGET_DIR }}/client
           SOURCE: client/build # specify the directory containing the built artifacts
 
       - name: Install BE dependencies and build
@@ -47,7 +53,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
           REMOTE_HOST: ${{ secrets.HOST_DNS }}
           REMOTE_USER: ${{ secrets.USERNAME }}
-          TARGET: ${{ secrets.TARGET_DIR }}
+          TARGET: ${{ secrets.TARGET_DIR }}/server
           SOURCE: server # specify the directory containing the built artifacts
 
 
