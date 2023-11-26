@@ -20,12 +20,6 @@ jobs:
         with:
           node-version: "20.9"
 
-      - name: Debug Directories
-        run: |
-          ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.USERNAME }}@${{ secrets.HOST_DNS }} "mkdir -p ${{ secrets.TARGET_DIR }}"
-          ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.USERNAME }}@${{ secrets.HOST_DNS }} "mkdir -p ${{ secrets.TARGET_DIR }}/client"
-          ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.USERNAME }}@${{ secrets.HOST_DNS }} "mkdir -p ${{ secrets.TARGET_DIR }}/server"
-
       - name: Install FE dependencies and build
         run: |
           cd client
@@ -38,7 +32,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
           REMOTE_HOST: ${{ secrets.HOST_DNS }}
           REMOTE_USER: ${{ secrets.USERNAME }}
-          TARGET: ${{ secrets.TARGET_DIR }}/client
+          TARGET: ${{ secrets.TARGET_DIR }}
           SOURCE: client/build # specify the directory containing the built artifacts
 
       - name: Install BE dependencies and build
