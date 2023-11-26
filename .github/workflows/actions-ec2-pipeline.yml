@@ -33,8 +33,8 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-          sudo mkdir -p TaskEm/client
-          sudo mkdir -p TaskEm/server
+            sudo mkdir -p TaskEm/client
+            sudo mkdir -p TaskEm/server
 
       - name: Deploy FE to Server
         uses: easingthemes/ssh-deploy@main
@@ -59,5 +59,4 @@ jobs:
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: ${{ secrets.TARGET_DIR_BE }}
           SOURCE: server # specify the directory containing the built artifacts
-
 
