@@ -9,7 +9,7 @@ function App(): JSX.Element {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index path="/" element={<TaskManager />} />
+          <Route index element={<TaskManager />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
         </Route>

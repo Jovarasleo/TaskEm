@@ -27,7 +27,8 @@ self.addEventListener("activate", (event: any) => {
       )
     )
   );
-}); //listen for requests
+});
+//listen for requests
 self.addEventListener("fetch", (event: any) => {
   event.respondWith(
     caches
