@@ -30,6 +30,5 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            sudo cd TaskEm/client
             sudo npm install
             sudo npm run build
