@@ -8,18 +8,11 @@ function App(): JSX.Element {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="*"
-          element={
-            <Layout>
-              <Routes>
-                <Route path="/" element={<TaskManager />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-              </Routes>
-            </Layout>
-          }
-        />
+        <Route path="/" element={<Layout />}>
+          <Route index path="/" element={<TaskManager />} />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

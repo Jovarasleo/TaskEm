@@ -8,11 +8,13 @@ import { uid } from "../../../../util/uid";
 import { createContainer } from "../../../../store/slices/containerReducer";
 import { useState } from "react";
 import { defaultContainers } from "../../model/containers";
+import { useNavigate } from "react-router-dom";
 
 function CreateProject() {
   const dispatch: AppDispatch = useDispatch();
   const projects = useSelector((state: RootState) => state.project);
   const [projectName, setProjectName] = useState("");
+  const navigate = useNavigate();
 
   const handleProjectName = (value: string) => {
     setProjectName(value);
@@ -30,6 +32,7 @@ function CreateProject() {
               project.projectId === projects?.selected?.projectId ? styles.selectedProject : ""
             }
             onClick={() => {
+              navigate("/");
               dispatch(selectProject(project));
             }}
           >
