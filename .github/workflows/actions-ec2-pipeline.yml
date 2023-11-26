@@ -34,8 +34,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             sudo mkdir -p TaskEm/client
-            sudo chmod -R 777 TaskEm
-            sudo chmod -R 777 TaskEm/client
+            sudo chmod -R 755 TaskEm
+            sudo chmod -R 755 TaskEm/client
 
       - name: Deploy FE to Server
         uses: easingthemes/ssh-deploy@main
@@ -62,3 +62,21 @@ jobs:
           TARGET: ${{ secrets.TARGET_DIR }}
           SOURCE: server # specify the directory containing the built artifacts
 
+      - name: create .env file
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_DNS }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cat <<EOL | sudo tee TaskEm/server/.env
+            NODE_ENV=production
+            PORT=${{ secrets.BE_PORT }}
+
+            DB_HOST=${{ secrets.DB_HOST}}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+
+            SESSION_SECRET=${{ secrets.SESSION_SECRET }}
+            EOL
