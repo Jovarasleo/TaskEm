@@ -22,8 +22,7 @@ jobs:
 
       - name: Install dependencies and build
         run: |
-          cd TaskEm
-          npm install
+          npm run install
           cd client
           npm run build
 
