@@ -6,13 +6,10 @@ const allowHttps = () => {
   const certFilePath = "./ssl/localhost.pem";
 
   if (fs.existsSync(keyFilePath) && fs.existsSync(certFilePath)) {
-    const key = fs.readFileSync("./ssl/localhost-key.pem");
-    const cert = fs.readFileSync("./ssl/localhost.pem");
-
     return {
       https: {
-        key,
-        cert,
+        key: fs.readFileSync("./ssl/localhost-key.pem"),
+        cert: fs.readFileSync("./ssl/localhost.pem"),
       },
     };
   } else return {};

@@ -34,11 +34,10 @@ const options = {
           src: "assets/icon-512.png",
           sizes: "512x512",
           type: "image/png",
-          purpose: "any maskable",
         },
       ],
       display: "standalone",
-      start_url: "./index.html",
+      start_url: "/",
       theme_color: "#B12A34",
       background_color: "#B12A34",
     };
