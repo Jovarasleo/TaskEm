@@ -25,6 +25,16 @@ jobs:
           cd client
           npm install
           npm run build
+          
+      - name: Executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_DNS }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+        sudo mkdir -p TaskEm/client
+        sudo mkdir -p TaskEm/server
 
       - name: Deploy FE to Server
         uses: easingthemes/ssh-deploy@main
@@ -51,9 +61,3 @@ jobs:
           SOURCE: server # specify the directory containing the built artifacts
 
 
-      # - name: Executing remote ssh commands using ssh key
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.HOST_DNS }}
-      #     username: ${{ secrets.USERNAME }}
-      #     key: ${{ secrets.EC2_SSH_KEY }}
