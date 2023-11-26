@@ -53,6 +53,7 @@ jobs:
         run: |
           cd server
           npm install
+          npm install typescript
           npm run build
 
       - name: Deploy BE to Server
