@@ -37,7 +37,7 @@ jobs:
             sudo chmod 755 TaskEm
             sudo chmod 755 TaskEm/client
 
-            sudo mkdir -p TaskEm/server
+            sudo mkdir TaskEm/server
             sudo chmod 755 TaskEm/server
 
       - name: Deploy FE to Server
