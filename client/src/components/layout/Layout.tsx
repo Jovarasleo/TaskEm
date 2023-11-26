@@ -1,15 +1,13 @@
-import { ReactElement } from "react";
 import Header from "../header/Header";
+import { Outlet } from "react-router-dom";
 
-interface LayoutProps {
-  children: ReactElement;
-}
-
-function Layout({ children }: LayoutProps) {
+function Layout() {
   return (
     <>
       <Header />
-      <main>{children}</main>
+      <main>
+        <Outlet />
+      </main>
     </>
   );
 }
