@@ -35,9 +35,9 @@ jobs:
           script: |
             sudo mkdir -p TaskEm/client
             sudo mkdir -p TaskEm/server
-            sudo chmod TaskEm
-            sudo chmod TaskEm/client
-            sudo chmod TaskEm/server
+            sudo chmod 755 TaskEm
+            sudo chmod 755 TaskEm/client
+            sudo chmod 755 TaskEm/server
 
       - name: Deploy FE to Server
         uses: easingthemes/ssh-deploy@main
