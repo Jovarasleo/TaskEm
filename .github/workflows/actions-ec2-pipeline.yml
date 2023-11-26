@@ -33,7 +33,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.HOST_DNS }}
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: ${{ secrets.TARGET_DIR }}
-          SOURCE: TaskEm/client/build # specify the directory containing the built artifacts
+          SOURCE: client/build # specify the directory containing the built artifacts
 
       - name: Install BE dependencies and build
         run: |
@@ -48,7 +48,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.HOST_DNS }}
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: ${{ secrets.TARGET_DIR }}
-          SOURCE: TaskEm/server # specify the directory containing the built artifacts
+          SOURCE: server # specify the directory containing the built artifacts
 
 
       # - name: Executing remote ssh commands using ssh key
