@@ -1,14 +1,13 @@
-import React, { useState, useRef } from "react";
-import { HandleDragStart, HandleDrag, Task as TaskModel } from "../../model/task";
+import clsx from "clsx";
+import React, { useRef, useState } from "react";
+import { BsPlusCircle } from "react-icons/bs";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
+import { AppDispatch } from "../../../../store/configureStore";
+import { createTask } from "../../../../store/slices/taskReducer";
 import { uid } from "../../../../util/uid";
+import { HandleDrag, Task as TaskModel } from "../../model/task";
 import TaskCard from "../taskCard/TaskCard";
 import styles from "./styles.module.scss";
-import clsx from "clsx";
-import { BsPlusCircle } from "react-icons/bs";
-import { createTask } from "../../../../store/slices/taskReducer";
-import { AppDispatch } from "../../../../store/configureStore";
-import { useSelector } from "react-redux";
 
 interface TaskContainer {
   dataTestId?: string;
@@ -21,8 +20,8 @@ interface TaskContainer {
   currentlyDragging: string;
   dispatch: AppDispatch;
   handleDrag: HandleDrag;
-  handleMouseDown: (
-    e: React.MouseEvent<HTMLLIElement>,
+  handlePointerDown: (
+    e: React.PointerEvent<HTMLLIElement>,
     taskItem: HTMLLIElement | null,
     container: string,
     index: number,
@@ -40,7 +39,7 @@ function TasksContainer({
   currentlyDragging,
   dispatch,
   handleDrag,
-  handleMouseDown,
+  handlePointerDown,
 }: TaskContainer) {
   const containerRef = useRef<HTMLDivElement>(null);
   const outsideClickRef = useRef<HTMLTextAreaElement>(null);
@@ -85,7 +84,7 @@ function TasksContainer({
       key={containerId}
       className={clsx(styles.tasksContainerWrapper, dragging && styles.containerHover)}
       role={containerName}
-      onMouseOver={(e) => handleDrag(e, containerRef, containerId)}
+      onPointerOver={(e) => handleDrag(e, containerRef, containerId)}
       ref={containerRef}
     >
       <div>
@@ -126,7 +125,7 @@ function TasksContainer({
               container={containerId}
               currentlyDragging={currentlyDragging}
               dispatch={dispatch}
-              handleMouseDown={handleMouseDown}
+              handlePointerDown={handlePointerDown}
             />
           );
         })}

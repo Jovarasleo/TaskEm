@@ -26,6 +26,7 @@ const useDragAndDrop = (dispatch: AppDispatch, tasks: Task[]) => {
       left: `${left}px`,
       width: `${width}px`,
       boxShadow: `0px 0px 6px 2px rgb(84, 84, 84)`,
+      transition: "transform 250ms",
       pointerEvents: "none",
     };
   };
@@ -44,7 +45,7 @@ const useDragAndDrop = (dispatch: AppDispatch, tasks: Task[]) => {
     handleDragEnd();
   };
 
-  const handleMouseMove = (event: MouseEvent) => {
+  const handleMouseMove = (event: PointerEvent) => {
     if (!isDragging.current) {
       return;
     }
@@ -58,17 +59,22 @@ const useDragAndDrop = (dispatch: AppDispatch, tasks: Task[]) => {
     }
   };
 
-  const handleMouseDown = (
-    e: React.MouseEvent<HTMLLIElement>,
+  const handlePointerDown = (
+    e: React.PointerEvent<HTMLLIElement>,
     taskItem: HTMLLIElement | null,
     containerId: string,
     index: number,
     taskId: string
   ) => {
-    if (taskItem === null) return;
+    if (taskItem == null) return;
 
     e.preventDefault();
     e.stopPropagation();
+
+    if ((e.target as HTMLLIElement).hasPointerCapture(e.pointerId)) {
+      (e.target as HTMLLIElement).releasePointerCapture(e.pointerId);
+      navigator.vibrate(50);
+    }
 
     dragItemNode.current = taskItem;
     isDragging.current = true;
@@ -87,8 +93,14 @@ const useDragAndDrop = (dispatch: AppDispatch, tasks: Task[]) => {
     cloneElement.current = clone;
 
     if (isDragging) {
-      document.addEventListener("mousemove", handleMouseMove);
-      document.addEventListener("mouseup", handleMouseUp);
+      document.addEventListener("pointermove", handleMouseMove);
+      document.addEventListener("pointerup", handleMouseUp);
+
+      setTimeout(() => {
+        if (cloneElement.current) {
+          cloneElement.current.style.transform = "scale(0.85)";
+        }
+      }, 5);
     }
   };
 
@@ -193,14 +205,14 @@ const useDragAndDrop = (dispatch: AppDispatch, tasks: Task[]) => {
     setNextIndex(null);
     setDragging(false);
 
-    document.removeEventListener("mousemove", handleMouseMove);
-    document.removeEventListener("mouseup", handleMouseUp);
+    document.removeEventListener("pointermove", handleMouseMove);
+    document.removeEventListener("pointerup", handleMouseUp);
   };
 
   return {
     handleDrag: handleDrag(tasks),
     handleDragStart,
-    handleMouseDown,
+    handlePointerDown,
     handleDragCancel: handleDragCancel(tasks),
     dragging,
     toContainer,

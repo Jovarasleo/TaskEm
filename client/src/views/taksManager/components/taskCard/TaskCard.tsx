@@ -9,6 +9,7 @@ import Button from "../../../../components/button/Button";
 import { AppDispatch } from "../../../../store/configureStore";
 import { deleteTask, editTask } from "../../../../store/slices/taskReducer";
 import styles from "./styles.module.scss";
+import { isMobile } from "../../../..";
 
 interface TaskProps {
   dataTestId?: string;
@@ -18,14 +19,16 @@ interface TaskProps {
   dragging: boolean;
   currentlyDragging: string;
   dispatch: AppDispatch;
-  handleMouseDown: (
-    e: React.MouseEvent<HTMLLIElement>,
+  handlePointerDown: (
+    e: React.PointerEvent<HTMLLIElement>,
     taskItem: HTMLLIElement | null,
     container: string,
     index: number,
     taskId: string
   ) => void;
 }
+
+const HOLD_THRESHOLD = isMobile ? 150 : 0;
 
 function TaskCard({
   dataTestId,
@@ -35,7 +38,7 @@ function TaskCard({
   dragging,
   currentlyDragging,
   dispatch,
-  handleMouseDown,
+  handlePointerDown,
 }: TaskProps) {
   const { value, taskId } = task;
   const [inputField, setInputField] = useState(false);
@@ -46,6 +49,18 @@ function TaskCard({
   const outsideClickRef = useRef<HTMLElement | null>(null);
   const deleteButtonRef = useRef<HTMLDivElement>(null);
   const taskItem = useRef<HTMLLIElement>(null);
+
+  const trigger = (
+    e: React.PointerEvent<HTMLLIElement>,
+    pointerDownTime: number,
+    holdThreshold: number
+  ) => {
+    if (Date.now() - pointerDownTime >= holdThreshold) {
+      handlePointerDown(e, taskItem.current, container, index, taskId);
+    }
+  };
+
+  let timeoutId: ReturnType<typeof setTimeout>;
 
   const handleConfirmDeletion = (confirm: boolean) => {
     if (confirm && !confirmDeletion) {
@@ -91,9 +106,11 @@ function TaskCard({
         dragging && currentlyDragging === task.taskId ? styles.draggable : ""
       )}
       tabIndex={0}
-      onMouseDown={(e) => {
-        handleMouseDown(e, taskItem.current, container, index, taskId);
+      onPointerDown={(e) => {
+        const pointerDownTime = Date.now();
+        timeoutId = setTimeout(() => trigger(e, pointerDownTime, HOLD_THRESHOLD), HOLD_THRESHOLD);
       }}
+      onPointerUp={() => clearTimeout(timeoutId)}
       data-testid={dataTestId}
     >
       <span className={styles.taskIndex}>{`# ${task?.count}`}</span>
@@ -102,7 +119,7 @@ function TaskCard({
         className={clsx(styles.deleteButton, confirmDeletion && styles.confirmationView)}
         ref={deleteButtonRef}
         tabIndex={0}
-        onMouseDown={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => {
           e.stopPropagation();
           handleConfirmDeletion(true);
@@ -135,7 +152,7 @@ function TaskCard({
           className={clsx(styles.textarea, styles.taskDescription)}
           rows={1}
           onChange={(e) => setInput(e.target.value)}
-          onMouseDown={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
           onKeyDown={(e) => handleKeypress(e)}
           placeholder="Describe task here..."
           onFocus={(e) => moveCursorToEnd(e)}
@@ -150,7 +167,7 @@ function TaskCard({
           role="paragraph"
           className={clsx(styles.paragraph, styles.taskDescription)}
           onClick={(e) => handleDescriptionClick(e)}
-          onMouseDown={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
         >
           {input ? input : "Task description:"}
         </p>
