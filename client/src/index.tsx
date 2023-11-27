@@ -9,6 +9,9 @@ const container = document.getElementById("app");
 const root = createRoot(container!);
 
 export let userOnline = "onLine" in navigator ? navigator.onLine : true;
+export const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+  navigator.userAgent
+);
 
 function ready() {
   if (!userOnline) {

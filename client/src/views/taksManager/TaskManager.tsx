@@ -25,7 +25,7 @@ function TaskManager() {
 
   const currentProject = selectedProject ?? projects[0];
 
-  const { handleDrag, handleMouseDown, handleDragCancel, dragging, currentlyDragging } =
+  const { handleDrag, handlePointerDown, handleDragCancel, dragging, currentlyDragging } =
     useDragAndDrop(dispatch, tasks);
 
   const [projectName, setProjectName] = useState("");
@@ -112,7 +112,7 @@ function TaskManager() {
                 containerId={container.containerId}
                 dispatch={dispatch}
                 handleDrag={handleDrag}
-                handleMouseDown={handleMouseDown}
+                handlePointerDown={handlePointerDown}
                 dragging={dragging}
                 currentlyDragging={currentlyDragging}
               />
