@@ -169,7 +169,7 @@ function TaskCard({
           onClick={(e) => handleDescriptionClick(e)}
           onPointerDown={(e) => e.stopPropagation()}
         >
-          {input ? input : "Task description:"}
+          {input ? input : "Empty..."}
         </p>
       )}
     </li>

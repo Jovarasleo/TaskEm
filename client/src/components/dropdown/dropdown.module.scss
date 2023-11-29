@@ -1,16 +1,17 @@
-.dropdownWrapper {
+.dropdown {
   transition: 200ms all;
   opacity: 0;
   z-index: 1000;
   position: absolute;
-  right: 1rem;
   margin-top: 1rem;
+  right: 1rem;
   overflow: hidden;
   width: 100%;
   max-width: 200px;
   min-width: 160px;
   box-shadow: rgb(68, 68, 68) 1px 2px 5px 2px;
   border-radius: 1px;
+
   li {
     list-style-type: none;
     width: 100%;
@@ -44,7 +45,6 @@
   width: 3rem;
   height: 3rem;
   background-color: transparent;
-  position: relative;
 
   svg {
     font-size: 36px;
@@ -59,4 +59,8 @@
 .activeGear svg {
   transform: rotate(90deg);
   fill: white;
+}
+
+.dropdownWrapper {
+  position: relative;
 }

@@ -9,14 +9,15 @@ export interface ButtonProps {
   type?: string;
   children?: ReactElement | ReactNode;
   ref?: RefObject<HTMLButtonElement>;
-  onClick: <T>(T?: T) => void;
+  onClick: React.MouseEventHandler<HTMLButtonElement>;
+  // onClick: <T>(T?: T) => void;
 }
 
 function Button({ className, disabled, type, children, onClick, ref, ...rest }: ButtonProps) {
   return (
     <button
       className={clsx(styles.button, type && styles[type], disabled && styles.disabled, className)}
-      onClick={disabled ? () => null : onClick}
+      onClick={disabled ? undefined : onClick}
       ref={ref}
       {...rest}
     >

@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import TasksContainer from "../components/taskContainer/TasksContainer";
+import TasksContainer from "../components/container/TasksContainer";
 
 afterEach(() => {
   cleanup(); // Resets the DOM after each test suite

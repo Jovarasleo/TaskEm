@@ -1,6 +1,6 @@
 import { cleanup, render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import TaskCard from "../components/taskCard/TaskCard";
+import TaskCard from "../components/task/TaskCard";
 
 afterEach(() => {
   cleanup(); // Resets the DOM after each test suite

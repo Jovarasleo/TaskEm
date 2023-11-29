@@ -22,6 +22,9 @@ module.exports = {
     historyApiFallback: true,
     ...allowHttps(),
   },
+  optimization: {
+    runtimeChunk: "single",
+  },
   module: {
     rules: [
       {
@@ -57,6 +60,7 @@ module.exports = {
   infrastructureLogging: {
     level: "info",
   },
+
   stats: "minimal",
   target: "web",
 };
