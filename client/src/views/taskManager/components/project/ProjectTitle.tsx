@@ -1,8 +1,8 @@
 import { useState, useRef } from "react";
 import styles from "./styles.module.scss";
 import { FiEdit3 } from "react-icons/fi";
-import { Project } from "../../model/task";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
+import { Project } from "../../model/task";
 
 interface Props {
   project: Project;
@@ -10,17 +10,20 @@ interface Props {
 }
 
 const ProjectTitle = ({ project, setName }: Props) => {
-  const [projectName, setProjectName] = useState(project.projectName);
+  const currentProjectName = project.projectName;
+  const [projectName, setProjectName] = useState(currentProjectName);
   const [error, setError] = useState("");
   const [editName, setEditName] = useState(false);
   const outsideClickRef = useRef<HTMLElement | null>(null);
 
   const saveChanges = (updatedName: string) => {
+    setProjectName(currentProjectName);
+
     if (!editName) {
       return;
     }
 
-    if (projectName === project.projectName) {
+    if (projectName === currentProjectName) {
       return setEditName(false);
     }
 
@@ -30,8 +33,8 @@ const ProjectTitle = ({ project, setName }: Props) => {
     }
 
     setEditName(false);
+    setProjectName("");
     setName(updatedName);
-    setError("");
   };
 
   useOutsideClick(() => saveChanges(projectName), outsideClickRef);
@@ -49,7 +52,7 @@ const ProjectTitle = ({ project, setName }: Props) => {
         </div>
       ) : (
         <h2 className={styles.projectName}>
-          {project.projectName}
+          {currentProjectName}
           <FiEdit3
             className={styles.editButton}
             onClick={() => {

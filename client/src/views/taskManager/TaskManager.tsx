@@ -40,7 +40,7 @@ function TaskManager() {
     <>
       <div className={styles.projectHeader}>
         <ProjectTitle
-          project={currentProject}
+          project={{ ...currentProject }}
           setName={(projectName) => dispatch(renameProject({ ...currentProject, projectName }))}
         />
         <ProjectMenu
