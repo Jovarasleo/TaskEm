@@ -2,8 +2,8 @@ import clsx from "clsx";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
-import CreateProject from "../../views/taksManager/components/project/CreateProject";
-import ProjectList from "../../views/taksManager/components/project/ProjectList";
+import CreateProject from "../../views/taskManager/components/project/CreateProject";
+import ProjectList from "../../views/taskManager/components/project/ProjectList";
 import styles from "./styles.module.scss";
 
 interface NavbarProps {
