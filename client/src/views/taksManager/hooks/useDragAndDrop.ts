@@ -160,18 +160,20 @@ const useDragAndDrop = (dispatch: AppDispatch, tasks: Task[]) => {
       return;
     }
 
-    dispatch(
-      moveTask(
-        getTaskPosition({
-          state,
-          toContainerId: container,
-          fromContainerId: dragItemPosition.current?.container,
-          toIndex: index,
-          fromIndex: dragItemPosition.current?.index,
-          taskId: savedTaskId.current,
-        })
-      )
-    );
+    const updatedTask = getTaskPosition({
+      state,
+      toContainerId: container,
+      fromContainerId: dragItemPosition.current?.container,
+      toIndex: index,
+      fromIndex: dragItemPosition.current?.index,
+      taskId: savedTaskId.current,
+    });
+
+    if (!updatedTask) {
+      return;
+    }
+
+    dispatch(moveTask(updatedTask));
     dragItemPosition.current = { container, index };
   }, []);
 
@@ -182,19 +184,20 @@ const useDragAndDrop = (dispatch: AppDispatch, tasks: Task[]) => {
     setToContainer(container);
     setNextIndex(index);
 
-    dispatch(
-      moveTask(
-        getTaskPosition({
-          state,
-          toContainerId: container,
-          fromContainerId: dragItemPosition.current?.container,
-          toIndex: index,
-          fromIndex: dragItemPosition.current?.index,
-          taskId: savedTaskId.current,
-        })
-      )
-    );
+    const updatedTask = getTaskPosition({
+      state,
+      toContainerId: container,
+      fromContainerId: dragItemPosition.current?.container,
+      toIndex: index,
+      fromIndex: dragItemPosition.current?.index,
+      taskId: savedTaskId.current,
+    });
 
+    if (!updatedTask) {
+      return;
+    }
+
+    dispatch(moveTask(updatedTask));
     dragItemPosition.current = { container, index };
   };
 

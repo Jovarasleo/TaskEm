@@ -1,11 +1,10 @@
 import clsx from "clsx";
 import { useRef } from "react";
-import { useSelector } from "react-redux";
-import { CSSTransition } from "react-transition-group";
-import { RootState } from "store/configureStore";
-import CreateProject from "../../views/taksManager/components/createProject/CreateProject";
-import styles from "./styles.module.scss";
 import { useNavigate } from "react-router-dom";
+import { CSSTransition } from "react-transition-group";
+import CreateProject from "../../views/taksManager/components/project/CreateProject";
+import ProjectList from "../../views/taksManager/components/project/ProjectList";
+import styles from "./styles.module.scss";
 
 interface NavbarProps {
   visible: boolean;
@@ -32,6 +31,7 @@ function Sidebar({ visible }: NavbarProps) {
             {"Task'Em!"}
           </h1>
         </div>
+        <ProjectList />
         <CreateProject />
       </nav>
     </CSSTransition>

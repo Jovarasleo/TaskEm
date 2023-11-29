@@ -64,6 +64,8 @@ const store = configureStore({
     ),
 });
 
+store.dispatch({ type: "INITIAL_LOAD_ACTION" });
+
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 

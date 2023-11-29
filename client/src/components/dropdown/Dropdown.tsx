@@ -26,9 +26,8 @@ const Dropdown = ({
   };
 
   return (
-    <div ref={dropdownRef} style={{ position: "relative" }}>
+    <div ref={dropdownRef} className={styles.dropdownWrapper}>
       <Button
-        type="button"
         onClick={() => handleDropdown()}
         className={clsx(styles.projectSettingsGear, showOptions && styles.activeGear)}
       >
@@ -44,13 +43,12 @@ const Dropdown = ({
         }}
         unmountOnExit
       >
-        <div ref={nodeRef} className={clsx(styles.dropdownWrapper)}>
+        <div ref={nodeRef} className={clsx(styles.dropdown)}>
           <ul>
             {options?.map(({ title, onClick }) => {
               return (
                 <li key={title} className={styles.dropdownElement}>
                   <Button
-                    type="button"
                     onClick={() => {
                       onClick();
                       handleDropdown();

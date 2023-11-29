@@ -11,15 +11,8 @@ import Button from "../button/Button";
 import { logoutUser } from "../../store/slices/authSlice";
 
 function Header() {
-  const { userData } = useSelector((state) => (state as RootState).auth);
-  const navigate = useNavigate();
-
-  // automatically authenticate user if token is found
-  const { data } = useGetUserQuery("userDetails", {
-    // perform a refetch every 15mins
-    pollingInterval: 900000,
-  });
   const dispatch: AppDispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [showNav, setShowNav] = useState(false);
 
@@ -30,11 +23,13 @@ function Header() {
   return (
     <>
       <header className={styles.header}>
-        <NavButton onClick={() => handleNavigation()} visible />
-        <Button onClick={() => navigate("/login")} className={styles.userButton}>
-          <CgUserlane />
+        <NavButton onClick={() => handleNavigation()} active={showNav} />
+        {/* <Button onClick={() => navigate("/login")} className={styles.loginBtn}>
+          Login
         </Button>
-        <Button onClick={() => dispatch(logoutUser())}>Logout</Button>
+        <Button onClick={() => dispatch(logoutUser())} className={styles.logoutBtn}>
+          Logout
+        </Button> */}
       </header>
       <Sidebar visible={showNav} />
     </>
