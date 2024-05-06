@@ -11,14 +11,15 @@ interface Props {
 
 const ProjectTitle = ({ project, setName }: Props) => {
   const currentProjectName = project.projectName;
-  const [projectName, setProjectName] = useState(currentProjectName);
-  const [error, setError] = useState("");
-  const [editName, setEditName] = useState(false);
   const outsideClickRef = useRef<HTMLElement | null>(null);
 
-  const saveChanges = (updatedName: string) => {
-    setProjectName(currentProjectName);
+  const [projectName, setProjectName] = useState(currentProjectName);
+  const [error, setError] = useState<null | string>("");
+  const [editName, setEditName] = useState(false);
 
+  useOutsideClick(() => saveChanges(projectName), outsideClickRef);
+
+  const saveChanges = (updatedName: string) => {
     if (!editName) {
       return;
     }
@@ -27,17 +28,17 @@ const ProjectTitle = ({ project, setName }: Props) => {
       return setEditName(false);
     }
 
-    const trimmed = updatedName.trim();
-    if (!trimmed.length) {
+    const trimmedName = updatedName.trim();
+
+    if (!trimmedName.length) {
       return setError("missing value");
     }
 
     setEditName(false);
-    setProjectName("");
-    setName(updatedName);
+    setName(trimmedName);
+    setProjectName(trimmedName);
+    setError(null);
   };
-
-  useOutsideClick(() => saveChanges(projectName), outsideClickRef);
 
   return (
     <span className={styles.projectNameWrapper} ref={outsideClickRef}>
@@ -45,6 +46,7 @@ const ProjectTitle = ({ project, setName }: Props) => {
         <div className={styles.projectName}>
           <input
             value={projectName}
+            className={styles.projectNameInput}
             onChange={(e) => setProjectName(e.target.value)}
             onKeyDown={(e) => (e.key === "Enter" ? saveChanges(projectName) : null)}
           />
