@@ -1,17 +1,12 @@
 import Dropdown from "@components/dropdown/Dropdown";
 
 interface Props {
-  hasProjects: boolean;
   deleteProject: () => void;
   deleteContainers: () => void;
   deleteTask: () => void;
 }
 
-const ProjectMenu = ({ hasProjects, deleteProject, deleteContainers, deleteTask }: Props) => {
-  if (!hasProjects) {
-    return null;
-  }
-
+const ProjectMenu = ({ deleteProject, deleteContainers, deleteTask }: Props) => {
   return (
     <Dropdown
       options={[
