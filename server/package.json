@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon --watch src/**/*.ts --exec node --no-warnings=ExperimentalWarning --loader ts-node/esm src/server.ts",
-    "build": "npx tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json",
     "start": "node build/server.js"
   },
   "author": "Jovaras Leo",
@@ -22,7 +22,7 @@
     "jsonwebtoken": "^9.0.0",
     "mysql2": "^2.3.3",
     "tsc": "^2.0.4",
-    "typescript": "^5.2.2",
+    "typescript": "^5.5.3",
     "uuid": "^9.0.0",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4",
