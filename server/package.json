@@ -6,12 +6,14 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon --watch src/**/*.ts --exec node --no-warnings=ExperimentalWarning --loader ts-node/esm src/server.ts",
-    "build": "npx tsc -p tsconfig.json",
+    "build": "npx -p typescript tsc -p tsconfig.json",
     "start": "node build/server.js"
   },
   "author": "Jovaras Leo",
   "license": "ISC",
   "dependencies": {
+    "typescript": "^5.5.3",
+    "ts-node": "^10.9.1",
     "@types/express-session": "^1.17.8",
     "@types/ws": "^8.5.7",
     "bcrypt": "^5.1.0",
@@ -34,8 +36,6 @@
     "@types/jsonwebtoken": "^9.0.2",
     "@types/node": "^18.15.11",
     "@types/uuid": "^9.0.1",
-    "nodemon": "^2.0.22",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.5.3"
+    "nodemon": "^2.0.22"
   }
 }
