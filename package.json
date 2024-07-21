@@ -8,8 +8,8 @@
     "dev": "cd ./client && npm run dev",
     "install": "cd ./client && npm install && cd ../server && npm install",
     "update": "cd ./client && npm update && cd ../server && npm run update",
-    "build": "cd ./client && npm run build && cd ../server && npm run build",
-    "start": "cd ./client && npx serve -s build && cd ../server && npm run start",
+    "build": "cd ./client && npm run build && cd ../server && npm run build-swc",
+    "start": "cd ./client && npx serve -s build && cd ../server && npm run start-swc",
     "test": "cd ./client && npm run test"
   },
   "repository": {
