@@ -44,13 +44,10 @@ const app = express();
 const server = http.createServer(app);
 dotenv.config();
 
-const store = new session.MemoryStore();
-
 const sessionParser = session({
   saveUninitialized: false,
   secret: process.env.SESSION_SECRET as string,
   resave: false,
-  store: store,
 
   cookie: {
     sameSite: "none",
