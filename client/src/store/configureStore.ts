@@ -1,6 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { projectsApi } from "../api/project";
-import { userApi } from "../api/user";
 import { socketMiddleware } from "./middleware/socketMiddleware";
 import { onLoadMiddleware } from "./middleware/onLoadMiddleware";
 import authReducer from "./slices/authSlice";
@@ -29,13 +27,9 @@ const store = configureStore({
     task: taskReducer,
     container: containerReducer,
     project: projectReducer,
-    [userApi.reducerPath]: userApi.reducer,
-    [projectsApi.reducerPath]: projectsApi.reducer,
   },
   middleware: (gDM) =>
     gDM().concat(
-      userApi.middleware,
-      projectsApi.middleware,
       onLoadMiddleware,
       storeEventsMiddleware({
         createTask,

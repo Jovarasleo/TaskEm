@@ -9,7 +9,7 @@ import {
   storeEvents,
 } from "../../db";
 import { uid } from "../../util/uid";
-import { Project, Task } from "../../views/taksManager/model/task";
+import { Project, Task } from "../../views/taskManager/model/task";
 import { ws } from "./socketMiddleware";
 
 export const storeEventsMiddleware =

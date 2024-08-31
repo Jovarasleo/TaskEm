@@ -2,6 +2,7 @@ const path = require("path");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const Dotenv = require("dotenv-webpack");
 
 const options = {
   generate: (file) => {
@@ -87,6 +88,7 @@ module.exports = {
   },
 
   plugins: [
+    new Dotenv(),
     new CopyWebpackPlugin({
       patterns: [{ from: "./src/assets/images", to: "assets" }],
     }),

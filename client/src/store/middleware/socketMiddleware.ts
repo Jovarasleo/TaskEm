@@ -1,22 +1,16 @@
 import { Dispatch, MiddlewareAPI } from "redux";
-import { getSocketTasks, moveSocketTask, moveTask } from "../slices/taskReducer";
 import { deleteEvent, getEvents } from "../../db";
+import { userLoggedIn } from "../slices/authSlice";
 import { setSocketContainers } from "../slices/containerReducer";
 import { setProjects } from "../slices/projectReducer";
-import { userLoggedIn } from "../slices/authSlice";
+import { getSocketTasks, moveSocketTask } from "../slices/taskReducer";
 
-const eventCallbacks: { [eventName: string]: (data: any) => void } = {
-  "task/createTask": (data) => {
-    // Handle the "task/CreateTask" event here
-    console.log("Received task/CreateTask event:", data);
-  },
-  // Add more event callbacks as needed
-};
+const ENDPOINT_URL = process.env.BACKEND_WS_ADDRESS as string;
 
 export let ws: WebSocket | null = null;
 export const socketMiddleware =
   (subscribers: any) => (store: MiddlewareAPI<Dispatch>) => (next: Dispatch) => {
-    if (!!ws) {
+    if (ws) {
       ws.onerror = ws.onopen = ws.onclose = null;
       ws.close();
     }
@@ -32,8 +26,20 @@ export const socketMiddleware =
       ws.send(JSON.stringify({ type: "syncData" }));
     };
 
-    ws = new WebSocket("ws://127.0.0.1:3000");
+    const sendToBackend = (eventType: string, eventPayload: any) => {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        const message = {
+          type: eventType,
+          payload: eventPayload,
+        };
+        const stingifiedMessage = JSON.stringify(message);
+        ws.send(stingifiedMessage);
+      } else {
+        console.error("WebSocket not open. Cannot send message.");
+      }
+    };
 
+    ws = new WebSocket(ENDPOINT_URL);
     ws.addEventListener("open", async () => {
       if (ws && ws.readyState === WebSocket.OPEN) {
         synchroniseData(ws);
@@ -43,7 +49,6 @@ export const socketMiddleware =
 
     ws.addEventListener("message", (event) => {
       const parsedData = JSON.parse(event.data);
-      console.log({ parsedData });
       const { type, payload } = parsedData;
       try {
         if (type === "tasks/getTasks") {
@@ -63,20 +68,11 @@ export const socketMiddleware =
       }
     });
 
-    const sendToBackend = (eventType: string, eventPayload: any) => {
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        const message = {
-          type: eventType,
-          payload: eventPayload,
-        };
-        const stingifiedMessage = JSON.stringify(message);
-        ws.send(stingifiedMessage);
-      } else {
-        console.error("WebSocket not open. Cannot send message.");
-      }
-    };
-
     return (action: any) => {
+      if (!document.cookie) {
+        return next(action);
+      }
+
       if (action) {
         Object.keys(subscribers).forEach((key: string) => {
           const event = subscribers[key];
@@ -88,7 +84,7 @@ export const socketMiddleware =
         //connect after login
         if (action.type === "auth/login/fulfilled") {
           console.log("try relogin");
-          ws = new WebSocket("ws://127.0.0.1:3000");
+          ws = new WebSocket(ENDPOINT_URL);
           ws.addEventListener("open", async () => {
             if (ws && ws.readyState === WebSocket.OPEN) {
               synchroniseData(ws);

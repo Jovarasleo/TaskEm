@@ -1,18 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { Project, TaskContainer } from "../../views/taksManager/model/task";
-import { getContainers, setContainers } from "../../db";
-import { uid } from "../../util/uid";
-
-const fetchUserFromAPI = async () => {
-  try {
-    // Simulated async operation (replace with actual API call)
-    const response = await fetch("/api/user");
-    const userData = await response.json();
-    return userData;
-  } catch (error) {
-    throw error;
-  }
-};
+import { TaskContainer } from "../../views/taskManager/model/task";
+import { getContainers } from "../../db";
 
 interface InitialContainerState {
   data: TaskContainer[] | [];
@@ -20,17 +8,9 @@ interface InitialContainerState {
   error: null | string;
 }
 
-export const fetchUserAsync = createAsyncThunk("user/fetchUser", async () => {
-  return fetchUserFromAPI();
-});
-
 export const getContainersFromIdb = createAsyncThunk("container/getData", async () => {
-  try {
-    const data = await getContainers();
-    return data as TaskContainer[];
-  } catch (error) {
-    throw error;
-  }
+  const data = await getContainers();
+  return data as TaskContainer[];
 });
 
 const containerReducer = createSlice({

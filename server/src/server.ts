@@ -50,16 +50,16 @@ const sessionParser = session({
   resave: false,
 
   cookie: {
-    sameSite: "none",
+    sameSite: "strict",
     secure: false,
-    httpOnly: true,
+    httpOnly: false,
     maxAge: 60000000,
   },
 });
 
 app.use(
   cors({
-    origin: "https://localhost:8080",
+    origin: process.env.FRONT_END_ADDRESS,
     methods: ["POST", "GET"],
     credentials: true,
   }),
@@ -86,8 +86,7 @@ server.on("upgrade", function upgrade(request: WebSocketRequest, socket, head) {
   socket.on("error", onSocketError);
 
   sessionParser(request as any, {} as any, () => {
-    console.log({ request: request.session });
-    if (!request.session.authorized) {
+    if (!request?.session?.authorized) {
       socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
       socket.destroy();
       return;
@@ -166,6 +165,7 @@ wss.on("connection", function connection(ws, request: WebSocketRequest) {
 
             for (const task of payload) {
               const response = await deleteTaskSocketController(task);
+              console.log({ response });
             }
           }
           break;

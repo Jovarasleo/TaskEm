@@ -50,9 +50,25 @@ export async function userAccessSocketMiddleware(
   }
 
   const isPayloadArray = Array.isArray(payload);
-  const projectId = isPayloadArray ? 0 : payload?.projectId;
+  console.log(payload);
 
-  const userHasAccess = await userHasProjectAccessGateway(userId, projectId);
+  if (isPayloadArray) {
+    for (const item of payload) {
+      const userHasAccess = await userHasProjectAccessGateway(
+        userId,
+        item.projectId
+      );
+      console.log({ userHasAccess });
+      if (!userHasAccess) {
+        return console.error("User does not have access to the project.");
+      }
+    }
+  }
+
+  const userHasAccess = await userHasProjectAccessGateway(
+    userId,
+    payload?.projectId
+  );
   if (!userHasAccess) {
     return console.error("User does not have access to the project.");
   }

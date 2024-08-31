@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-const backendURL = "http://127.0.0.1:3000";
+const ENDPOINT_URL = process.env.BACKEND_ADDRESS;
 
 export interface LoginUser {
   email: string;
@@ -11,41 +11,65 @@ export interface RegisterUser extends LoginUser {
   username: string;
 }
 
+interface UserData {
+  username: string;
+  email: string;
+}
+
+interface InitialState {
+  loading: boolean;
+  userData: UserData;
+  loggedIn: boolean;
+  message: null | string;
+  error: null | string;
+  success: boolean;
+}
+
+interface RegisteredUserDto {
+  success: boolean;
+  message: string;
+  user: {
+    username: string;
+    email: string;
+  };
+  error?: string;
+}
+
+const REQUEST_INIT: RequestInit = {
+  method: "POST", // *GET, POST, PUT, DELETE, etc.
+  mode: "cors", // no-cors, *cors, same-origin
+  cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+  // credentials: "same-origin", // include, *same-origin, omit
+  credentials: "include",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  redirect: "follow", // manual, *follow, error
+  referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+};
+
 export const registerUser = createAsyncThunk(
   "auth/register",
-
   async ({ username, email, password }: RegisterUser, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${backendURL}/user`, {
-        method: "POST", // *GET, POST, PUT, DELETE, etc.
-        mode: "cors", // no-cors, *cors, same-origin
-        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: "include", // include, *same-origin, omit
-        headers: {
-          "Content-Type": "application/json",
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        redirect: "follow", // manual, *follow, error
-        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      const response = await fetch(`${ENDPOINT_URL}/user`, {
+        ...REQUEST_INIT,
         body: JSON.stringify({ username, email, password }), // body data type must match "Content-Type" header
       });
 
-      const data = await response.json();
+      const data: RegisteredUserDto = await response.json();
 
       if (response.ok) {
-        // Successful response
-        localStorage.setItem("userToken", data.token);
         return data;
       } else {
-        // Error response, handle it here
         if (data) {
-          return rejectWithValue(data);
+          return rejectWithValue({ payload: { error: data.error } });
         } else {
-          return rejectWithValue("Unknown error occurred.");
+          return rejectWithValue({ payload: { error: "unknown error" } });
         }
       }
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue({ payload: { error: "unknown error" } });
     }
   }
 );
@@ -54,18 +78,8 @@ export const loginUser = createAsyncThunk(
   "auth/login",
   async ({ email, password }: LoginUser, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${backendURL}/user/login`, {
-        method: "POST", // *GET, POST, PUT, DELETE, etc.
-        mode: "cors", // no-cors, *cors, same-origin
-        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        // credentials: "same-origin", // include, *same-origin, omit
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        redirect: "follow", // manual, *follow, error
-        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      const response = await fetch(`${ENDPOINT_URL}/user/login`, {
+        ...REQUEST_INIT,
         body: JSON.stringify({ email, password }), // body data type must match "Content-Type" header
       });
 
@@ -89,20 +103,7 @@ export const loginUser = createAsyncThunk(
 
 export const logoutUser = createAsyncThunk("auth/logout", async (_, { rejectWithValue }) => {
   try {
-    const response = await fetch(`${backendURL}/user/logout`, {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, *cors, same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      // credentials: "same-origin", // include, *same-origin, omit
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        // 'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      redirect: "follow", // manual, *follow, error
-      referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-    });
-
+    const response = await fetch(`${ENDPOINT_URL}/user/logout`, REQUEST_INIT);
     const data = await response.json();
 
     if (response.ok) {
@@ -121,7 +122,7 @@ export const logoutUser = createAsyncThunk("auth/logout", async (_, { rejectWith
   }
 });
 
-const initialState = {
+const initialState: InitialState = {
   loading: false,
   userData: { username: "", email: "" }, // for user object
   loggedIn: false,
@@ -148,7 +149,7 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.success = true; // registration successful
+        state.success;
         state.message = action.payload.message;
         state.userData = action.payload.user;
         state.error = null;
@@ -157,14 +158,14 @@ const authSlice = createSlice({
         state.loading = false;
         state.message = null;
         state.error = action.payload?.error;
-        state.success = false; // registration successful
+        state.success = false;
       })
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.success = true; // registration successful
+        state.success = true;
         state.loggedIn = true;
         state.message = action.payload.message;
         state.userData = action.payload.user;
@@ -173,15 +174,15 @@ const authSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.message = null;
-        state.error = action.payload.error;
-        state.success = false; // registration successful
+        state.error = action.payload?.error;
+        state.success = false;
       })
       .addCase(logoutUser.pending, (state) => {
         state.loading = true;
       })
       .addCase(logoutUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.success = true; // registration
+        state.success = true;
         state.loggedIn = false;
         state.message = action.payload.message;
         state.error = null;
@@ -189,8 +190,8 @@ const authSlice = createSlice({
       .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false;
         state.message = null;
-        state.error = action.payload.message;
-        state.success = false; // registration successful
+        state.error = action.payload?.error || "Unknown error";
+        state.success = false;
       });
   },
 });
