@@ -13,6 +13,8 @@ export interface TaskContainer {
   projectId: string;
   containerId: string;
   containerName: string;
+  createdAt: string;
+  modifiedAt: string;
   position: number;
 }
 

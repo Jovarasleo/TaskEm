@@ -6,11 +6,21 @@ export async function setContainerGateway({
   containerId,
   containerName,
   position,
+  createdAt,
+  modifiedAt,
   projectId,
 }: IContainer) {
   const sql =
-    "INSERT INTO containers (containerId, containerName, position, projectId) VALUES (?, ?, ?, ?)";
-  const values = [containerId, containerName, position, projectId];
+    "INSERT INTO containers (containerId, containerName, position, createdAt, modifiedAt, projectId) VALUES (?, ?, ?, ?, ?, ?)";
+
+  const values = [
+    containerId,
+    containerName,
+    position,
+    createdAt,
+    modifiedAt,
+    projectId,
+  ];
 
   try {
     const result = await db.execute(sql, values);

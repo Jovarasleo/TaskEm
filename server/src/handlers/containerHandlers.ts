@@ -12,12 +12,21 @@ type GetContainersGateway = (projectId: string) => Promise<RowDataPacket[]>;
 
 export async function createContainerHandler(
   setContainerGateway: SetContainerGateway,
-  { containerId, containerName, position, projectId }: IContainer
+  {
+    containerId,
+    containerName,
+    position,
+    createdAt,
+    modifiedAt,
+    projectId,
+  }: IContainer
 ) {
   const container = new Container(
     containerId,
     containerName,
     position,
+    createdAt,
+    modifiedAt,
     projectId
   );
   const validatedContainer = await container.validate();

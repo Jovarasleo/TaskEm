@@ -70,7 +70,7 @@ function Login() {
           <button type="submit" onClick={() => submitForm(user)}>
             Login
           </button>
-          {error ? <div>{error}</div> : null}
+          {/* {error ? <div>{error}</div> : null} */}
         </form>
       </h1>
     </main>

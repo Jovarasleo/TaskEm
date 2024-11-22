@@ -10,13 +10,22 @@ import {
 import Container from "../entities/containerEntity.js";
 
 export const setContainer = async (req: Request, res: Response) => {
-  const { containerId, containerName, position, projectId } = req.body;
+  const {
+    containerId,
+    containerName,
+    position,
+    createdAt,
+    modifiedAt,
+    projectId,
+  } = req.body;
 
   try {
     const response = await createContainerHandler(setContainerGateway, {
       containerId,
       containerName,
       position,
+      createdAt,
+      modifiedAt,
       projectId,
     });
 
@@ -41,13 +50,22 @@ export const getContainers = async (req: Request, res: Response) => {
 };
 
 export const setContainerSocketHandler = async (data: Container) => {
-  const { containerId, containerName, position, projectId } = data;
+  const {
+    containerId,
+    containerName,
+    position,
+    createdAt,
+    modifiedAt,
+    projectId,
+  } = data;
 
   try {
     const response = await createContainerHandler(setContainerGateway, {
       containerId,
       containerName,
       position,
+      createdAt,
+      modifiedAt,
       projectId,
     });
 

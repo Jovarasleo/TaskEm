@@ -72,8 +72,8 @@ app.use("/task", auth, userAccess, taskRouters);
 app.use("/project", auth, userAccess, projectRouters);
 app.use("/container", auth, userAccess, containerRouters);
 
-server.listen(3000, () => {
-  console.log("Server is running on port 3000");
+server.listen(3001, () => {
+  console.log("Server is running on port 3001");
 });
 
 function onSocketError(err: Error) {
