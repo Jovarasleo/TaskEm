@@ -4,7 +4,7 @@ import db from "../interface/data.access.js";
 
 export async function getUserProjectsGateway(userId: string) {
   const sql =
-    "SELECT P.* FROM Projects P JOIN ProjectAccess PA ON P.projectId = PA.accessibleProjectId WHERE PA.userId = ?";
+    "SELECT P.* FROM projects P JOIN projectaccess PA ON P.projectId = PA.accessibleProjectId WHERE PA.userId = ?";
   const values = [userId];
   try {
     const [projects] = await db.execute<RowDataPacket[]>(sql, values);
