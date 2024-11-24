@@ -18,7 +18,7 @@ import {
   selectProject,
   setProjects,
 } from "./slices/projectReducer";
-import { createContainer, deleteContainers, setSocketContainers } from "./slices/containerReducer";
+import { createContainer, deleteContainers, getContainers } from "./slices/containerReducer";
 import { storeEventsMiddleware } from "./middleware/storeEventsMiddleware";
 
 const store = configureStore({
@@ -43,7 +43,7 @@ const store = configureStore({
         setProjects,
         renameProject,
         deleteProject,
-        setSocketContainers,
+        getContainers,
       }),
       socketMiddleware({
         createTask,

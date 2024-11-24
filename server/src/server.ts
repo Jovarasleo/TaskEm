@@ -38,8 +38,6 @@ type WebSocketRequest = http.IncomingMessage & {
   session: ISession;
 };
 
-const projectRooms = new Map();
-
 const app = express();
 const server = http.createServer(app);
 dotenv.config();
@@ -120,7 +118,9 @@ wss.on("connection", function connection(ws, request: WebSocketRequest) {
           // implement project rename
           break;
         case "project/selectProject":
-          const containers = await getContainersSocketController(payload);
+          const containers = await getContainersSocketController(
+            payload.projectId
+          );
           ws.send(
             JSON.stringify({
               type: "container/getContainers",
@@ -134,16 +134,6 @@ wss.on("connection", function connection(ws, request: WebSocketRequest) {
               payload: tasks,
             })
           );
-
-          const roomId = payload.projectId; // Use the project ID as the room name
-          if (!projectRooms.has(roomId)) {
-            projectRooms.set(roomId, { [userId]: ws });
-          }
-          const currentRoom = projectRooms.get(roomId);
-          if (currentRoom) {
-            projectRooms.set(roomId, { ...currentRoom, [userId]: ws });
-          }
-          console.log({ projectRooms });
           break;
         case "container/createContainer":
           for (const container of payload) {
@@ -164,8 +154,7 @@ wss.on("connection", function connection(ws, request: WebSocketRequest) {
             }
 
             for (const task of payload) {
-              const response = await deleteTaskSocketController(task);
-              console.log({ response });
+              await deleteTaskSocketController(task);
             }
           }
           break;
@@ -179,27 +168,44 @@ wss.on("connection", function connection(ws, request: WebSocketRequest) {
               payload: response.data,
             };
 
-            const currentRoom = projectRooms.get(payload.projectId);
-            if (currentRoom) {
-              Object.keys(currentRoom).forEach((key) => {
-                const webSocket = currentRoom[key];
-                webSocket.send(JSON.stringify(message));
-              });
-            }
+            ws.send(JSON.stringify(message));
           }
 
           break;
         }
 
-        case "syncData":
+        case "syncData": {
           const projects = await getProjectsSocketController(userId);
+          ws.send(
+            JSON.stringify({
+              type: "project/getProjects",
+              payload: projects ?? [],
+            })
+          );
 
-          const message = {
-            type: "project/getProjects",
-            payload: projects,
-          };
+          if (projects?.length) {
+            const projectId = projects[0].projectId;
+            const containers = await getContainersSocketController(projectId);
+            const tasks = await getTasksSocketController(projectId);
 
-          ws.send(JSON.stringify(message));
+            console.log({ projects, containers, tasks });
+
+            ws.send(
+              JSON.stringify({
+                type: "container/getContainers",
+                payload: containers,
+              })
+            );
+
+            ws.send(
+              JSON.stringify({
+                type: "tasks/getTasks",
+                payload: tasks,
+              })
+            );
+          }
+        }
+
         default:
           break;
       }

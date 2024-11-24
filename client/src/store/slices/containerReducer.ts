@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { TaskContainer } from "../../views/taskManager/model/task";
-import { getContainers } from "../../db";
+import { getContainersIdb } from "../../db";
 
 interface InitialContainerState {
   data: TaskContainer[] | [];
@@ -9,7 +9,7 @@ interface InitialContainerState {
 }
 
 export const getContainersFromIdb = createAsyncThunk("container/getData", async () => {
-  const data = await getContainers();
+  const data = await getContainersIdb();
   return data as TaskContainer[];
 });
 
@@ -39,14 +39,13 @@ const containerReducer = createSlice({
         );
       });
 
-      console.log({ filteredData });
       return {
         ...state,
         data: filteredData,
       };
     },
 
-    setSocketContainers: (state, action) => {
+    getContainers: (state, action) => {
       return {
         ...state,
         data: action.payload.sort((a: TaskContainer, b: TaskContainer) => a.position - b.position),
@@ -71,6 +70,6 @@ const containerReducer = createSlice({
   },
 });
 
-export const { createContainer, deleteContainers, setSocketContainers } = containerReducer.actions;
+export const { createContainer, deleteContainers, getContainers } = containerReducer.actions;
 
 export default containerReducer.reducer;

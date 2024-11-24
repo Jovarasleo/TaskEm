@@ -76,11 +76,7 @@ export const setContainerSocketHandler = async (data: Container) => {
   }
 };
 
-export const getContainersSocketController = async (data: {
-  projectId: string;
-}) => {
-  const { projectId } = data;
-
+export const getContainersSocketController = async (projectId: string) => {
   try {
     const response = await getContainersHandler(
       getContainersGateway,

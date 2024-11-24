@@ -1,8 +1,8 @@
-import { Project, Task, TaskContainer } from "./views/taksManager/model/task";
+import { Project, Task, TaskContainer } from "./views/taskManager/model/task";
 
-var request: IDBOpenDBRequest;
-var db: IDBDatabase;
-let version = 1;
+let request: IDBOpenDBRequest;
+let db: IDBDatabase;
+const version = 1;
 const dbName = "TaskEm";
 
 export enum Stores {
@@ -113,14 +113,23 @@ export async function setContainers(containers: TaskContainer[]) {
 export async function setTask(Task: Task) {
   try {
     await initDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([Stores.Tasks], "readwrite");
 
-    const transaction = db.transaction([Stores.Tasks], "readwrite");
+      const objectStore = transaction.objectStore(Stores.Tasks);
+      const id = Task.taskId;
 
-    const objectStore = transaction.objectStore(Stores.Tasks);
-    const id = Task.taskId;
+      const request = objectStore.put(Task, id);
+      request.onsuccess = (event) => {
+        const result = (event.target as IDBOpenDBRequest).result;
+        resolve(result); // Resolve the Promise with the data
+      };
 
-    const request = objectStore.put(Task, id);
-    request.onsuccess = (event) => {};
+      request.onerror = (event) => {
+        const error = (event.target as IDBOpenDBRequest).error;
+        reject(error);
+      };
+    });
   } catch (error) {
     console.log(error);
   }
@@ -198,7 +207,7 @@ export async function getProjects() {
   }
 }
 
-export async function getContainers() {
+export async function getContainersIdb() {
   try {
     await initDB();
 

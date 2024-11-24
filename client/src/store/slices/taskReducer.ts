@@ -1,15 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getTasks, putTask, setTask } from "../../db";
-import { Task } from "../../views/taksManager/model/task";
-import { RootState } from "../configureStore";
+import { getTasks } from "../../db";
+import { Task } from "../../views/taskManager/model/task";
 
 export const getDataFromIndexedDB = createAsyncThunk("task/getData", async () => {
-  try {
-    const data = (await getTasks()) as Task[];
-    return data;
-  } catch (error) {
-    throw error;
-  }
+  const data = (await getTasks()) as Task[];
+  return data;
 });
 
 const filteredData = (tasks: Task[]) => {
@@ -29,13 +24,9 @@ const filteredData = (tasks: Task[]) => {
 
 interface InitialTaskState {
   data: Task[] | [];
-  status: string; // 'idle', 'loading', 'succeeded', or 'failed'
+  status: "loading" | "succeeded" | "idle" | "failed";
   error: null | string;
 }
-
-// export const fetchUserAsync = createAsyncThunk("user/fetchUser", async () => {
-//   return fetchUserFromAPI();
-// });
 
 const taskSlice = createSlice({
   name: "task",

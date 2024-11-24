@@ -1,12 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getProjects, putProject } from "../../db";
-import { Project } from "../../views/taksManager/model/task";
+import { Project } from "../../views/taskManager/model/task";
 import { RootState } from "../configureStore";
 
 interface InitialProjectState {
   data: Project[] | [];
   selected: Project | null;
-  status: string; // 'idle', 'loading', 'succeeded', or 'failed'
+  status: "loading" | "succeeded" | "idle" | "failed";
   loading: boolean;
   error: null | string;
 }
@@ -70,7 +70,6 @@ const projectSlice = createSlice({
       state.selected = action.payload;
     },
     renameProject: (state, action) => {
-      console.log(action.payload);
       const editableProject = state.data.find(
         (project) => project.projectId === action.payload.projectId
       );
@@ -80,7 +79,6 @@ const projectSlice = createSlice({
       }
     },
     deleteProject: (state, action) => {
-      console.log(action.payload);
       const currentProjectIndex = state.data.findIndex(
         (project) => project.projectId === action.payload.projectId
       );
