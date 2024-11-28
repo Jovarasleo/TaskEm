@@ -13,9 +13,9 @@ const ProjectMenu = ({ deleteProject, deleteContainers, deleteTask }: Props) => 
         {
           title: "delete",
           onClick: () => {
-            deleteProject();
-            deleteContainers();
             deleteTask();
+            deleteContainers();
+            deleteProject();
           },
         },
       ]}

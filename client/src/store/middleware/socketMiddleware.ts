@@ -57,11 +57,10 @@ export const socketMiddleware =
       const allEvents: any = await getEvents();
 
       for (const userEvent of allEvents) {
+        console.log({ userEvent });
         ws.send(JSON.stringify(userEvent));
-        deleteEvent(userEvent.id);
+        deleteEvent(userEvent.key);
       }
-
-      await new Promise((resolve) => setTimeout(resolve, 10)); // Small delay
 
       ws.send(JSON.stringify({ type: "syncData" }));
     };
@@ -72,6 +71,7 @@ export const socketMiddleware =
           type: eventType,
           payload: eventPayload,
         };
+
         const stingifiedMessage = JSON.stringify(message);
         ws.send(stingifiedMessage);
       } else {
@@ -100,7 +100,6 @@ export const socketMiddleware =
 
         //connect after login
         if (action.type === "auth/login/fulfilled") {
-          console.log("mhm");
           socketMiddleware(subscribers)(store)(next);
         }
       }

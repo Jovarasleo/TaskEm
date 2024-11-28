@@ -149,6 +149,7 @@ wss.on("connection", function connection(ws, request: WebSocketRequest) {
           break;
         case "task/deleteTask":
           {
+            console.log({ payload });
             if (!payload.length) {
               return;
             }
@@ -176,6 +177,7 @@ wss.on("connection", function connection(ws, request: WebSocketRequest) {
 
         case "syncData": {
           const projects = await getProjectsSocketController(userId);
+          console.log("syncData called");
           ws.send(
             JSON.stringify({
               type: "project/getProjects",
@@ -187,8 +189,6 @@ wss.on("connection", function connection(ws, request: WebSocketRequest) {
             const projectId = projects[0].projectId;
             const containers = await getContainersSocketController(projectId);
             const tasks = await getTasksSocketController(projectId);
-
-            console.log({ projects, containers, tasks });
 
             ws.send(
               JSON.stringify({

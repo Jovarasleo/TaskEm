@@ -68,8 +68,6 @@ export const login = async (req: Request, res: Response) => {
       session.userId = response.user.userId;
       session.authorized = true;
 
-      console.log(req.session);
-
       req.session.save();
 
       return res.status(200).send({ success: true, user: response.user });

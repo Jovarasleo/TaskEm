@@ -13,15 +13,15 @@ import { Project, Task } from "../../views/taskManager/model/task";
 import { ws } from "./socketMiddleware";
 
 export const storeEventsMiddleware = (subscribers: any) => () => (next: Dispatch) => {
-  return (action: any) => {
+  return async (action: any) => {
     if (action) {
-      Object.keys(subscribers).forEach((key: string) => {
+      for (const key of Object.keys(subscribers)) {
         const event = subscribers[key];
         if (event.type === action.type) {
           const eventId = uid();
 
           if (ws?.readyState !== WebSocket.OPEN) {
-            storeEvents({ ...action, id: eventId });
+            await storeEvents({ ...action, id: eventId });
           }
 
           //save data
@@ -67,7 +67,7 @@ export const storeEventsMiddleware = (subscribers: any) => () => (next: Dispatch
               break;
           }
         }
-      });
+      }
     }
 
     next(action);

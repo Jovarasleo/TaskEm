@@ -45,9 +45,9 @@ function TaskManager() {
         />
         {projects.length > 0 && (
           <ProjectMenu
-            deleteProject={() => dispatch(deleteProject({ projectId: currentProject?.projectId }))}
-            deleteContainers={() => dispatch(deleteContainers(projectContainers))}
             deleteTask={() => dispatch(deleteTask(projectTasks))}
+            deleteContainers={() => dispatch(deleteContainers(projectContainers))}
+            deleteProject={() => dispatch(deleteProject({ projectId: currentProject?.projectId }))}
           />
         )}
       </div>

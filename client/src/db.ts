@@ -47,7 +47,7 @@ export const initDB = (): Promise<boolean> => {
 
       if (!db.objectStoreNames.contains(Stores.Events)) {
         db.createObjectStore(Stores.Events, {
-          autoIncrement: false,
+          autoIncrement: true,
         });
       }
     };
@@ -315,9 +315,9 @@ export async function storeEvents(eventData: any) {
     await initDB();
 
     const transaction = db.transaction([Stores.Events], "readwrite");
-
     const objectStore = transaction.objectStore(Stores.Events);
-    const request = objectStore.put(eventData, eventData.id);
+
+    const request = objectStore.put(eventData);
     request.onsuccess = (event) => {
       console.log(event);
     };
@@ -331,9 +331,25 @@ export async function getEvents() {
     await initDB();
     return new Promise((resolve, reject) => {
       const transaction = db.transaction([Stores.Events], "readwrite");
-
       const objectStore = transaction.objectStore(Stores.Events);
-      const request = objectStore.getAll();
+
+      const valuesRequest = objectStore.getAll();
+      const keysRequest = objectStore.getAllKeys();
+
+      valuesRequest.onsuccess = () => {
+        keysRequest.onsuccess = () => {
+          const values = valuesRequest.result;
+          const keys = keysRequest.result;
+
+          // Combine keys and values into an array of objects
+          const events = keys.map((key, index) => ({
+            key,
+            value: values[index],
+          }));
+          resolve(events);
+        };
+      };
+
       request.onsuccess = (event) => {
         const result = (event.target as IDBOpenDBRequest).result;
         resolve(result);
