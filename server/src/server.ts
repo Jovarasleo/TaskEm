@@ -1,9 +1,11 @@
 import cors from "cors";
 import * as dotenv from "dotenv";
 import express, { json } from "express";
-import session, { Session } from "express-session";
+import { Session } from "express-session";
 import http from "http";
 import { WebSocketServer } from "ws";
+import cookieParser from "cookie-parser";
+import jwt from "jsonwebtoken";
 import {
   getContainersSocketController,
   setContainerSocketHandler,
@@ -28,7 +30,8 @@ import {
 import containerRouters from "./routes/container.js";
 import projectRouters from "./routes/project.js";
 import taskRouters from "./routes/task.js";
-import usersRouters from "./routes/user.js";
+// import usersRouters from "./routes/user.js";
+import authRouters from "./routes/auth.js";
 
 export interface ISession extends Session {
   userId: string;
@@ -42,30 +45,17 @@ const app = express();
 const server = http.createServer(app);
 dotenv.config();
 
-const sessionParser = session({
-  saveUninitialized: false,
-  secret: process.env.SESSION_SECRET as string,
-  resave: false,
-
-  cookie: {
-    sameSite: "strict",
-    secure: false,
-    httpOnly: false,
-    maxAge: 60000000,
-  },
-});
-
 app.use(
   cors({
     origin: process.env.FRONT_END_ADDRESS,
-    methods: ["POST", "GET"],
     credentials: true,
   }),
-  json(),
-  sessionParser
+  cookieParser(),
+  json()
 );
 
-app.use("/user", auth, usersRouters);
+app.use("/auth", authRouters);
+// app.use("/user", usersRouters);
 app.use("/task", auth, userAccess, taskRouters);
 app.use("/project", auth, userAccess, projectRouters);
 app.use("/container", auth, userAccess, containerRouters);
@@ -80,19 +70,53 @@ function onSocketError(err: Error) {
 
 const wss = new WebSocketServer({ clientTracking: true, noServer: true });
 
-server.on("upgrade", function upgrade(request: WebSocketRequest, socket, head) {
-  socket.on("error", onSocketError);
+server.on("upgrade", function upgrade(request, socket, head) {
+  socket.on("error", (err) => console.error("Socket Error:", err));
 
-  sessionParser(request as any, {} as any, () => {
-    if (!request?.session?.authorized) {
-      socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
-      socket.destroy();
-      return;
-    }
+  // Extract JWT from request headers
+  const authHeader = request.headers["sec-websocket-protocol"];
+  if (!authHeader) {
+    socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+    socket.destroy();
+    return;
+  }
 
+  // The token should be sent as "Bearer <token>"
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+    socket.destroy();
+    return;
+  }
+
+  try {
+    // Verify JWT
+    const user = jwt.verify(token, process.env.JWT_SECRET as string);
+    // request.user = user; // Attach user info to the request
+
+    // Upgrade WebSocket connection if valid
     wss.handleUpgrade(request, socket, head, function (ws) {
-      wss.emit("connection", ws, request);
+      // ws.user = user; // Attach user info to WebSocket instance
+      // wss.emit("connection", ws, request);
     });
+  } catch (err) {
+    console.error("JWT Verification Failed:", err);
+    socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+    socket.destroy();
+  }
+});
+
+// Handle WebSocket Connections
+wss.on("connection", (ws, request) => {
+  console.log("User connected:", ws);
+
+  ws.on("message", (message) => {
+    console.log("Received:", message);
+    ws.send(JSON.stringify({ message: "Echo: " + message }));
+  });
+
+  ws.on("close", () => {
+    console.log("User disconnected");
   });
 });
 
