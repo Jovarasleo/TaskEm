@@ -23,15 +23,11 @@ export async function createUserHandler(
   { generateId, hashPassword }: propFunctions,
   data: Props
 ) {
-  if (!data) {
-    return { error: "Email is already in use" };
+  if (!data || !data.username || !data.password || !data.email) {
+    return { error: "missing user data" };
   }
 
   const { username, password, email } = data;
-  if (!username || !password || !email) {
-    return { error: "missing data" };
-  }
-
   const foundUser = findUserGateway(email);
   const isUserFound = await foundUser;
 
@@ -39,7 +35,7 @@ export async function createUserHandler(
     return { error: "Email is already in use" };
   }
 
-  const user = new User(username, password, email);
+  const user = new User({ username, password, email, uuid: "" });
   const validatedUser = await user.validateUser(generateId, hashPassword);
 
   if (validatedUser.error) {

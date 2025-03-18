@@ -30,7 +30,7 @@ import {
 import containerRouters from "./routes/container.js";
 import projectRouters from "./routes/project.js";
 import taskRouters from "./routes/task.js";
-// import usersRouters from "./routes/user.js";
+import usersRouters from "./routes/user.js";
 import authRouters from "./routes/auth.js";
 
 export interface ISession extends Session {
@@ -55,7 +55,7 @@ app.use(
 );
 
 app.use("/auth", authRouters);
-// app.use("/user", usersRouters);
+app.use("/user", auth, usersRouters);
 app.use("/task", auth, userAccess, taskRouters);
 app.use("/project", auth, userAccess, projectRouters);
 app.use("/container", auth, userAccess, containerRouters);
@@ -104,20 +104,6 @@ server.on("upgrade", function upgrade(request, socket, head) {
     socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
     socket.destroy();
   }
-});
-
-// Handle WebSocket Connections
-wss.on("connection", (ws, request) => {
-  console.log("User connected:", ws);
-
-  ws.on("message", (message) => {
-    console.log("Received:", message);
-    ws.send(JSON.stringify({ message: "Echo: " + message }));
-  });
-
-  ws.on("close", () => {
-    console.log("User disconnected");
-  });
 });
 
 wss.on("connection", function connection(ws, request: WebSocketRequest) {

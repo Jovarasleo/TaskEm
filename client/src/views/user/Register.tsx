@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Button from "../../components/button/Button";
 import styles from "./authenticate.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { RegisterUser, registerUser } from "../../store/slices/authSlice";
+import { RegisterUser, registerUser, logoutUser } from "../../store/slices/authSlice";
 import type { AppDispatch, RootState } from "../../store/configureStore";
 import { useNavigate } from "react-router-dom";
 
@@ -101,9 +101,11 @@ function Register() {
           >
             Register
           </Button>
+
+          <Button onClick={() => dispatch(logoutUser())}>logout</Button>
         </form>
-        {error ? <div>{error}</div> : null}
-        {message ? <div>{message}</div> : null}
+        {/* {error ? <div>{error}</div> : null}
+        {message ? <div>{message}</div> : null} */}
       </h1>
     </main>
   );

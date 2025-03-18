@@ -1,7 +1,10 @@
-import dotenv from "dotenv";
 import { NextFunction, Request, Response } from "express";
 import { ISession } from "../../server.js";
-dotenv.config();
+import jwt from "jsonwebtoken";
+
+const verifyToken = (token: string) => {
+  return jwt.verify(token, process.env.TOKEN_SECRET || "");
+};
 
 export const auth = (req: Request, res: Response, next: NextFunction) => {
   if (
@@ -11,8 +14,14 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
     return next();
   }
 
-  if ((req.session as ISession).authorized) {
-    return next();
+  const token = req.cookies.token;
+  try {
+    const verifiedUser = verifyToken(token);
+    if (verifiedUser) {
+      return next();
+    }
+  } catch (err) {
+    console.log("Invalid token!");
   }
 
   return res

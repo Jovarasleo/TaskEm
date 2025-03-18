@@ -52,7 +52,7 @@ export const registerUser = createAsyncThunk(
   "auth/register",
   async ({ username, email, password }: RegisterUser, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${ENDPOINT_URL}/user`, {
+      const response = await fetch(`${ENDPOINT_URL}/auth`, {
         ...REQUEST_INIT,
         body: JSON.stringify({ username, email, password }), // body data type must match "Content-Type" header
       });
@@ -78,7 +78,7 @@ export const loginUser = createAsyncThunk(
   "auth/login",
   async ({ email, password }: LoginUser, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${ENDPOINT_URL}/user/login`, {
+      const response = await fetch(`${ENDPOINT_URL}/auth/login`, {
         ...REQUEST_INIT,
         body: JSON.stringify({ email, password }), // body data type must match "Content-Type" header
       });
@@ -103,7 +103,7 @@ export const loginUser = createAsyncThunk(
 
 export const logoutUser = createAsyncThunk("auth/logout", async (_, { rejectWithValue }) => {
   try {
-    const response = await fetch(`${ENDPOINT_URL}/user/logout`, REQUEST_INIT);
+    const response = await fetch(`${ENDPOINT_URL}/auth/logout`, REQUEST_INIT);
     const data = await response.json();
 
     if (response.ok) {
