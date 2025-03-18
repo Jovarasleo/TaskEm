@@ -38,8 +38,15 @@ export interface ISession extends Session {
   authorized: boolean;
 }
 type WebSocketRequest = http.IncomingMessage & {
-  session: ISession;
+  user: TokenData;
 };
+
+interface TokenData {
+  id: string;
+  email: string;
+  iat: number;
+  exp: number;
+}
 
 const app = express();
 const server = http.createServer(app);
@@ -70,19 +77,14 @@ function onSocketError(err: Error) {
 
 const wss = new WebSocketServer({ clientTracking: true, noServer: true });
 
-server.on("upgrade", function upgrade(request, socket, head) {
+server.on("upgrade", function upgrade(request: WebSocketRequest, socket, head) {
   socket.on("error", (err) => console.error("Socket Error:", err));
 
   // Extract JWT from request headers
-  const authHeader = request.headers["sec-websocket-protocol"];
-  if (!authHeader) {
-    socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
-    socket.destroy();
-    return;
-  }
+  const token = request.rawHeaders
+    .find((header) => header.includes("token="))
+    ?.split("token=")[1];
 
-  // The token should be sent as "Bearer <token>"
-  const token = authHeader.split(" ")[1];
   if (!token) {
     socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
     socket.destroy();
@@ -90,14 +92,10 @@ server.on("upgrade", function upgrade(request, socket, head) {
   }
 
   try {
-    // Verify JWT
-    const user = jwt.verify(token, process.env.JWT_SECRET as string);
-    // request.user = user; // Attach user info to the request
-
-    // Upgrade WebSocket connection if valid
+    const user = jwt.verify(token, process.env.TOKEN_SECRET || "") as TokenData;
     wss.handleUpgrade(request, socket, head, function (ws) {
-      // ws.user = user; // Attach user info to WebSocket instance
-      // wss.emit("connection", ws, request);
+      request.user = user;
+      wss.emit("connection", ws, request);
     });
   } catch (err) {
     console.error("JWT Verification Failed:", err);
@@ -107,7 +105,9 @@ server.on("upgrade", function upgrade(request, socket, head) {
 });
 
 wss.on("connection", function connection(ws, request: WebSocketRequest) {
-  const userId = request.session.userId;
+  const userId = request.user.id;
+
+  console.log({ userId });
   console.log("user connected!");
 
   ws.on("error", console.error);
@@ -172,7 +172,6 @@ wss.on("connection", function connection(ws, request: WebSocketRequest) {
         case "task/moveTask": {
           await updateTaskPositionSocketController(payload);
           const response = await getSingleTaskSocketController(payload.taskId);
-
           if (response?.success) {
             const message = {
               type: "task/moveTask",

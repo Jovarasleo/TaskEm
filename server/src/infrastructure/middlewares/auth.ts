@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { ISession } from "../../server.js";
 import jwt from "jsonwebtoken";
 
 const verifyToken = (token: string) => {
@@ -35,10 +34,14 @@ export const authorizeSocket = (
   socket: WebSocket,
   next: NextFunction
 ) => {
-  // You can access the request object from the socket handshake
-
-  if ((req.session as ISession).authorized) {
-    return next();
+  const token = req.cookies.token;
+  try {
+    const verifiedUser = verifyToken(token);
+    if (verifiedUser) {
+      return next();
+    }
+  } catch (err) {
+    console.log("Invalid token!");
   }
 
   if (socket) {

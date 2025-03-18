@@ -5,7 +5,7 @@ import { getContainers } from "../slices/containerReducer";
 import { setProjects } from "../slices/projectReducer";
 import { getSocketTasks, moveSocketTask } from "../slices/taskReducer";
 
-const ENDPOINT_URL = process.env.BACKEND_WS_ADDRESS as string;
+const WEB_SOCKET_ENDPOINT = process.env.BACKEND_WS_ADDRESS as string;
 
 export let ws: WebSocket | null = null;
 export const socketMiddleware =
@@ -79,7 +79,7 @@ export const socketMiddleware =
       }
     };
 
-    ws = new WebSocket(ENDPOINT_URL);
+    ws = new WebSocket(WEB_SOCKET_ENDPOINT);
 
     ws.addEventListener("message", wsEventHandler);
     ws.addEventListener("open", openHandler);
