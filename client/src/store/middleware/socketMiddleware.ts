@@ -19,7 +19,7 @@ export const socketMiddleware =
           store.dispatch(getSocketTasks(payload));
         }
         if (type === "task/moveTask") {
-          store.dispatch(moveSocketTask(payload[0]));
+          store.dispatch(moveSocketTask(payload));
         }
         if (type === "container/getContainers") {
           store.dispatch(getContainers(payload));

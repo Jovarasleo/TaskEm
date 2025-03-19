@@ -24,8 +24,6 @@ export const storeEventsMiddleware = (subscribers: any) => () => (next: Dispatch
             await storeEvents({ ...action, id: eventId });
           }
 
-          //save data
-          console.log(action);
           switch (action.type) {
             case "task/createTask":
             case "task/editTask":
