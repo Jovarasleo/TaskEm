@@ -1,42 +1,29 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { object, string } from "yup";
+import { object, string, ref } from "yup";
 import Button from "../../components/button/Button";
 import { AppDispatch, RootState } from "../../store/configureStore";
-import { loginUser } from "../../store/slices/authSlice";
+import { registerUser } from "../../store/slices/authSlice";
 import styles from "./authenticate.module.scss";
+import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
 
 const schema = object({
   email: string().email().required(),
-  password: string().required(),
+  username: string().min(3).required(),
+  password: string()
+    .required()
+    .min(8)
+    .matches(/^(?=.*[a-z])/, "must contain at least one lowercase character")
+    .matches(/^(?=.*[A-Z])/, "must contain at least one uppercase character")
+    .matches(/^(?=.*[0-9])/, "must contain at least one number"),
+  confirmPassword: string()
+    .required("password is a required field")
+    .oneOf([ref("password"), ""], "passwords must match"),
 }).required();
 
-declare global {
-  interface Window {
-    google: {
-      accounts: {
-        id: {
-          initialize: ({
-            client_id,
-            callback,
-          }: {
-            client_id: string;
-            callback: () => void;
-          }) => void;
-          renderButton: (
-            Element: HTMLElement | null,
-            { theme, size }: { theme: string; size: string }
-          ) => void;
-        };
-      };
-    };
-  }
-}
-
-function Login() {
+function Signup() {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state: RootState) => state.auth); // Get auth state
@@ -48,35 +35,19 @@ function Login() {
     resolver: yupResolver(schema),
     defaultValues: {
       email: "",
+      username: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
   const submit = handleSubmit(async (formValues) => {
-    const resultAction = await dispatch(loginUser(formValues));
+    const resultAction = await dispatch(registerUser(formValues));
 
     if (resultAction.meta.requestStatus === "fulfilled") {
       navigate("/");
     }
   });
-
-  const handleGoogleOAuth = () => {
-    window.location.href = `${process.env.BACKEND_ADDRESS}/auth/google`;
-  };
-
-  useEffect(() => {
-    if (window.google) {
-      window.google.accounts.id.initialize({
-        client_id: process.env.CLIENT_ID ?? "",
-        callback: handleGoogleOAuth,
-      });
-
-      window.google.accounts.id.renderButton(document.getElementById("google-login-btn"), {
-        theme: "outline",
-        size: "large",
-      });
-    }
-  }, []);
 
   return (
     <>
@@ -92,6 +63,16 @@ function Login() {
           <p className={styles.formError}>{errors.email?.message}</p>
         </div>
         <div className={styles.loginFormField}>
+          <label htmlFor="username">Username</label>
+          <input
+            className={styles.fieldInput}
+            type="username"
+            placeholder="Type your username"
+            {...register("username")}
+          />
+          <p className={styles.formError}>{errors.username?.message}</p>
+        </div>
+        <div className={styles.loginFormField}>
           <label htmlFor="password">Password</label>
           <input
             className={styles.fieldInput}
@@ -100,17 +81,26 @@ function Login() {
             {...register("password")}
           />
           <p className={styles.formError}>{errors.password?.message}</p>
-          <Button
-            className={styles.forgotPasswordBtn}
-            type="link"
-            onClick={(e) => e.preventDefault()}
-          >
-            forgot password?
-          </Button>
-          {error && <p className={styles.formError}>{error}</p>}
+        </div>
+        <div className={styles.loginFormField}>
+          <label htmlFor="password">Password</label>
+          <input
+            className={styles.fieldInput}
+            type="password"
+            placeholder="Confirm password"
+            {...register("confirmPassword")}
+          />
+          <p className={styles.formError}>{errors.confirmPassword?.message}</p>
+          {error.length > 0 && (
+            <ul className={clsx(styles.formError, styles.serverErrors)}>
+              {error.map((er) => (
+                <li key={er}>{er}</li>
+              ))}
+            </ul>
+          )}
         </div>
         <Button className={styles.formSubmitBtn} loading={loading} onClick={submit}>
-          Login
+          Sign Up
         </Button>
       </form>
 
@@ -118,4 +108,4 @@ function Login() {
     </>
   );
 }
-export default Login;
+export default Signup;

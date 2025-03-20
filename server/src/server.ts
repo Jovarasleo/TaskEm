@@ -5,7 +5,7 @@ import express, { json } from "express";
 import { Session } from "express-session";
 import http from "http";
 import { auth } from "./infrastructure/middlewares/auth.js";
-import { userAccess } from "./infrastructure/middlewares/userAccess.js";
+import { userAccessMiddleware } from "./infrastructure/middlewares/userAccess.js";
 import authRouters from "./routes/auth.js";
 import containerRouters from "./routes/container.js";
 import projectRouters from "./routes/project.js";
@@ -35,9 +35,9 @@ app.use(
 
 app.use("/auth", authRouters);
 app.use("/user", auth, usersRouters);
-app.use("/task", auth, userAccess, taskRouters);
-app.use("/project", auth, userAccess, projectRouters);
-app.use("/container", auth, userAccess, containerRouters);
+app.use("/task", auth, userAccessMiddleware, taskRouters);
+app.use("/project", auth, userAccessMiddleware, projectRouters);
+app.use("/container", auth, userAccessMiddleware, containerRouters);
 
 server.listen(3000, () => {
   console.log("Server is running on port 3000");

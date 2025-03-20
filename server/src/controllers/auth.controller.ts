@@ -7,7 +7,7 @@ import { authenticateUserHandler } from "../handlers/authHandler.js";
 import { createUserHandler } from "../handlers/userHandler.js";
 import hashPassword from "../infrastructure/utils/passwordHash.js";
 import generateId from "../infrastructure/utils/uuidGenerator.js";
-import { ISession } from "../server.js";
+import { generateToken } from "../infrastructure/utils/jwtGenerator.js";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -18,18 +18,25 @@ export const register = async (req: Request, res: Response) => {
       { username, password, email }
     );
 
-    if (response.error) {
+    if (response.error || !response.user) {
       return res.status(400).send({ success: false, error: response?.error });
     }
+
+    const jwtToken = generateToken(response.user);
+
+    res.cookie("token", jwtToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
 
     return res.status(201).send({
       success: true,
       message: `user ${username} has been created`,
       user: response.user,
     });
-  } catch (error) {
-    console.log({ error });
-    res.status(500).send({ success: false, error: "Internal Server Error" });
+  } catch (ex) {
+    console.error(ex);
+    res.status(500).send({ success: false, error: ["Internal Server Error"] });
   }
 };
 
@@ -43,26 +50,30 @@ export const login = async (req: Request, res: Response) => {
     );
 
     if (response.success && response.user) {
-      let session = req.session as ISession;
-      session.userId = response.user.userId;
-      session.authorized = true;
+      const jwtToken = generateToken(response.user);
 
-      req.session.save();
+      res.cookie("token", jwtToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+      });
 
-      return res.status(200).send({ success: true, user: response.user });
+      return res.status(201).send({
+        success: true,
+        user: response.user,
+      });
     }
 
     return res
       .status(401)
-      .send({ success: false, error: "incorrect credentials" });
+      .send({ success: false, error: ["incorrect credentials"] });
   } catch (e) {
     console.log(e);
-    res.status(500).send({ success: false, error: "internal server error" });
+    res.status(500).send({ success: false, error: ["internal server error"] });
     return;
   }
 };
 
-export const logout = async (req: Request, res: Response) => {
+export const logout = async (_: Request, res: Response) => {
   try {
     res
       .clearCookie("token")

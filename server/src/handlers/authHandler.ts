@@ -36,7 +36,7 @@ export async function authenticateUserHandler(
     return {
       success: true,
       user: {
-        userId: foundUser[0].uuid,
+        uuid: foundUser[0].uuid,
         username: foundUser[0].name,
         email: foundUser[0].email,
       },

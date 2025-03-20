@@ -32,7 +32,7 @@ export async function createUserHandler(
   const isUserFound = await foundUser;
 
   if (isUserFound.length) {
-    return { error: "Email is already in use" };
+    return { error: ["Email is already in use"] };
   }
 
   const user = new User({ username, password, email, uuid: "" });
@@ -41,10 +41,14 @@ export async function createUserHandler(
   if (validatedUser.error) {
     return { error: validatedUser.error };
   } else {
-    const newUser = await createUserGateway(validatedUser);
+    const createdUser = await createUserGateway(validatedUser);
 
     return {
-      user: { username: newUser[0].name, email: newUser[0].email },
+      user: {
+        username: createdUser[0].name,
+        email: createdUser[0].email,
+        uuid: createdUser[0].uuid,
+      },
     };
   }
 }
