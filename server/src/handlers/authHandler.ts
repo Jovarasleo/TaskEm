@@ -26,13 +26,17 @@ export async function authenticateUserHandler(
   }
 
   const userPassword = foundUser[0].password;
-  const passwordMatch = await bcrypt.compare(password, userPassword);
 
+  if (!userPassword) {
+    return { success: false, error: "user missing password" };
+  }
+
+  const passwordMatch = await bcrypt.compare(password, userPassword);
   if (passwordMatch) {
     return {
       success: true,
       user: {
-        userId: foundUser[0].uuid,
+        uuid: foundUser[0].uuid,
         username: foundUser[0].name,
         email: foundUser[0].email,
       },

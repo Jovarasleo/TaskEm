@@ -74,7 +74,7 @@ export async function getSingleTaskHandler(
     return { success: false, error: "", data: null };
   }
 
-  return task;
+  return { ...task, data: task.data[0] };
 }
 
 export async function updateTaskHandler(

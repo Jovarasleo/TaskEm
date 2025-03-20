@@ -1,0 +1,87 @@
+@import "../../styles/variables.scss";
+
+.formContainer {
+  max-width: 500px;
+  background-color: var(--color-white-0);
+  margin-inline: auto;
+  padding: $size-x2;
+  box-shadow: 0 0 4px 1px var(--color-shadow-grey-0);
+  border-radius: $size-sm;
+  width: 100%;
+}
+
+.formTitle {
+  margin: $size-sm 0 $size-lg 0;
+  font-size: $size-xl;
+  text-align: center;
+}
+
+.linkToContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: $size-x2;
+  font-size: $font-nm;
+}
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: $size-lg;
+  font-size: $font-nm;
+}
+
+.loginFormField {
+  display: flex;
+  flex-direction: column;
+}
+
+.fieldInput {
+  padding: $size-sm;
+  border: none;
+  border-bottom: 1px solid grey;
+}
+
+.formError {
+  min-height: $size-md;
+  color: rgb(161, 81, 81);
+}
+
+.serverErrors {
+  list-style-type: none;
+}
+
+.forgotPasswordBtn {
+  margin-left: auto;
+  color: var(--color-grey-2);
+
+  text-underline-offset: 4px;
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+
+  transition-duration: 0.3s;
+  transition-property: text-decoration-color;
+
+  &:hover {
+    text-decoration-color: var(--color-shadow-grey-1);
+  }
+}
+
+.googleLoginBtn {
+  margin: $size-md 0;
+}
+
+.formSubmitBtn {
+  padding: 11px;
+  font-weight: $font-weight-medium;
+
+  transition-duration: 0.3s;
+  transition-property: background;
+
+  &:not(:disabled) {
+    background-color: var(--theme-main);
+    color: var(--color-white-0);
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-grey-2);
+  }
+}

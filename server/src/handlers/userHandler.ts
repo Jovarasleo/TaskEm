@@ -23,32 +23,32 @@ export async function createUserHandler(
   { generateId, hashPassword }: propFunctions,
   data: Props
 ) {
-  if (!data) {
-    return { error: "Email is already in use" };
+  if (!data || !data.username || !data.password || !data.email) {
+    return { error: "missing user data" };
   }
 
   const { username, password, email } = data;
-  if (!username || !password || !email) {
-    return { error: "missing data" };
-  }
-
   const foundUser = findUserGateway(email);
   const isUserFound = await foundUser;
 
   if (isUserFound.length) {
-    return { error: "Email is already in use" };
+    return { error: ["Email is already in use"] };
   }
 
-  const user = new User(username, password, email);
+  const user = new User({ username, password, email, uuid: "" });
   const validatedUser = await user.validateUser(generateId, hashPassword);
 
   if (validatedUser.error) {
     return { error: validatedUser.error };
   } else {
-    const newUser = await createUserGateway(validatedUser);
+    const createdUser = await createUserGateway(validatedUser);
 
     return {
-      user: { username: newUser[0].name, email: newUser[0].email },
+      user: {
+        username: createdUser[0].name,
+        email: createdUser[0].email,
+        uuid: createdUser[0].uuid,
+      },
     };
   }
 }

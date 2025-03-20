@@ -21,7 +21,7 @@ interface InitialState {
   userData: UserData;
   loggedIn: boolean;
   message: null | string;
-  error: null | string;
+  error: string[];
   success: boolean;
 }
 
@@ -32,7 +32,11 @@ interface RegisteredUserDto {
     username: string;
     email: string;
   };
-  error?: string;
+  error?: string[];
+}
+
+interface RejectValue {
+  rejectValue: { error: string[] };
 }
 
 const REQUEST_INIT: RequestInit = {
@@ -48,11 +52,11 @@ const REQUEST_INIT: RequestInit = {
   referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
 };
 
-export const registerUser = createAsyncThunk(
+export const registerUser = createAsyncThunk<RegisteredUserDto, RegisterUser, RejectValue>(
   "auth/register",
   async ({ username, email, password }: RegisterUser, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${ENDPOINT_URL}/user`, {
+      const response = await fetch(`${ENDPOINT_URL}/auth`, {
         ...REQUEST_INIT,
         body: JSON.stringify({ username, email, password }), // body data type must match "Content-Type" header
       });
@@ -62,72 +66,65 @@ export const registerUser = createAsyncThunk(
       if (response.ok) {
         return data;
       } else {
-        if (data) {
-          return rejectWithValue({ payload: { error: data.error } });
-        } else {
-          return rejectWithValue({ payload: { error: "unknown error" } });
-        }
+        const error = Array.isArray(data?.error) ? data.error : ["Unknown error occurred."];
+        return rejectWithValue({ error });
       }
     } catch (error) {
-      return rejectWithValue({ payload: { error: "unknown error" } });
+      console.error(error);
+      return rejectWithValue({ error: ["Unknown error occurred."] });
     }
   }
 );
 
-export const loginUser = createAsyncThunk(
+export const loginUser = createAsyncThunk<RegisteredUserDto, LoginUser, RejectValue>(
   "auth/login",
   async ({ email, password }: LoginUser, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${ENDPOINT_URL}/user/login`, {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const response = await fetch(`${ENDPOINT_URL}/auth/login`, {
         ...REQUEST_INIT,
-        body: JSON.stringify({ email, password }), // body data type must match "Content-Type" header
+        body: JSON.stringify({ email, password }),
       });
+      const data: RegisteredUserDto = await response.json();
 
+      if (response.ok) {
+        return data;
+      } else {
+        const error = Array.isArray(data?.error) ? data.error : ["Unknown error occurred."];
+        return rejectWithValue({ error });
+      }
+    } catch (error) {
+      console.error(error);
+      return rejectWithValue({ error: ["Unknown error occurred."] });
+    }
+  }
+);
+
+export const logoutUser = createAsyncThunk<void, void, RejectValue>(
+  "auth/logout",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${ENDPOINT_URL}/auth/logout`, REQUEST_INIT);
       const data = await response.json();
 
       if (response.ok) {
         return data;
       } else {
-        // Error response, handle it here
-        if (data) {
-          return rejectWithValue({ error: data });
-        } else {
-          return rejectWithValue({ error: "Unknown error occurred." });
-        }
+        const error = Array.isArray(data?.error) ? data.error : ["Unknown error occurred."];
+        return rejectWithValue({ error });
       }
     } catch (error) {
-      return rejectWithValue({ error });
+      return rejectWithValue({ error: ["Unknown error occurred."] });
     }
   }
 );
-
-export const logoutUser = createAsyncThunk("auth/logout", async (_, { rejectWithValue }) => {
-  try {
-    const response = await fetch(`${ENDPOINT_URL}/user/logout`, REQUEST_INIT);
-    const data = await response.json();
-
-    if (response.ok) {
-      // Successful response
-      return data;
-    } else {
-      // Error response, handle it here
-      if (data) {
-        return rejectWithValue({ error: data });
-      } else {
-        return rejectWithValue({ error: "Unknown error occurred." });
-      }
-    }
-  } catch (error) {
-    return rejectWithValue({ error });
-  }
-});
 
 const initialState: InitialState = {
   loading: false,
   userData: { username: "", email: "" }, // for user object
   loggedIn: false,
   message: null,
-  error: null,
+  error: [],
   success: false, // for monitoring the registration process.
 };
 
@@ -141,6 +138,13 @@ const authSlice = createSlice({
         loggedIn: true,
       };
     },
+    clearAuthError: (state) => {
+      console.log("clear reducer called");
+      return {
+        ...state,
+        error: [],
+      };
+    },
   },
   extraReducers(builder) {
     builder
@@ -152,12 +156,12 @@ const authSlice = createSlice({
         state.success;
         state.message = action.payload.message;
         state.userData = action.payload.user;
-        state.error = null;
+        state.error = [];
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.message = null;
-        state.error = action.payload?.error;
+        state.error = action.payload?.error ?? [];
         state.success = false;
       })
       .addCase(loginUser.pending, (state) => {
@@ -169,33 +173,32 @@ const authSlice = createSlice({
         state.loggedIn = true;
         state.message = action.payload.message;
         state.userData = action.payload.user;
-        state.error = null;
+        state.error = [];
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.message = null;
-        state.error = action.payload?.error;
+        state.error = action.payload?.error ?? [];
         state.success = false;
       })
       .addCase(logoutUser.pending, (state) => {
         state.loading = true;
       })
-      .addCase(logoutUser.fulfilled, (state, action) => {
+      .addCase(logoutUser.fulfilled, (state) => {
         state.loading = false;
         state.success = true;
         state.loggedIn = false;
-        state.message = action.payload.message;
-        state.error = null;
+        state.error = [];
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false;
         state.message = null;
-        state.error = action.payload?.error || "Unknown error";
+        state.error = action.payload?.error ?? [];
         state.success = false;
       });
   },
 });
 
-export const { userLoggedIn } = authSlice.actions;
+export const { userLoggedIn, clearAuthError } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -14,11 +14,7 @@ export const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Oper
 );
 
 function ready() {
-  if (!userOnline) {
-    console.log("user is", { userOnline });
-  } else {
-    console.log("user is", { userOnline });
-  }
+  console.log("user is", { userOnline });
 
   window.addEventListener("online", function online() {
     userOnline = true;
