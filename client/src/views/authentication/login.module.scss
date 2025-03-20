@@ -1,0 +1,61 @@
+@import "../../styles/variables.scss";
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: $size-lg;
+  font-size: $font-nm;
+}
+
+.loginFormField {
+  display: flex;
+  flex-direction: column;
+}
+
+.fieldInput {
+  padding: $size-sm;
+  border: none;
+  border-bottom: 1px solid grey;
+}
+
+.formError {
+  height: $size-md;
+  color: rgb(161, 81, 81);
+}
+
+.forgotPasswordBtn {
+  margin-left: auto;
+  color: var(--color-grey-2);
+
+  text-underline-offset: 4px;
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+
+  transition-duration: 0.3s;
+  transition-property: text-decoration-color;
+
+  &:hover {
+    text-decoration-color: var(--color-shadow-grey-1);
+  }
+}
+
+.googleLoginBtn {
+  margin: $size-md 0;
+}
+
+.formSubmitBtn {
+  padding: 11px;
+  font-weight: $font-weight-medium;
+
+  transition-duration: 0.3s;
+  transition-property: background;
+
+  &:not(:disabled) {
+    background-color: var(--theme-main);
+    color: var(--color-white-0);
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-grey-2);
+  }
+}

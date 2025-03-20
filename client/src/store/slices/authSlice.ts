@@ -78,9 +78,10 @@ export const loginUser = createAsyncThunk(
   "auth/login",
   async ({ email, password }: LoginUser, { rejectWithValue }) => {
     try {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       const response = await fetch(`${ENDPOINT_URL}/auth/login`, {
         ...REQUEST_INIT,
-        body: JSON.stringify({ email, password }), // body data type must match "Content-Type" header
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
@@ -88,12 +89,7 @@ export const loginUser = createAsyncThunk(
       if (response.ok) {
         return data;
       } else {
-        // Error response, handle it here
-        if (data) {
-          return rejectWithValue({ error: data });
-        } else {
-          return rejectWithValue({ error: "Unknown error occurred." });
-        }
+        return rejectWithValue(data ? data : { error: "Unknown error occurred." });
       }
     } catch (error) {
       return rejectWithValue({ error });

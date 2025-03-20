@@ -1,26 +1,11 @@
 import { Request, Response } from "express";
+import { google } from "googleapis";
+import { createGoogleUserHandler } from "../handlers/authGoogleHandler.js";
+import { generateToken } from "../infrastructure/utils/jwtGenerator.js";
 import {
   createUserGateway,
   findUserGateway,
 } from "../gateways/user.gateway.js";
-
-import { google } from "googleapis";
-import jwt from "jsonwebtoken";
-import { createGoogleUserHandler } from "../handlers/authGoogleHandler.js";
-
-const generateToken = (user: any) => {
-  if (!process.env.TOKEN_SECRET) {
-    throw new Error("missing token secret");
-  }
-
-  return jwt.sign(
-    { id: user.id, email: user.email },
-    process.env.TOKEN_SECRET,
-    {
-      expiresIn: "1h",
-    }
-  );
-};
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || "";
@@ -83,7 +68,8 @@ export const googleLogin = async (req: Request, res: Response) => {
       );
     }
 
-    const jwtToken = generateToken(data);
+    const userDetails = await findUserGateway(data.email);
+    const jwtToken = generateToken(userDetails[0]);
     res.cookie("token", jwtToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

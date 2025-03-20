@@ -1,26 +1,41 @@
-import { ReactElement, ReactNode } from "react";
+import { ReactElement, ReactNode, RefObject } from "react";
 import styles from "./button.module.scss";
 import clsx from "clsx";
-import { RefObject } from "react";
 
 export interface ButtonProps {
+  type?: "link" | "select";
   className?: string;
   disabled?: boolean;
-  type?: string;
+  loading?: boolean;
   children?: ReactElement | ReactNode;
   ref?: RefObject<HTMLButtonElement>;
   onClick: React.MouseEventHandler<HTMLButtonElement>;
-  // onClick: <T>(T?: T) => void;
 }
 
-function Button({ className, disabled, type, children, onClick, ref, ...rest }: ButtonProps) {
+function Button({
+  className,
+  disabled,
+  loading,
+  type,
+  children,
+  onClick,
+  ref,
+  ...rest
+}: ButtonProps) {
   return (
     <button
-      className={clsx(styles.button, type && styles[type], disabled && styles.disabled, className)}
-      onClick={disabled ? undefined : onClick}
       ref={ref}
+      className={clsx(
+        styles.button,
+        type && styles[type],
+        (disabled || loading) && styles.disabled,
+        className
+      )}
+      disabled={disabled || loading}
+      onClick={disabled || loading ? undefined : onClick}
       {...rest}
     >
+      {loading && <span className={styles.loader} />}
       {children}
     </button>
   );

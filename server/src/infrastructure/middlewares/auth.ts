@@ -8,7 +8,7 @@ const verifyToken = (token: string) => {
 export const auth = (req: Request, res: Response, next: NextFunction) => {
   if (
     req.method === "POST" &&
-    (req.originalUrl === "/user/login" || req.originalUrl === "/user")
+    (req.originalUrl === "/auth/login" || req.originalUrl === "/auth")
   ) {
     return next();
   }

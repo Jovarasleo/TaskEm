@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Button from "../../components/button/Button";
-import styles from "./authenticate.module.scss";
+import styles from "./login.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { RegisterUser, registerUser, logoutUser } from "../../store/slices/authSlice";
 import type { AppDispatch, RootState } from "../../store/configureStore";
@@ -89,7 +89,6 @@ function Register() {
             />
           </div>
           <Button
-            type="submit"
             disabled={missmatch}
             onClick={() =>
               submitForm({

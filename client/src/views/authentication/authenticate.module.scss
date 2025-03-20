@@ -1,0 +1,16 @@
+@import "../../styles/variables.scss";
+
+.formContainer {
+  max-width: 500px;
+  background-color: var(--color-white-0);
+  margin-inline: auto;
+  padding: $size-lg;
+  border-radius: $size-sm;
+  width: 100%;
+}
+
+.formTitle {
+  margin: $size-sm 0 $size-lg 0;
+  font-size: $size-xl;
+  text-align: center;
+}
