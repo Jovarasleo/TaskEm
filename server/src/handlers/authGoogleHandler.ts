@@ -1,5 +1,5 @@
-import User, { IUser } from "../entities/userEntity";
-import { IUserFromDb } from "../gateways/user.gateway";
+import User, { IUser } from "../entities/userEntity.js";
+import { IUserFromDb } from "../gateways/user.gateway.js";
 
 interface Props {
   username: string;
