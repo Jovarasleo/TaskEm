@@ -85,7 +85,7 @@ export async function setProject(Project: Project) {
   }
 }
 
-export async function setContainers(containers: TaskContainer[]) {
+export async function setContainer(container: TaskContainer) {
   try {
     await initDB();
 
@@ -93,33 +93,32 @@ export async function setContainers(containers: TaskContainer[]) {
 
     const objectStore = transaction.objectStore(Stores.Containers);
 
-    containers.forEach((container) => {
-      const request = objectStore.put(container, container.containerId);
+    const request = objectStore.put(container, container.containerId);
 
-      request.onsuccess = (event) => {
-        console.log("Item stored successfully:", event);
-      };
+    request.onsuccess = (event) => {
+      console.log("Item stored successfully:", event);
+    };
 
-      request.onerror = (event) => {
-        const error = (event.target as IDBOpenDBRequest).error;
-        console.error("Error storing item:", error);
-      };
-    });
+    request.onerror = (event) => {
+      const error = (event.target as IDBOpenDBRequest).error;
+      console.error("Error storing item:", error);
+    };
   } catch (error) {
     console.log(error);
   }
 }
 
-export async function setTask(Task: Task) {
+export async function setTask(task: Task) {
   try {
     await initDB();
     return new Promise((resolve, reject) => {
       const transaction = db.transaction([Stores.Tasks], "readwrite");
 
       const objectStore = transaction.objectStore(Stores.Tasks);
-      const id = Task.taskId;
+      const id = task.taskId;
 
-      const request = objectStore.put(Task, id);
+      console.log({ store: task });
+      const request = objectStore.put(task, id);
       request.onsuccess = (event) => {
         const result = (event.target as IDBOpenDBRequest).result;
         resolve(result); // Resolve the Promise with the data
@@ -158,25 +157,23 @@ export async function getTasks() {
   }
 }
 
-export async function deleteTask(tasks: Task[]) {
+export async function deleteTask(task: Task) {
   try {
     await initDB();
 
     const transaction = db.transaction([Stores.Tasks], "readwrite");
     const objectStore = transaction.objectStore(Stores.Tasks);
 
-    tasks.forEach((task) => {
-      const request = objectStore.delete(task.taskId);
+    const request = objectStore.delete(task.taskId);
 
-      request.onsuccess = (event) => {
-        console.log("Item deleted successfully:", event);
-      };
+    request.onsuccess = (event) => {
+      console.log("Item deleted successfully:", event);
+    };
 
-      request.onerror = (event) => {
-        const error = (event.target as IDBOpenDBRequest).error;
-        console.error("Error storing item:", error);
-      };
-    });
+    request.onerror = (event) => {
+      const error = (event.target as IDBOpenDBRequest).error;
+      console.error("Error storing item:", error);
+    };
   } catch (error) {
     console.log(error);
   }
@@ -285,26 +282,23 @@ export async function deleteProject(projectInfo: { projectId: string }) {
   }
 }
 
-export async function deleteContainers(containers: TaskContainer[]) {
+export async function deleteContainer(container: TaskContainer) {
   try {
     await initDB();
 
     const transaction = db.transaction([Stores.Containers], "readwrite");
     const objectStore = transaction.objectStore(Stores.Containers);
 
-    containers.forEach((container) => {
-      console.log(container);
-      const request = objectStore.delete(container.containerId);
+    const request = objectStore.delete(container.containerId);
 
-      request.onsuccess = (event) => {
-        console.log("Item deleted successfully:", event);
-      };
+    request.onsuccess = (event) => {
+      console.log("Item deleted successfully:", event);
+    };
 
-      request.onerror = (event) => {
-        const error = (event.target as IDBOpenDBRequest).error;
-        console.error("Error storing item:", error);
-      };
-    });
+    request.onerror = (event) => {
+      const error = (event.target as IDBOpenDBRequest).error;
+      console.error("Error storing item:", error);
+    };
   } catch (error) {
     console.log(error);
   }
@@ -317,12 +311,18 @@ export async function storeEvents(eventData: any) {
     const transaction = db.transaction([Stores.Events], "readwrite");
     const objectStore = transaction.objectStore(Stores.Events);
 
+    console.log({ eventData });
     const request = objectStore.put(eventData);
     request.onsuccess = (event) => {
-      console.log(event);
+      console.log("store event fails", event);
+    };
+
+    request.onerror = (event) => {
+      const error = (event.target as IDBOpenDBRequest).error;
+      console.error("Error storing item:", error);
     };
   } catch (error) {
-    console.log(error);
+    console.log("store event fails 2", error);
   }
 }
 

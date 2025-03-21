@@ -58,7 +58,7 @@ const projectSlice = createSlice({
     syncProjects: (state) => {
       return state;
     },
-    setProjects: (state, action) => {
+    setProject: (state, action) => {
       const projects = action.payload;
       return { ...state, data: projects };
     },
@@ -109,7 +109,7 @@ const projectSlice = createSlice({
 });
 
 export const {
-  setProjects,
+  setProject,
   createProject,
   selectProject,
   renameProject,

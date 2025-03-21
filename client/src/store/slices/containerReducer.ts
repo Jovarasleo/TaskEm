@@ -3,7 +3,7 @@ import { TaskContainer } from "../../views/taskManager/model/task";
 import { getContainersIdb } from "../../db";
 
 interface InitialContainerState {
-  data: TaskContainer[] | [];
+  data: TaskContainer[];
   loading: boolean;
   error: null | string;
 }
@@ -31,7 +31,7 @@ const containerReducer = createSlice({
       };
     },
 
-    deleteContainers: (state, action) => {
+    deleteContainer: (state, action) => {
       const filteredData = state.data.filter((container) => {
         return action.payload.some(
           (projectContainer: TaskContainer) =>
@@ -54,6 +54,12 @@ const containerReducer = createSlice({
   },
   extraReducers(builder) {
     builder
+      .addCase("project/deleteProject", (state, action) => {
+        return {
+          ...state,
+          data: state.data.filter((container) => container.projectId === action?.payload.projectId),
+        };
+      })
       .addCase(getContainersFromIdb.pending, (state) => {
         state.loading = true;
       })
@@ -70,6 +76,6 @@ const containerReducer = createSlice({
   },
 });
 
-export const { createContainer, deleteContainers, getContainers } = containerReducer.actions;
+export const { createContainer, deleteContainer, getContainers } = containerReducer.actions;
 
 export default containerReducer.reducer;

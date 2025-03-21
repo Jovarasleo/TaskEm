@@ -2,13 +2,11 @@ import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store/configureStore";
 import { deleteProject, renameProject } from "../../store/slices/projectReducer";
 import TasksContainer from "./components/container/TasksContainer";
+import ProjectMenu from "./components/project/ProjectOptions";
+import ProjectTitle from "./components/project/ProjectTitle";
 import useDragAndDrop from "./hooks/useDragAndDrop";
 import { Task, TaskContainer } from "./model/task";
 import styles from "./styles.module.scss";
-import { deleteContainers } from "../../store/slices/containerReducer";
-import { deleteTask } from "../../store/slices/taskReducer";
-import ProjectMenu from "./components/project/ProjectOptions";
-import ProjectTitle from "./components/project/ProjectTitle";
 
 function TaskManager() {
   const dispatch: AppDispatch = useDispatch();
@@ -18,6 +16,7 @@ function TaskManager() {
   const { data: containers } = useSelector((state: RootState) => state.container);
   const { data: tasks } = useSelector((state: RootState) => state.task);
 
+  console.log({ containers });
   const currentProject = selectedProject ?? projects[0];
 
   const { handleDrag, handlePointerDown, handleDragCancel, dragging, currentlyDragging } =
@@ -45,8 +44,6 @@ function TaskManager() {
         />
         {projects.length > 0 && (
           <ProjectMenu
-            deleteTask={() => dispatch(deleteTask(projectTasks))}
-            deleteContainers={() => dispatch(deleteContainers(projectContainers))}
             deleteProject={() => dispatch(deleteProject({ projectId: currentProject?.projectId }))}
           />
         )}

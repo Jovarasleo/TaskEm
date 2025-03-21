@@ -4,21 +4,15 @@ import { onLoadMiddleware } from "./middleware/onLoadMiddleware";
 import authReducer from "./slices/authSlice";
 import containerReducer from "./slices/containerReducer";
 import projectReducer from "./slices/projectReducer";
-import taskReducer, {
-  createTask,
-  editTask,
-  moveTask,
-  deleteTask,
-  getSocketTasks,
-} from "./slices/taskReducer";
+import taskReducer, { createTask, editTask, moveTask, deleteTask } from "./slices/taskReducer";
 import {
   createProject,
   renameProject,
   deleteProject,
   selectProject,
-  setProjects,
+  setProject,
 } from "./slices/projectReducer";
-import { createContainer, deleteContainers, getContainers } from "./slices/containerReducer";
+import { createContainer, deleteContainer, getContainers } from "./slices/containerReducer";
 import { storeEventsMiddleware } from "./middleware/storeEventsMiddleware";
 
 const store = configureStore({
@@ -32,18 +26,17 @@ const store = configureStore({
     gDM().concat(
       onLoadMiddleware,
       storeEventsMiddleware({
-        createTask,
-        editTask,
-        deleteTask,
-        moveTask,
-        getSocketTasks,
-        createProject,
-        createContainer,
-        deleteContainers,
-        setProjects,
-        renameProject,
-        deleteProject,
-        getContainers,
+        "task/createTask": createTask,
+        "task/editTask": editTask,
+        "task/deleteTask": deleteTask,
+        "task/moveTask": moveTask,
+        "container/createContainer": createContainer,
+        "container/getContainers": getContainers,
+        "container/deleteContainer": deleteContainer,
+        "project/createProject": createProject,
+        "project/setProject": setProject,
+        "project/renameProject": renameProject,
+        "project/deleteProject": deleteProject,
       }),
       socketMiddleware({
         createTask,

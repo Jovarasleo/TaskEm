@@ -128,9 +128,8 @@ function TaskCard({
         {confirmDeletion ? (
           <>
             <Button
-              type="button"
               className={styles.confirmationButton}
-              onClick={() => dispatch(deleteTask([task]))}
+              onClick={() => dispatch(deleteTask(task))}
             >
               <BsCheckLg />
             </Button>

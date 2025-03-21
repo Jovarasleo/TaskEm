@@ -1,22 +1,60 @@
+import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
 import { Dispatch } from "redux";
 import {
-  deleteContainers,
+  deleteContainer,
   deleteProject,
   deleteTask,
-  setContainers,
+  setContainer,
   setProject,
   setTask,
   storeEvents,
 } from "../../db";
 import { uid } from "../../util/uid";
-import { Project, Task } from "../../views/taskManager/model/task";
+import { Project, Task, TaskContainer } from "../../views/taskManager/model/task";
 import { ws } from "./socketMiddleware";
 
-export const storeEventsMiddleware = (subscribers: any) => () => (next: Dispatch) => {
-  return async (action: any) => {
+type TaskAction =
+  | { type: "task/createTask"; payload: Task }
+  | { type: "task/editTask"; payload: Task }
+  | { type: "task/moveTask"; payload: Task }
+  | { type: "task/deleteTask"; payload: Task };
+
+type ContainerAction =
+  | { type: "container/createContainer"; payload: TaskContainer }
+  | { type: "container/deleteContainer"; payload: TaskContainer }
+  | { type: "container/getContainers"; payload: TaskContainer[] };
+
+type ProjectAction =
+  | { type: "project/createProject"; payload: Project }
+  | { type: "project/renameProject"; payload: Project }
+  | { type: "project/setProject"; payload: Project }
+  | { type: "project/deleteProject"; payload: Project };
+
+type AppAction = TaskAction | ContainerAction | ProjectAction;
+
+type KnownActionTypes =
+  | "task/createTask"
+  | "task/editTask"
+  | "task/deleteTask"
+  | "task/moveTask"
+  | "container/createContainer"
+  | "container/deleteContainer"
+  | "container/getContainers"
+  | "project/createProject"
+  | "project/renameProject"
+  | "project/setProject"
+  | "project/deleteProject";
+
+type Subscribers = {
+  [K in KnownActionTypes]: ActionCreatorWithPayload<() => void, KnownActionTypes>;
+};
+
+export const storeEventsMiddleware = (subscribers: Subscribers) => () => (next: Dispatch) => {
+  return async (action: AppAction) => {
     if (action) {
-      for (const key of Object.keys(subscribers)) {
+      for (const key of Object.keys(subscribers) as Array<keyof typeof subscribers>) {
         const event = subscribers[key];
+
         if (event.type === action.type) {
           const eventId = uid();
 
@@ -28,35 +66,28 @@ export const storeEventsMiddleware = (subscribers: any) => () => (next: Dispatch
             case "task/createTask":
             case "task/editTask":
             case "task/moveTask":
+              console.log({ payload: action.payload });
               setTask(action.payload);
               break;
-
             case "task/deleteTask":
               deleteTask(action.payload);
               break;
-
             case "container/createContainer":
-              setContainers(action.payload);
+              setContainer(action.payload);
               break;
-
-            case "container/deleteContainers":
-              deleteContainers(action.payload);
+            case "container/deleteContainer":
+              deleteContainer(action.payload);
               break;
-
+            case "container/getContainers":
+              () => console.log("what");
+              break;
             case "project/createProject":
             case "project/renameProject":
               setProject(action.payload);
               break;
-            case "project/setProjects":
-              action.payload.forEach((project: Project) => setProject(project));
+            case "project/setProject":
+              setProject(action.payload);
               break;
-            case "container/getContainers":
-              setContainers(action.payload);
-              break;
-            case "task/getSocketTasks":
-              action.payload.data.forEach((task: Task) => setTask(task));
-              break;
-
             case "project/deleteProject":
               deleteProject(action.payload);
               break;

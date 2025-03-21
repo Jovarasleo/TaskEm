@@ -56,9 +56,7 @@ const taskSlice = createSlice({
     },
 
     deleteTask: (state, action) => {
-      const filteredData = state.data.filter((task) => {
-        return action.payload.some((currentTasks: Task) => currentTasks.taskId !== task.taskId);
-      });
+      const filteredData = state.data.filter((task) => task.taskId === action.payload.taskId);
 
       return {
         ...state,

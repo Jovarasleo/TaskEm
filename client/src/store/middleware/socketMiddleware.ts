@@ -2,7 +2,7 @@ import { Dispatch, MiddlewareAPI } from "redux";
 import { deleteEvent, getEvents } from "../../db";
 import { userLoggedIn } from "../slices/authSlice";
 import { getContainers } from "../slices/containerReducer";
-import { setProjects } from "../slices/projectReducer";
+import { setProject } from "../slices/projectReducer";
 import { getSocketTasks, moveSocketTask } from "../slices/taskReducer";
 
 const WEB_SOCKET_ENDPOINT = process.env.BACKEND_WS_ADDRESS as string;
@@ -25,7 +25,7 @@ export const socketMiddleware =
           store.dispatch(getContainers(payload));
         }
         if (type === "project/getProjects") {
-          store.dispatch(setProjects(payload));
+          store.dispatch(setProject(payload));
         }
       } catch (error) {
         console.error("Error parsing message:", error);
