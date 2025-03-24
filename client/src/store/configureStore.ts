@@ -1,19 +1,20 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { socketMiddleware } from "./middleware/socketMiddleware";
+import { localStorageMiddleware } from "./middleware/localStorageMiddleware";
 import { onLoadMiddleware } from "./middleware/onLoadMiddleware";
+import { socketMiddleware } from "./middleware/socketMiddleware";
 import authReducer from "./slices/authSlice";
-import containerReducer from "./slices/containerReducer";
-import projectReducer from "./slices/projectReducer";
-import taskReducer, { createTask, editTask, moveTask, deleteTask } from "./slices/taskReducer";
-import {
+import containerReducer, {
+  createContainer,
+  deleteContainer,
+  deleteContainersByProject,
+} from "./slices/containerReducer";
+import projectReducer, {
   createProject,
-  renameProject,
   deleteProject,
+  renameProject,
   selectProject,
-  setProject,
 } from "./slices/projectReducer";
-import { createContainer, deleteContainer, getContainers } from "./slices/containerReducer";
-import { storeEventsMiddleware } from "./middleware/storeEventsMiddleware";
+import taskReducer, { createTask, deleteTask, editTask, moveTask } from "./slices/taskReducer";
 
 const store = configureStore({
   reducer: {
@@ -25,29 +26,29 @@ const store = configureStore({
   middleware: (gDM) =>
     gDM().concat(
       onLoadMiddleware,
-      storeEventsMiddleware({
+      localStorageMiddleware({
         "task/createTask": createTask,
         "task/editTask": editTask,
         "task/deleteTask": deleteTask,
         "task/moveTask": moveTask,
         "container/createContainer": createContainer,
-        "container/getContainers": getContainers,
         "container/deleteContainer": deleteContainer,
         "project/createProject": createProject,
-        "project/setProject": setProject,
         "project/renameProject": renameProject,
         "project/deleteProject": deleteProject,
+        "container/deleteContainersByProject": deleteContainersByProject,
       }),
       socketMiddleware({
-        createTask,
-        editTask,
-        deleteTask,
-        moveTask,
-        createProject,
-        createContainer,
-        deleteContainer,
-        selectProject,
-        deleteProject,
+        "task/createTask": createTask,
+        "task/editTask": editTask,
+        "task/deleteTask": deleteTask,
+        "task/moveTask": moveTask,
+        "container/createContainer": createContainer,
+        "container/deleteContainer": deleteContainer,
+        "project/selectProject": selectProject,
+        "project/createProject": createProject,
+        "project/renameProject": renameProject,
+        "project/deleteProject": deleteProject,
       })
     ),
 });

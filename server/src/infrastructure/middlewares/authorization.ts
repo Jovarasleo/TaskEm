@@ -5,7 +5,7 @@ import { ISession } from "../../server.js";
 
 dotenv.config();
 
-export async function userAccessMiddleware(
+export async function authorizationMiddleware(
   req: Request,
   res: Response,
   next: NextFunction
@@ -17,10 +17,7 @@ export async function userAccessMiddleware(
     return next();
   }
 
-  console.log(req);
-
   const userId = (req.session as ISession).userId;
-  console.log(userId);
   const projectId = req.body.projectId;
 
   const userHasAccess = await userHasProjectAccessGateway(userId, projectId);
@@ -33,15 +30,13 @@ export async function userAccessMiddleware(
   next();
 }
 
-export async function userAccessSocketMiddleware(
+export async function authorizationSocketMiddleware(
   data: any,
   userId: string,
   next: NextFunction
 ) {
   const parsedData = JSON.parse(data);
   const { type, payload } = parsedData;
-
-  console.log("access middleware payload", parsedData);
 
   if (
     type === "project/createProject" ||
@@ -58,7 +53,7 @@ export async function userAccessSocketMiddleware(
         userId,
         item.projectId
       );
-      console.log({ userHasAccess });
+
       if (!userHasAccess) {
         return console.error("User does not have access to the project.");
       }

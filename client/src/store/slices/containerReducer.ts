@@ -29,7 +29,7 @@ const containerReducer = createSlice({
     },
     deleteContainer: (state, action) => {
       const filteredData = state.data.filter((container) => {
-        action.payload.containerId === container.containerId;
+        action.payload.containerId !== container.containerId;
       });
 
       return {
@@ -39,8 +39,10 @@ const containerReducer = createSlice({
     },
     deleteContainersByProject: (state, action) => {
       const filteredData = state.data.filter((container) => {
-        action.payload.projectId === container.projectId;
+        container.projectId === action.payload.projectId;
       });
+
+      console.log({ data: state.data, action, filteredData });
 
       return {
         ...state,
@@ -50,7 +52,10 @@ const containerReducer = createSlice({
     getContainers: (state, action) => {
       return {
         ...state,
-        data: action.payload.sort((a: TaskContainer, b: TaskContainer) => a.position - b.position),
+        data: [
+          ...state.data,
+          // ...action.payload.sort((a: TaskContainer, b: TaskContainer) => a.position - b.position),
+        ],
       };
     },
   },

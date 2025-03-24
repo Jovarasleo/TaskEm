@@ -117,7 +117,6 @@ export async function setTask(task: Task) {
       const objectStore = transaction.objectStore(Stores.Tasks);
       const id = task.taskId;
 
-      console.log({ store: task });
       const request = objectStore.put(task, id);
       request.onsuccess = (event) => {
         const result = (event.target as IDBOpenDBRequest).result;
@@ -134,7 +133,7 @@ export async function setTask(task: Task) {
   }
 }
 
-export async function getTasks() {
+export async function getTasksIdb() {
   try {
     await initDB();
     return new Promise((resolve, reject) => {
@@ -179,7 +178,7 @@ export async function deleteTask(task: Task) {
   }
 }
 
-export async function getProjects() {
+export async function getProjectsIdb() {
   try {
     await initDB();
 
@@ -313,9 +312,6 @@ export async function storeEvents(eventData: any) {
 
     console.log({ eventData });
     const request = objectStore.put(eventData);
-    request.onsuccess = (event) => {
-      console.log("store event fails", event);
-    };
 
     request.onerror = (event) => {
       const error = (event.target as IDBOpenDBRequest).error;
@@ -326,7 +322,12 @@ export async function storeEvents(eventData: any) {
   }
 }
 
-export async function getEvents() {
+export interface EventData {
+  key: IDBValidKey;
+  value: any; // Adjust this type based on the expected structure of your events
+}
+
+export async function getEvents(): Promise<EventData[]> {
   try {
     await initDB();
     return new Promise((resolve, reject) => {
@@ -350,22 +351,16 @@ export async function getEvents() {
         };
       };
 
-      request.onsuccess = (event) => {
-        const result = (event.target as IDBOpenDBRequest).result;
-        resolve(result);
-      };
-
-      request.onerror = (event) => {
-        reject(request);
-        console.log(event);
-      };
+      valuesRequest.onerror = (event) => reject(event);
+      keysRequest.onerror = (event) => reject(event);
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return [];
   }
 }
 
-export async function deleteEvent(eventId: number) {
+export async function deleteEvent(eventId: string) {
   try {
     await initDB();
 

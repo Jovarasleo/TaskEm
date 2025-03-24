@@ -132,10 +132,11 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    userLoggedIn: (state) => {
+    userLoggedIn: (state, action) => {
+      console.log({ action });
       return {
         ...state,
-        loggedIn: true,
+        loggedIn: action.payload,
       };
     },
     clearAuthError: (state) => {

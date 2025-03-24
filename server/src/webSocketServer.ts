@@ -18,7 +18,7 @@ import {
   setTaskSocketController,
   updateTaskPositionSocketController,
 } from "./controllers/task.controller.js";
-import { userAccessSocketMiddleware } from "./infrastructure/middlewares/userAccess.js";
+import { authorizationSocketMiddleware } from "./infrastructure/middlewares/authorization.js";
 import { Response } from "express";
 
 interface TokenData {
@@ -42,42 +42,6 @@ interface Event {
     id: string;
   };
 }
-
-// const eventProcessor = async (
-//   event: any,
-//   processEvent: (data: any) => Promise<void>
-// ) => {
-//   const sortedEvents: Event[] = [];
-
-//   const getTypeCategory = (type: EventType) => {
-//     if (type.includes("project")) return "project";
-//     if (type.includes("container")) return "container";
-//     if (type.includes("task")) return "task";
-//     return "other"; // For any other types not matching
-//   };
-
-//   const priority = {
-//     project: 1,
-//     container: 2,
-//     task: 3,
-//     other: 4,
-//   };
-//   const parsedData = JSON.parse(event);
-//   sortedEvents.push(parsedData);
-
-//   sortedEvents.sort((a, b) => {
-//     const priorityA = priority[getTypeCategory(a.value.type)];
-//     const priorityB = priority[getTypeCategory(b.value.type)];
-
-//     return priorityA - priorityB;
-//   });
-
-//   while (sortedEvents.length > 0) {
-//     const nextEvent = sortedEvents.shift();
-//     console.log("while loop");
-//     await processEvent(nextEvent);
-//   }
-// };
 
 const getUserJwtToken = (headers: string[]) =>
   headers.find((header) => header.includes("token="))?.split("token=")[1];
@@ -128,7 +92,7 @@ wss.on("connection", function connection(client, request: WebSocketRequest) {
   });
 
   client.on("message", async (data) => {
-    await userAccessSocketMiddleware(
+    await authorizationSocketMiddleware(
       data,
       userId,
       async ({ type, payload }) => {

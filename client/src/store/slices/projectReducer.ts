@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getProjects, putProject } from "../../db";
+import { getProjectsIdb } from "../../db";
 import { Project } from "../../views/taskManager/model/task";
-import { RootState } from "../configureStore";
 import { deleteContainersByProject } from "./containerReducer";
 import { deleteTasksByProject } from "./taskReducer";
 
@@ -25,22 +24,23 @@ const nextProject = (currentIndex: number, projectsCount: number) => {
   return currentIndex - 1;
 };
 
-export const updateProjectToIdb = createAsyncThunk(
-  "project/updateData",
+//is it needed?
+// export const updateProjectToIdb = createAsyncThunk(
+//   "project/updateData",
 
-  async (projectId: string, { getState }) => {
-    const currentState = getState() as RootState;
-    const foundProject = currentState.project.data.find(
-      (project) => project.projectId === projectId
-    );
-    if (!foundProject) {
-      return;
-    }
+//   async (projectId: string, { getState }) => {
+//     const currentState = getState() as RootState;
+//     const foundProject = currentState.project.data.find(
+//       (project) => project.projectId === projectId
+//     );
+//     if (!foundProject) {
+//       return;
+//     }
 
-    const data = await putProject(foundProject);
-    return data;
-  }
-);
+//     const data = await putProject(foundProject);
+//     return data;
+//   }
+// );
 
 export const deleteProjectThunk = createAsyncThunk(
   "project/deleteProject",
@@ -57,7 +57,7 @@ export const deleteProjectThunk = createAsyncThunk(
 );
 
 export const getProjectFromIdb = createAsyncThunk("project/getData", async () => {
-  const data = await getProjects();
+  const data = await getProjectsIdb();
   return data as Project[];
 });
 
@@ -71,10 +71,7 @@ const projectSlice = createSlice({
     error: null,
   } as InitialProjectState,
   reducers: {
-    syncProjects: (state) => {
-      return state;
-    },
-    setProject: (state, action) => {
+    getProjects: (state, action) => {
       const projects = action.payload;
       return { ...state, data: projects };
     },
@@ -124,13 +121,7 @@ const projectSlice = createSlice({
   },
 });
 
-export const {
-  setProject,
-  createProject,
-  selectProject,
-  renameProject,
-  deleteProject,
-  syncProjects,
-} = projectSlice.actions;
+export const { getProjects, createProject, selectProject, renameProject, deleteProject } =
+  projectSlice.actions;
 
 export default projectSlice.reducer;

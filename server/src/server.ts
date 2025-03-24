@@ -4,13 +4,13 @@ import * as dotenv from "dotenv";
 import express, { json } from "express";
 import { Session } from "express-session";
 import http from "http";
-import { auth } from "./infrastructure/middlewares/auth.js";
-import { userAccessMiddleware } from "./infrastructure/middlewares/userAccess.js";
+import { authMiddleware } from "./infrastructure/middlewares/authentication.js";
+import { authorizationMiddleware } from "./infrastructure/middlewares/authorization.js";
 import authRouters from "./routes/auth.js";
-import containerRouters from "./routes/container.js";
-import projectRouters from "./routes/project.js";
-import taskRouters from "./routes/task.js";
-import usersRouters from "./routes/user.js";
+import usersRouter from "./routes/user.js";
+import taskRouter from "./routes/task.js";
+import containerRouter from "./routes/container.js";
+import projectRouter from "./routes/project.js";
 import { initializeWebSocketServer } from "./webSocketServer.js";
 
 export interface ISession extends Session {
@@ -36,10 +36,10 @@ app.use(
 );
 
 app.use("/auth", authRouters);
-app.use("/user", auth, usersRouters);
-app.use("/task", auth, userAccessMiddleware, taskRouters);
-app.use("/project", auth, userAccessMiddleware, projectRouters);
-app.use("/container", auth, userAccessMiddleware, containerRouters);
+app.use("/user", authMiddleware, usersRouter);
+app.use("/task", authMiddleware, authorizationMiddleware, taskRouter);
+app.use("/project", authMiddleware, authorizationMiddleware, projectRouter);
+app.use("/container", authMiddleware, authorizationMiddleware, containerRouter);
 
 server.listen(3000, () => {
   console.log("Server is running on port 3000");

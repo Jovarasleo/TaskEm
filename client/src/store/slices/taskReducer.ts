@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getTasks } from "../../db";
+import { getTasksIdb } from "../../db";
 import { Task } from "../../views/taskManager/model/task";
 
-export const getDataFromIndexedDB = createAsyncThunk("task/getData", async () => {
-  const data = (await getTasks()) as Task[];
+export const getTasksFromIdb = createAsyncThunk("task/getData", async () => {
+  const data = (await getTasksIdb()) as Task[];
   return data;
 });
 
@@ -36,6 +36,12 @@ const taskSlice = createSlice({
     error: "",
   } as InitialTaskState,
   reducers: {
+    getTasks: (state, action) => {
+      return {
+        ...state,
+        data: [...action.payload.data].sort((a, b) => a.position - b.position),
+      };
+    },
     createTask: (state, action) => {
       const { projectId, containerId, value, taskId, count, position } = action.payload;
 
@@ -56,7 +62,7 @@ const taskSlice = createSlice({
     },
 
     deleteTask: (state, action) => {
-      const filteredData = state.data.filter((task) => task.taskId === action.payload.taskId);
+      const filteredData = state.data.filter((task) => task.taskId !== action.payload.taskId);
 
       return {
         ...state,
@@ -66,7 +72,7 @@ const taskSlice = createSlice({
 
     deleteTasksByProject: (state, action) => {
       const filteredData = state.data.filter((task) => {
-        action.payload.projectId === task.projectId;
+        action.payload.projectId !== task.projectId;
       });
 
       return {
@@ -118,24 +124,17 @@ const taskSlice = createSlice({
         data: [...newTasksArray, newTask].sort((a, b) => a.position - b.position),
       };
     },
-
-    getSocketTasks: (state, action) => {
-      return {
-        ...state,
-        data: [...action.payload.data].sort((a, b) => a.position - b.position),
-      };
-    },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getDataFromIndexedDB.pending, (state) => {
+      .addCase(getTasksFromIdb.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(getDataFromIndexedDB.fulfilled, (state, action) => {
+      .addCase(getTasksFromIdb.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.data = filteredData(action.payload);
       })
-      .addCase(getDataFromIndexedDB.rejected, (state, action) => {
+      .addCase(getTasksFromIdb.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message ?? "";
       });
@@ -148,7 +147,7 @@ export const {
   deleteTasksByProject,
   editTask,
   moveTask,
-  getSocketTasks,
+  getTasks,
   moveSocketTask,
 } = taskSlice.actions;
 export default taskSlice.reducer;

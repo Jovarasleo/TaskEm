@@ -5,7 +5,11 @@ const verifyToken = (token: string) => {
   return jwt.verify(token, process.env.TOKEN_SECRET || "");
 };
 
-export const auth = (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   if (
     req.method === "POST" &&
     (req.originalUrl === "/auth/login" || req.originalUrl === "/auth")
@@ -28,7 +32,7 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
     .send({ success: false, error: "Please provide authorization header" });
 };
 
-export const authorizeSocket = (
+export const authenticationSocketMiddleware = (
   req: Request,
   res: Response,
   socket: WebSocket,

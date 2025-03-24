@@ -21,35 +21,31 @@ type TaskAction =
 
 type ContainerAction =
   | { type: "container/createContainer"; payload: TaskContainer }
-  | { type: "container/deleteContainer"; payload: TaskContainer }
-  | { type: "container/getContainers"; payload: TaskContainer[] };
+  | { type: "container/deleteContainer"; payload: TaskContainer };
 
 type ProjectAction =
   | { type: "project/createProject"; payload: Project }
   | { type: "project/renameProject"; payload: Project }
-  | { type: "project/setProject"; payload: Project }
   | { type: "project/deleteProject"; payload: Project };
 
-type AppAction = TaskAction | ContainerAction | ProjectAction;
+export type AppAction = TaskAction | ContainerAction | ProjectAction;
 
-type KnownActionTypes =
+export type KnownActionTypes =
   | "task/createTask"
   | "task/editTask"
   | "task/deleteTask"
   | "task/moveTask"
   | "container/createContainer"
   | "container/deleteContainer"
-  | "container/getContainers"
   | "project/createProject"
   | "project/renameProject"
-  | "project/setProject"
   | "project/deleteProject";
 
-type Subscribers = {
+export type Subscribers = {
   [K in KnownActionTypes]: ActionCreatorWithPayload<() => void, KnownActionTypes>;
 };
 
-export const storeEventsMiddleware = (subscribers: Subscribers) => () => (next: Dispatch) => {
+export const localStorageMiddleware = (subscribers: Subscribers) => () => (next: Dispatch) => {
   return async (action: AppAction) => {
     if (action) {
       for (const key of Object.keys(subscribers) as Array<keyof typeof subscribers>) {
@@ -66,7 +62,6 @@ export const storeEventsMiddleware = (subscribers: Subscribers) => () => (next: 
             case "task/createTask":
             case "task/editTask":
             case "task/moveTask":
-              console.log({ payload: action.payload });
               setTask(action.payload);
               break;
             case "task/deleteTask":
@@ -78,20 +73,17 @@ export const storeEventsMiddleware = (subscribers: Subscribers) => () => (next: 
             case "container/deleteContainer":
               deleteContainer(action.payload);
               break;
-            case "container/getContainers":
-              () => console.log("what");
-              break;
             case "project/createProject":
             case "project/renameProject":
-              setProject(action.payload);
-              break;
-            case "project/setProject":
               setProject(action.payload);
               break;
             case "project/deleteProject":
               deleteProject(action.payload);
               break;
-
+            case "container/deleteContainersByProject": {
+              console.log({ action });
+              break;
+            }
             default:
               break;
           }
