@@ -10,9 +10,7 @@ const ProjectMenu = ({ deleteProject }: Props) => {
       options={[
         {
           title: "delete",
-          onClick: () => {
-            deleteProject();
-          },
+          onClick: deleteProject,
         },
       ]}
     />

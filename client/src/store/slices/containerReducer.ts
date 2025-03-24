@@ -24,19 +24,12 @@ const containerReducer = createSlice({
     createContainer: (state, action) => {
       return {
         ...state,
-        data: [
-          ...state.data,
-          ...action.payload.sort((a: TaskContainer, b: TaskContainer) => a.position - b.position),
-        ],
+        data: [...state.data, action.payload],
       };
     },
-
     deleteContainer: (state, action) => {
       const filteredData = state.data.filter((container) => {
-        return action.payload.some(
-          (projectContainer: TaskContainer) =>
-            projectContainer.containerId !== container.containerId
-        );
+        action.payload.containerId === container.containerId;
       });
 
       return {
@@ -44,7 +37,16 @@ const containerReducer = createSlice({
         data: filteredData,
       };
     },
+    deleteContainersByProject: (state, action) => {
+      const filteredData = state.data.filter((container) => {
+        action.payload.projectId === container.projectId;
+      });
 
+      return {
+        ...state,
+        data: filteredData,
+      };
+    },
     getContainers: (state, action) => {
       return {
         ...state,
@@ -54,12 +56,6 @@ const containerReducer = createSlice({
   },
   extraReducers(builder) {
     builder
-      .addCase("project/deleteProject", (state, action) => {
-        return {
-          ...state,
-          data: state.data.filter((container) => container.projectId === action?.payload.projectId),
-        };
-      })
       .addCase(getContainersFromIdb.pending, (state) => {
         state.loading = true;
       })
@@ -76,6 +72,7 @@ const containerReducer = createSlice({
   },
 });
 
-export const { createContainer, deleteContainer, getContainers } = containerReducer.actions;
+export const { createContainer, deleteContainer, deleteContainersByProject, getContainers } =
+  containerReducer.actions;
 
 export default containerReducer.reducer;

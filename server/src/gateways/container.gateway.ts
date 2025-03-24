@@ -47,3 +47,39 @@ export async function getContainersGateway(projectId: string) {
     throw new Error("Failed to retrieve containers");
   }
 }
+
+export async function deleteContainerGateway(containerId: string) {
+  const sql = "DELETE FROM containers WHERE containerId = ?";
+  const values = [containerId];
+
+  try {
+    const [result] = await db.execute<RowDataPacket[]>(sql, values);
+
+    return {
+      success: true,
+      message: ["Container deleted successfully"],
+      data: result,
+    };
+  } catch (error) {
+    console.error("Error deleting container:", error);
+    throw new Error("Failed to delete container");
+  }
+}
+
+export async function deleteContainersByProjectGateway(projectId: string) {
+  const sql = "DELETE FROM containers WHERE projectId = ?";
+  const values = [projectId];
+
+  try {
+    const [result] = await db.execute<RowDataPacket[]>(sql, values);
+
+    return {
+      success: true,
+      message: ["Project containers deleted successfully"],
+      data: result,
+    };
+  } catch (error) {
+    console.error("Error deleting containers:", error);
+    throw new Error("Failed to delete containers");
+  }
+}

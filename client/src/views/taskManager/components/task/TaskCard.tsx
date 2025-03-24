@@ -99,7 +99,6 @@ function TaskCard({
 
   return (
     <li
-      role="taskItem"
       ref={taskItem}
       className={clsx(
         styles.taskWrapper,

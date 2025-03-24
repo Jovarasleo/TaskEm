@@ -99,14 +99,27 @@ export async function updateTaskHandler(
 }
 
 export async function deleteTaskHandler(
-  deleleTaskGateway: DeleteTaskGateway,
+  deleteTaskGateway: DeleteTaskGateway,
   taskId: string
 ) {
-  const task = await deleleTaskGateway(taskId);
+  const task = await deleteTaskGateway(taskId);
 
   if (!task.success) {
     return { success: false, error: "", data: null };
   }
 
   return task;
+}
+
+export async function deleteTasksByProjectHandler(
+  deleteTasksByProjectGateway: DeleteTaskGateway,
+  projectId: string
+) {
+  const result = await deleteTasksByProjectGateway(projectId);
+
+  if (!result.success) {
+    return { success: false, error: "", data: null };
+  }
+
+  return result;
 }

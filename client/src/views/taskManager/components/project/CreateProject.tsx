@@ -28,7 +28,7 @@ function CreateProject() {
     }
 
     dispatch(createProject({ projectId, projectName: trimmedProjectName }));
-    dispatch(createContainer(defaultContainers(projectId)));
+    defaultContainers(projectId).forEach((container) => dispatch(createContainer(container)));
 
     handleProjectName("");
     setAddNew(false);

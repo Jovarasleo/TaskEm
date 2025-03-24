@@ -64,6 +64,17 @@ const taskSlice = createSlice({
       };
     },
 
+    deleteTasksByProject: (state, action) => {
+      const filteredData = state.data.filter((task) => {
+        action.payload.projectId === task.projectId;
+      });
+
+      return {
+        ...state,
+        data: filteredData,
+      };
+    },
+
     editTask: (state, action) => {
       const { taskId, value } = action.payload;
       const newState = state.data.map((task) => {
@@ -131,6 +142,13 @@ const taskSlice = createSlice({
   },
 });
 
-export const { createTask, deleteTask, editTask, moveTask, getSocketTasks, moveSocketTask } =
-  taskSlice.actions;
+export const {
+  createTask,
+  deleteTask,
+  deleteTasksByProject,
+  editTask,
+  moveTask,
+  getSocketTasks,
+  moveSocketTask,
+} = taskSlice.actions;
 export default taskSlice.reducer;

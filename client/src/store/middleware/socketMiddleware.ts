@@ -72,6 +72,8 @@ export const socketMiddleware =
           payload: eventPayload,
         };
 
+        console.log({ message });
+
         const stingifiedMessage = JSON.stringify(message);
         ws.send(stingifiedMessage);
       } else {

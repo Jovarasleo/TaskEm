@@ -22,7 +22,9 @@ dotenv.config();
 
 const app = express();
 export const server = http.createServer(app);
-initializeWebSocketServer(server);
+
+const clearCookie = () => app.response.clearCookie("token");
+initializeWebSocketServer(server, clearCookie);
 
 app.use(
   cors({

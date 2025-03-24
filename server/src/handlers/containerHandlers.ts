@@ -10,6 +10,12 @@ type SetContainerGateway = ({
 
 type GetContainersGateway = (projectId: string) => Promise<RowDataPacket[]>;
 
+type DeleteContainerGateway = (projectId: string) => Promise<{
+  success: boolean;
+  message: string[];
+  data: RowDataPacket[];
+}>;
+
 export async function createContainerHandler(
   setContainerGateway: SetContainerGateway,
   {
@@ -43,6 +49,19 @@ export async function getContainersHandler(
   getContainersGateway: GetContainersGateway,
   projectId: string
 ) {
-  const containers = await getContainersGateway(projectId);
-  return containers;
+  return await getContainersGateway(projectId);
+}
+
+export async function deleteContainerHandler(
+  deleteContainerGateway: DeleteContainerGateway,
+  containerId: string
+) {
+  return deleteContainerGateway(containerId);
+}
+
+export async function deleteContainersByProjectHandler(
+  deleteContainersByProjectGateway: DeleteContainerGateway,
+  projectId: string
+) {
+  return deleteContainersByProjectGateway(projectId);
 }

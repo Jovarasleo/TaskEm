@@ -45,6 +45,7 @@ const store = configureStore({
         moveTask,
         createProject,
         createContainer,
+        deleteContainer,
         selectProject,
         deleteProject,
       })

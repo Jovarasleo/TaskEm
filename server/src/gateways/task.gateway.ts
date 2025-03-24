@@ -103,3 +103,21 @@ export async function deleteTaskGateway(taskId: string) {
     throw new Error("Failed to delete task");
   }
 }
+
+export async function deleteTasksByProjectGateway(projectId: string) {
+  const sql = "DELETE FROM tasks WHERE projectId = ?";
+  const values = [projectId];
+
+  try {
+    const [result] = await db.execute<RowDataPacket[]>(sql, values);
+
+    return {
+      success: true,
+      message: ["Project tasks deleted successfully"],
+      data: result,
+    };
+  } catch (error) {
+    console.error("Error deleting tasks:", error);
+    throw new Error("Failed to delete tasks");
+  }
+}

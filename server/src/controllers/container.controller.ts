@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import {
+  deleteContainerGateway,
   getContainersGateway,
   setContainerGateway,
 } from "../gateways/container.gateway.js";
 import {
   createContainerHandler,
+  deleteContainerHandler,
   getContainersHandler,
 } from "../handlers/containerHandlers.js";
 import Container from "../entities/containerEntity.js";
@@ -84,6 +86,23 @@ export const getContainersSocketController = async (projectId: string) => {
     );
 
     return response;
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
+export const deleteContainerSocketController = async (data: {
+  containerId: string;
+}) => {
+  const { containerId } = data;
+
+  try {
+    const reponse = await deleteContainerHandler(
+      deleteContainerGateway,
+      containerId
+    );
+
+    return reponse;
   } catch (error) {
     console.log({ error });
   }

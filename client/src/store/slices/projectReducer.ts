@@ -2,6 +2,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getProjects, putProject } from "../../db";
 import { Project } from "../../views/taskManager/model/task";
 import { RootState } from "../configureStore";
+import { deleteContainersByProject } from "./containerReducer";
+import { deleteTasksByProject } from "./taskReducer";
 
 interface InitialProjectState {
   data: Project[] | [];
@@ -37,6 +39,20 @@ export const updateProjectToIdb = createAsyncThunk(
 
     const data = await putProject(foundProject);
     return data;
+  }
+);
+
+export const deleteProjectThunk = createAsyncThunk(
+  "project/deleteProject",
+  async (project: Project, { dispatch }) => {
+    try {
+      dispatch(deleteContainersByProject(project));
+      dispatch(deleteTasksByProject(project));
+      dispatch(deleteProject(project));
+    } catch (error) {
+      console.error("Failed to delete project:", error);
+      throw error;
+    }
   }
 );
 

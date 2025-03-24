@@ -1,16 +1,20 @@
+import { Request, Response } from "express";
+import Project from "../entities/projectEntity.js";
+import { deleteContainersByProjectGateway } from "../gateways/container.gateway.js";
 import {
+  deleteProjectGateway,
   getUserProjectsGateway,
   setProjectGateway,
-  deleteProjectGateway,
 } from "../gateways/project.gateway.js";
-import { Request, Response } from "express";
+import { deleteTasksByProjectGateway } from "../gateways/task.gateway.js";
+import { deleteContainersByProjectHandler } from "../handlers/containerHandlers.js";
 import {
   createProjectHandler,
   deleteProjectHandler,
   getProjectsHandler,
 } from "../handlers/projectHandlers.js";
+import { deleteTasksByProjectHandler } from "../handlers/taskHandlers.js";
 import { ISession } from "../server.js";
-import Project from "../entities/projectEntity.js";
 
 export const getProjects = async (req: Request, res: Response) => {
   const { userId } = req.session as ISession;
@@ -72,6 +76,12 @@ export const deleteProjectSocketController = async (data: {
 }) => {
   const { projectId } = data;
   try {
+    await deleteTasksByProjectHandler(deleteTasksByProjectGateway, projectId);
+    await deleteContainersByProjectHandler(
+      deleteContainersByProjectGateway,
+      projectId
+    );
+
     const response = await deleteProjectHandler(
       deleteProjectGateway,
       projectId
