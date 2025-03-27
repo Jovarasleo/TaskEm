@@ -1,9 +1,17 @@
-import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
-import { Dispatch, MiddlewareAPI } from "redux";
-import { deleteEvent, EventData, getEvents } from "../../db";
+import { ActionCreatorWithPayload, ThunkDispatch } from "@reduxjs/toolkit";
+import { AnyAction, Dispatch, MiddlewareAPI } from "redux";
+import {
+  deleteEvent,
+  EventData,
+  getEvents,
+  syncAllContainers,
+  syncAllProjects,
+  syncAllTasks,
+} from "../../db";
 import { userLoggedIn } from "../slices/authSlice";
 import { serverCreateTask, serverEditTask, serverMoveTask } from "../slices/taskReducer";
 import { SocketAction, SocketActionType, SocketServerAction } from "../slices/types";
+import { clientLoadLocalProjects } from "../slices/projectReducer";
 
 export type Subscribers = {
   [K in SocketActionType]: ActionCreatorWithPayload<() => void, SocketActionType>;
@@ -41,9 +49,11 @@ const synchroniseData = async (ws: WebSocket) => {
   ws.send(JSON.stringify({ type: "syncData" }));
 };
 
+type AppDispatch = ThunkDispatch<Dispatch, unknown, AnyAction>;
+
 export let ws: WebSocket | null = null;
 export const socketMiddleware =
-  (subscribers: Subscribers) => (store: MiddlewareAPI<Dispatch>) => (next: Dispatch) => {
+  (subscribers: Subscribers) => (store: MiddlewareAPI<AppDispatch>) => (next: Dispatch) => {
     const handleReceivedSocketEvents = (event: MessageEvent<string>) => {
       const parsedData: SocketServerAction = JSON.parse(event.data);
       const { type, payload } = parsedData;
@@ -59,6 +69,7 @@ export const socketMiddleware =
       // "project/serverEditProject"
       // "project/serverDeleteProject"
 
+      //TODO Think of a better ALL around sync strategy
       try {
         switch (type) {
           case "task/serverCreateTask":
@@ -69,6 +80,16 @@ export const socketMiddleware =
             break;
           case "task/serverMoveTask":
             store.dispatch(serverMoveTask(payload));
+            break;
+          case "project/serverLoadProjects":
+            syncAllProjects(payload);
+            break;
+          case "container/serverLoadContainers":
+            syncAllContainers(payload);
+            break;
+          case "task/serverLoadTasks":
+            syncAllTasks(payload);
+            store.dispatch(clientLoadLocalProjects());
             break;
         }
       } catch (error) {

@@ -125,6 +125,7 @@ export type SocketAction =
   | SocketClientProjectAction;
 
 type SocketServerTaskActionType =
+  | "task/serverLoadTasks"
   | "task/serverCreateTask"
   | "task/serverEditTask"
   | "task/serverDeleteTask"
@@ -132,19 +133,28 @@ type SocketServerTaskActionType =
   | "task/serverDeleteProjectTasks";
 
 type SocketServerContainerActionType =
+  | "container/serverLoadContainers"
   | "container/serverCreateContainer"
   | "container/serverDeleteContainer"
   | "container/serverDeleteProjectContainers";
 
 type SocketServerProjectActionType =
+  | "project/serverLoadProjects"
   | "project/serverCreateProject"
   | "project/serverEditProject"
   | "project/serverDeleteProject";
 
 type SocketServerTaskAction =
   | {
-      type: Exclude<SocketServerTaskActionType, "task/serverDeleteProjectTasks">;
+      type: Exclude<
+        SocketServerTaskActionType,
+        "task/serverDeleteProjectTasks" | "task/serverLoadTasks"
+      >;
       payload: Task;
+    }
+  | {
+      type: Extract<SocketServerTaskActionType, "task/serverLoadTasks">;
+      payload: Task[];
     }
   | {
       type: Extract<SocketServerTaskActionType, "task/serverDeleteProjectTasks">;
@@ -153,18 +163,30 @@ type SocketServerTaskAction =
 
 type SocketServerContainerAction =
   | {
-      type: Exclude<SocketServerContainerActionType, "task/serverDeleteProjectContainers">;
+      type: Exclude<
+        SocketServerContainerActionType,
+        "task/serverDeleteProjectContainers" | "container/serverLoadContainers"
+      >;
       payload: TaskContainer;
+    }
+  | {
+      type: Extract<SocketServerContainerActionType, "container/serverLoadContainers">;
+      payload: TaskContainer[];
     }
   | {
       type: Extract<SocketServerContainerActionType, "task/serverDeleteProjectContainers">;
       payload: { projectId: string };
     };
 
-type SocketServerProjectAction = {
-  type: SocketServerProjectActionType;
-  payload: Project;
-};
+type SocketServerProjectAction =
+  | {
+      type: Exclude<SocketServerProjectActionType, "project/serverLoadProjects">;
+      payload: Project;
+    }
+  | {
+      type: Extract<SocketServerProjectActionType, "project/serverLoadProjects">;
+      payload: Project[];
+    };
 
 export type SocketServerAction =
   | SocketServerTaskAction

@@ -78,11 +78,6 @@ export const setTaskSocketController = async (data: Task) => {
 export const getTasksSocketController = async (projectId: string) => {
   try {
     const response = await getTasksHandler(getTasksGateway, projectId);
-
-    if (!response.success) {
-      return new Error("can't return tasks");
-    }
-
     return response;
   } catch (error) {
     console.log({ error });

@@ -20,6 +20,8 @@ import {
 } from "./controllers/task.controller.js";
 import { authorizationSocketMiddleware } from "./infrastructure/middlewares/authorization.js";
 import { Response } from "express";
+import Container from "./entities/containerEntity.js";
+import Task from "./entities/taskEntity.js";
 
 interface TokenData {
   id: string;
@@ -168,21 +170,33 @@ wss.on("connection", function connection(client, request: WebSocketRequest) {
             );
 
             if (projects?.length) {
-              const projectId = projects[0].projectId;
-              const containers = await getContainersSocketController(projectId);
-              const tasks = await getTasksSocketController(projectId);
+              const allContainers: Container[] = [];
+              const allTasks: Task[] = [];
+
+              for (const project of projects) {
+                const containers = await getContainersSocketController(
+                  project.projectId
+                );
+                if (containers) {
+                  allContainers.push(...(containers as Container[]));
+                }
+                const tasks = await getTasksSocketController(project.projectId);
+                if (tasks) {
+                  allTasks.push(...(tasks.data as Task[]));
+                }
+              }
 
               client.send(
                 JSON.stringify({
                   type: "container/serverLoadContainers",
-                  payload: containers,
+                  payload: allContainers,
                 })
               );
 
               client.send(
                 JSON.stringify({
-                  type: "tasks/serverLoadTasks",
-                  payload: tasks,
+                  type: "task/serverLoadTasks",
+                  payload: allTasks,
                 })
               );
             }

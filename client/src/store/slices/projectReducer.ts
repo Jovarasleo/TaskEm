@@ -109,11 +109,6 @@ const deleteProject = (state: ProjectStoreState, action: { payload: Project; typ
   };
 };
 
-const loadProject = (state: ProjectStoreState, action: { payload: Project[]; type: string }) => ({
-  ...state,
-  data: action.payload,
-});
-
 const projectSlice = createSlice({
   name: "project",
   initialState: {
@@ -124,7 +119,7 @@ const projectSlice = createSlice({
     error: null,
   } as ProjectStoreState,
   reducers: {
-    clientLoadProjects: (state, action) => loadProject(state, action),
+    clientLoadProjects: (state, action) => loadProjects(state, action),
     clientSelectProject: (state, action) => selectProject(state, action),
     serverLoadProjects: (state, action) => loadProjects(state, action),
     clientCreateProject: (state, action) => createProject(state, action),

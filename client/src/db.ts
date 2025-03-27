@@ -287,6 +287,90 @@ export async function deleteProject(projectInfo: { projectId: string }) {
   }
 }
 
+export async function syncAllProjects(projects: Project[]) {
+  try {
+    await initDB();
+
+    const transaction = db.transaction([Stores.Projects], "readwrite");
+    const objectStore = transaction.objectStore(Stores.Projects);
+
+    // Step 1: Clear all existing projects
+    const clearRequest = objectStore.clear();
+
+    clearRequest.onsuccess = async () => {
+      // Step 2: Add new projects
+      for (const project of projects) {
+        const id = project.projectId;
+        const addRequest = objectStore.add(project, id);
+        addRequest.onsuccess = () => console.log(`Project ${project.projectId} added.`);
+        addRequest.onerror = (event) => console.error("Error adding project", event);
+      }
+    };
+
+    clearRequest.onerror = (event) => {
+      console.error("Error clearing projects", event);
+    };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function syncAllTasks(tasks: Task[]) {
+  try {
+    await initDB();
+
+    const transaction = db.transaction([Stores.Tasks], "readwrite");
+    const objectStore = transaction.objectStore(Stores.Tasks);
+
+    const clearRequest = objectStore.clear();
+
+    clearRequest.onsuccess = async () => {
+      console.log("All Tasks deleted successfully.");
+
+      for (const task of tasks) {
+        const id = task.taskId;
+        const addRequest = objectStore.add(task, id);
+        addRequest.onsuccess = () => console.log(`Task ${task.taskId} added.`);
+        addRequest.onerror = (event) => console.error("Error adding task", event);
+      }
+    };
+
+    clearRequest.onerror = (event) => {
+      console.error("Error clearing tasks", event);
+    };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function syncAllContainers(containers: TaskContainer[]) {
+  try {
+    await initDB();
+
+    const transaction = db.transaction([Stores.Containers], "readwrite");
+    const objectStore = transaction.objectStore(Stores.Containers);
+
+    const clearRequest = objectStore.clear();
+
+    clearRequest.onsuccess = async () => {
+      console.log("All containers deleted successfully.");
+
+      for (const container of containers) {
+        const id = container.containerId;
+        const addRequest = objectStore.add(container, id);
+        addRequest.onsuccess = () => console.log(`Container ${container.containerId} added.`);
+        addRequest.onerror = (event) => console.error("Error adding container", event);
+      }
+    };
+
+    clearRequest.onerror = (event) => {
+      console.error("Error clearing containers", event);
+    };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export async function deleteContainer(container: TaskContainer) {
   try {
     await initDB();
