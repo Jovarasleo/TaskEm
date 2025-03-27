@@ -39,8 +39,8 @@ export async function authorizationSocketMiddleware(
   const { type, payload } = parsedData;
 
   if (
-    type === "project/createProject" ||
-    type === "container/createContainer" ||
+    type === "project/clientCreateProject" ||
+    type === "container/clientCreateContainer" ||
     type === "syncData"
   ) {
     return next(parsedData);

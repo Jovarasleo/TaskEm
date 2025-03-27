@@ -96,23 +96,24 @@ wss.on("connection", function connection(client, request: WebSocketRequest) {
       data,
       userId,
       async ({ type, payload }) => {
+        console.log(type);
         switch (type) {
-          case "project/createProject":
+          case "project/clientCreateProject":
             await setProjectSocketController(payload, userId);
             break;
-          case "project/deleteProject":
+          case "project/clientDeleteProject":
             await deleteProjectSocketController(payload);
             break;
-          case "project/renameProject":
+          case "project/clientEditProject":
             // TODO: implement project rename
             break;
-          case "project/selectProject":
+          case "project/clientSelectProject":
             const containers = await getContainersSocketController(
               payload.projectId
             );
             client.send(
               JSON.stringify({
-                type: "container/getContainers",
+                type: "container/serverLoadContainers",
                 payload: containers,
               })
             );
@@ -120,33 +121,33 @@ wss.on("connection", function connection(client, request: WebSocketRequest) {
             const tasks = await getTasksSocketController(payload.projectId);
             client.send(
               JSON.stringify({
-                type: "tasks/getTasks",
+                type: "tasks/serverLoadTasks",
                 payload: tasks,
               })
             );
             break;
-          case "container/createContainer":
+          case "container/clientCreateContainer":
             await setContainerSocketHandler(payload);
 
             break;
-          case "container/deleteContainer":
+          case "container/clientDeleteContainer":
             await deleteContainerSocketController(payload);
             break;
-          case "task/createTask":
+          case "task/clientCreateTask":
             await setTaskSocketController(payload);
             break;
-          case "task/deleteTask":
+          case "task/clientDeleteTask":
             await deleteTaskSocketController(payload);
 
             break;
-          case "task/moveTask": {
+          case "task/clientMoveTask": {
             await updateTaskPositionSocketController(payload);
             const response = await getSingleTaskSocketController(
               payload.taskId
             );
             if (response?.success) {
               const message = {
-                type: "task/moveTask",
+                type: "task/serverMoveTask",
                 payload: response.data,
               };
 
@@ -161,7 +162,7 @@ wss.on("connection", function connection(client, request: WebSocketRequest) {
             console.log("syncData called");
             client.send(
               JSON.stringify({
-                type: "project/getProjects",
+                type: "project/serverLoadProjects",
                 payload: projects ?? [],
               })
             );
@@ -173,14 +174,14 @@ wss.on("connection", function connection(client, request: WebSocketRequest) {
 
               client.send(
                 JSON.stringify({
-                  type: "container/getContainers",
+                  type: "container/serverLoadContainers",
                   payload: containers,
                 })
               );
 
               client.send(
                 JSON.stringify({
-                  type: "tasks/getTasks",
+                  type: "tasks/serverLoadTasks",
                   payload: tasks,
                 })
               );

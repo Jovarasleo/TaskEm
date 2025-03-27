@@ -365,14 +365,14 @@ export async function getEvents(): Promise<EventData[]> {
   }
 }
 
-export async function deleteEvent(eventId: string) {
+export async function deleteEvent(eventKey: IDBValidKey) {
   try {
     await initDB();
 
     const transaction = db.transaction([Stores.Events], "readwrite");
 
     const objectStore = transaction.objectStore(Stores.Events);
-    const request = objectStore.delete(eventId);
+    const request = objectStore.delete(eventKey);
     request.onsuccess = (event) => {
       console.log(event);
     };

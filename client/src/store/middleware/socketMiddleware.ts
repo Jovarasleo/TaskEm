@@ -27,15 +27,13 @@ const sendUserAction = (
   }
 };
 
-const synchroniseData = async (
-  ws: WebSocket,
-  deleteEventFromIdb: (eventId: string) => Promise<void>
-) => {
+const synchroniseData = async (ws: WebSocket) => {
   const allEvents: EventData[] = await getEvents();
 
   for (const userEvent of allEvents) {
-    ws.send(JSON.stringify(userEvent));
-    deleteEventFromIdb(userEvent.key.toString());
+    console.log({ userEvent });
+    ws.send(JSON.stringify(userEvent.value));
+    deleteEvent(userEvent.key);
   }
 
   ws.send(JSON.stringify({ type: "syncData" }));
@@ -69,7 +67,7 @@ export const socketMiddleware =
     const onWebSocketOpen = async () => {
       console.log("WebSocket connected");
       if (ws && ws.readyState === WebSocket.OPEN) {
-        await synchroniseData(ws, deleteEvent);
+        await synchroniseData(ws);
         store.dispatch(userLoggedIn(true));
       }
     };

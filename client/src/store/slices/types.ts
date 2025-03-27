@@ -18,6 +18,7 @@ type ClientProjectActionType =
   | "project/clientLoadProjects"
   | "project/clientCreateProject"
   | "project/clientEditProject"
+  | "project/clientSelectProject"
   | "project/clientDeleteProject";
 
 type UpdateDataClientTaskActionType = Exclude<ClientTaskActionType, "task/clientLoadTasks">;
@@ -27,7 +28,7 @@ type UpdateDataClientContainerActionType = Exclude<
 >;
 type UpdateDataClientProjectActionType = Exclude<
   ClientProjectActionType,
-  "project/clientLoadProjects"
+  "project/clientLoadProjects" | "project/clientSelectProject"
 >;
 
 type UpdateDataClientTaskAction =
