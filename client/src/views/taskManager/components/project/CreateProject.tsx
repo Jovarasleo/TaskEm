@@ -9,7 +9,7 @@ import styles from "./styles.module.scss";
 import clsx from "clsx";
 import { clientCreateProject } from "../../../../store/slices/projectReducer";
 import { clientCreateContainer } from "../../../../store/slices/containerReducer";
-import { clientResetTasks } from "../../../../store/slices/taskReducer";
+import { clientLoadTasks } from "../../../../store/slices/taskReducer";
 
 function CreateProject() {
   const dispatch: AppDispatch = useDispatch();
@@ -25,7 +25,7 @@ function CreateProject() {
     }
 
     dispatch(clientCreateProject({ projectId, projectName: trimmedProjectName }));
-    dispatch(clientResetTasks([]));
+    dispatch(clientLoadTasks([]));
     defaultContainers(projectId).forEach((container) => dispatch(clientCreateContainer(container)));
 
     setProjectName("");

@@ -1,113 +1,172 @@
 import { Project, Task, TaskContainer } from "../../views/taskManager/model/task";
 
-type ClientTaskActionType =
-  | "task/clientLoadTasks"
+type IdbClientTaskActionType =
   | "task/clientCreateTask"
   | "task/clientEditTask"
   | "task/clientDeleteTask"
   | "task/clientMoveTask"
   | "task/clientDeleteProjectTasks";
 
-type ClientContainerActionType =
-  | "container/clientLoadContainers"
+type IdbClientContainerActionType =
   | "container/clientCreateContainer"
   | "container/clientDeleteContainer"
   | "container/clientDeleteProjectContainers";
 
-type ClientProjectActionType =
-  | "project/clientLoadProjects"
+type IdbClientProjectActionType =
   | "project/clientCreateProject"
   | "project/clientEditProject"
-  | "project/clientSelectProject"
   | "project/clientDeleteProject";
 
-type UpdateDataClientTaskActionType = Exclude<ClientTaskActionType, "task/clientLoadTasks">;
-type UpdateDataClientContainerActionType = Exclude<
-  ClientContainerActionType,
-  "container/clientLoadContainers"
->;
-type UpdateDataClientProjectActionType = Exclude<
-  ClientProjectActionType,
-  "project/clientLoadProjects" | "project/clientSelectProject"
->;
-
-type UpdateDataClientTaskAction =
-  | {
-      type: Exclude<UpdateDataClientTaskActionType, "task/clientDeleteProjectTasks">;
-      payload: Task;
-    }
-  | {
-      type: Extract<ClientTaskActionType, "task/clientDeleteProjectTasks">;
-      payload: { projectId: string };
-    };
-
-type UpdateDataClientContainerAction =
-  | {
-      type: Exclude<UpdateDataClientContainerActionType, "container/clientDeleteProjectContainers">;
-      payload: TaskContainer;
-    }
-  | {
-      type: Extract<UpdateDataClientContainerActionType, "container/clientDeleteProjectContainers">;
-      payload: { projectId: string };
-    };
-
-type UpdateDataClientProjectAction = {
-  type: UpdateDataClientProjectActionType;
-  payload: Project;
-};
-
-export type UpdateDataClientAction =
-  | UpdateDataClientTaskAction
-  | UpdateDataClientContainerAction
-  | UpdateDataClientProjectAction;
-
-export type UpdateDataClientActionTypes =
-  | UpdateDataClientTaskActionType
-  | UpdateDataClientContainerActionType
-  | UpdateDataClientProjectActionType;
-
-export type ClientActionTypes =
-  | ClientTaskActionType
-  | ClientContainerActionType
-  | ClientProjectActionType;
-
-type ServerTaskActionType =
-  | "task/serverLoadTasks"
+type IdbServerTaskActionType =
   | "task/serverCreateTask"
   | "task/serverEditTask"
   | "task/serverDeleteTask"
   | "task/serverMoveTask"
   | "task/serverDeleteProjectTasks";
 
-type ServerContainerActionType =
-  | "container/serverLoadContainers"
+type IdbServerContainerActionType =
   | "container/serverCreateContainer"
   | "container/serverDeleteContainer"
   | "container/serverDeleteProjectContainers";
 
-type ServerProjectActionType =
-  | "project/serverLoadProjects"
+type IdbServerProjectActionType =
   | "project/serverCreateProject"
   | "project/serverEditProject"
   | "project/serverDeleteProject";
 
-interface ServerTaskAction {
-  type: ServerTaskActionType;
-  payload: Task;
-}
+export type IdbActionType =
+  | IdbClientTaskActionType
+  | IdbClientContainerActionType
+  | IdbClientProjectActionType
+  | IdbServerTaskActionType
+  | IdbServerContainerActionType
+  | IdbServerProjectActionType;
 
-interface ServerContainerAction {
-  type: ServerContainerActionType;
-  payload: TaskContainer;
-}
+type IdbTaskActionType = IdbClientTaskActionType | IdbServerTaskActionType;
+type IdbContainerActionType = IdbClientContainerActionType | IdbServerContainerActionType;
+type IdbProjectActionType = IdbClientProjectActionType | IdbServerProjectActionType;
 
-interface ServerProjectAction {
-  type: ServerProjectActionType;
+type IdbTaskAction =
+  | {
+      type: Exclude<
+        IdbTaskActionType,
+        "task/clientDeleteProjectTasks" | "task/serverDeleteProjectTasks"
+      >;
+      payload: Task;
+    }
+  | {
+      type: Extract<
+        IdbTaskActionType,
+        "task/clientDeleteProjectTasks" | "task/serverDeleteProjectTasks"
+      >;
+      payload: { projectId: string };
+    };
+
+type IdbContainerAction =
+  | {
+      type: Exclude<
+        IdbContainerActionType,
+        "container/clientDeleteProjectContainers" | "container/serverDeleteProjectContainers"
+      >;
+      payload: TaskContainer;
+    }
+  | {
+      type: Extract<
+        IdbContainerActionType,
+        "container/clientDeleteProjectContainers" | "container/serverDeleteProjectContainers"
+      >;
+      payload: { projectId: string };
+    };
+
+type IdbProjectAction = {
+  type: IdbProjectActionType;
   payload: Project;
-}
+};
 
-export type ServerAction = ServerTaskAction | ServerContainerAction | ServerProjectAction;
-export type ServerActionTypes =
-  | ServerTaskActionType
-  | ServerContainerActionType
-  | ServerProjectActionType;
+export type IdbAction = IdbTaskAction | IdbContainerAction | IdbProjectAction;
+
+type SocketClientTaskActionType =
+  | "task/clientCreateTask"
+  | "task/clientEditTask"
+  | "task/clientDeleteTask"
+  | "task/clientMoveTask";
+
+type SocketClientContainerActionType =
+  | "container/clientCreateContainer"
+  | "container/clientDeleteContainer";
+
+type SocketClientProjectActionType =
+  | "project/clientCreateProject"
+  | "project/clientEditProject"
+  | "project/clientDeleteProject";
+
+type SocketClientTaskAction = {
+  type: SocketClientTaskActionType;
+  payload: Task;
+};
+type SocketClientContainerAction = {
+  type: SocketClientContainerActionType;
+  payload: TaskContainer;
+};
+
+type SocketClientProjectAction = {
+  type: SocketClientProjectActionType;
+  payload: Project;
+};
+
+export type SocketActionType =
+  | SocketClientTaskActionType
+  | SocketClientContainerActionType
+  | SocketClientProjectActionType;
+
+export type SocketAction =
+  | SocketClientTaskAction
+  | SocketClientContainerAction
+  | SocketClientProjectAction;
+
+type SocketServerTaskActionType =
+  | "task/serverCreateTask"
+  | "task/serverEditTask"
+  | "task/serverDeleteTask"
+  | "task/serverMoveTask"
+  | "task/serverDeleteProjectTasks";
+
+type SocketServerContainerActionType =
+  | "container/serverCreateContainer"
+  | "container/serverDeleteContainer"
+  | "container/serverDeleteProjectContainers";
+
+type SocketServerProjectActionType =
+  | "project/serverCreateProject"
+  | "project/serverEditProject"
+  | "project/serverDeleteProject";
+
+type SocketServerTaskAction =
+  | {
+      type: Exclude<SocketServerTaskActionType, "task/serverDeleteProjectTasks">;
+      payload: Task;
+    }
+  | {
+      type: Extract<SocketServerTaskActionType, "task/serverDeleteProjectTasks">;
+      payload: { projectId: string };
+    };
+
+type SocketServerContainerAction =
+  | {
+      type: Exclude<SocketServerContainerActionType, "task/serverDeleteProjectContainers">;
+      payload: TaskContainer;
+    }
+  | {
+      type: Extract<SocketServerContainerActionType, "task/serverDeleteProjectContainers">;
+      payload: { projectId: string };
+    };
+
+type SocketServerProjectAction = {
+  type: SocketServerProjectActionType;
+  payload: Project;
+};
+
+export type SocketServerAction =
+  | SocketServerTaskAction
+  | SocketServerContainerAction
+  | SocketServerProjectAction;

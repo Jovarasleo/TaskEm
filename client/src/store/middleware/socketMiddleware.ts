@@ -1,18 +1,20 @@
+import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
 import { Dispatch, MiddlewareAPI } from "redux";
 import { deleteEvent, EventData, getEvents } from "../../db";
 import { userLoggedIn } from "../slices/authSlice";
-import { ServerAction, UpdateDataClientAction, UpdateDataClientActionTypes } from "../slices/types";
-import { Subscribers } from "./updateIdbMiddleware";
-import { serverLoadTasks, serverMoveTask } from "../slices/taskReducer";
-import { serverLoadContainers } from "../slices/containerReducer";
-import { serverLoadProjects } from "../slices/projectReducer";
+import { serverCreateTask, serverEditTask, serverMoveTask } from "../slices/taskReducer";
+import { SocketAction, SocketActionType, SocketServerAction } from "../slices/types";
+
+export type Subscribers = {
+  [K in SocketActionType]: ActionCreatorWithPayload<() => void, SocketActionType>;
+};
 
 const WEB_SOCKET_ENDPOINT = process.env.BACKEND_WS_ADDRESS as string;
 
 const sendUserAction = (
   ws: WebSocket | null,
-  actionType: UpdateDataClientActionTypes,
-  actionPayload: UpdateDataClientAction["payload"]
+  actionType: SocketActionType,
+  actionPayload: SocketAction["payload"]
 ) => {
   if (ws && ws.readyState === WebSocket.OPEN) {
     const message = {
@@ -43,21 +45,31 @@ export let ws: WebSocket | null = null;
 export const socketMiddleware =
   (subscribers: Subscribers) => (store: MiddlewareAPI<Dispatch>) => (next: Dispatch) => {
     const handleReceivedSocketEvents = (event: MessageEvent<string>) => {
-      const parsedData: ServerAction = JSON.parse(event.data);
+      const parsedData: SocketServerAction = JSON.parse(event.data);
       const { type, payload } = parsedData;
 
+      // "task/serverCreateTask"
+      // "task/serverEditTask"
+      // "task/serverDeleteTask"
+      // "task/serverDeleteProjectTasks"
+      // "container/serverCreateContainer"
+      // "container/serverDeleteContainer"
+      // "container/serverDeleteProjectContainers"
+      // "project/serverCreateProject"
+      // "project/serverEditProject"
+      // "project/serverDeleteProject"
+
       try {
-        if (type === "task/serverLoadTasks") {
-          store.dispatch(serverLoadTasks(payload));
-        }
-        if (type === "container/serverLoadContainers") {
-          store.dispatch(serverLoadContainers(payload));
-        }
-        if (type === "project/serverLoadProjects") {
-          store.dispatch(serverLoadProjects(payload));
-        }
-        if (type === "task/serverMoveTask") {
-          store.dispatch(serverMoveTask(payload));
+        switch (type) {
+          case "task/serverCreateTask":
+            store.dispatch(serverCreateTask(payload));
+            break;
+          case "task/serverEditTask":
+            store.dispatch(serverEditTask(payload));
+            break;
+          case "task/serverMoveTask":
+            store.dispatch(serverMoveTask(payload));
+            break;
         }
       } catch (error) {
         console.error("Error parsing message:", error);
@@ -91,7 +103,7 @@ export const socketMiddleware =
     ws.addEventListener("open", onWebSocketOpen);
     ws.addEventListener("close", onWebSocketClosed);
 
-    return (action: UpdateDataClientAction) => {
+    return (action: SocketAction) => {
       if (!store.getState().auth.loggedIn) {
         return next(action);
       }

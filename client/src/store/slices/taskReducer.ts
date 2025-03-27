@@ -2,8 +2,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getTasksIdb } from "../../db";
 import { Task } from "../../views/taskManager/model/task";
 
-export const clientLoadTasks = createAsyncThunk(
-  "task/clientLoadTasks",
+export const clientLoadLocalTasks = createAsyncThunk(
+  "task/clientLoadLocalTasks",
   async (projectId: string) => await getTasksIdb(projectId)
 );
 
@@ -136,7 +136,7 @@ const taskSlice = createSlice({
     error: "",
   } as InitialTaskState,
   reducers: {
-    clientResetTasks: (state, action) => loadTasks(state, action),
+    clientLoadTasks: (state, action) => loadTasks(state, action),
     serverLoadTasks: (state, action) => loadTasks(state, action),
     clientCreateTask: (state, action) => createTask(state, action),
     serverCreateTask: (state, action) => createTask(state, action),
@@ -151,14 +151,14 @@ const taskSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(clientLoadTasks.pending, (state) => {
+      .addCase(clientLoadLocalTasks.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(clientLoadTasks.fulfilled, (state, action) => {
+      .addCase(clientLoadLocalTasks.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.data = filteredData(action.payload);
       })
-      .addCase(clientLoadTasks.rejected, (state, action) => {
+      .addCase(clientLoadLocalTasks.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message ?? "";
       });
@@ -166,7 +166,7 @@ const taskSlice = createSlice({
 });
 
 export const {
-  clientResetTasks,
+  clientLoadTasks,
   serverLoadTasks,
   clientCreateTask,
   serverCreateTask,

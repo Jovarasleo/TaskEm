@@ -11,17 +11,14 @@ import {
 } from "../../db";
 import { uid } from "../../util/uid";
 import { ws } from "./socketMiddleware";
-import { UpdateDataClientAction, UpdateDataClientActionTypes } from "../slices/types";
+import { IdbAction, IdbActionType } from "../slices/types";
 
 export type Subscribers = {
-  [K in UpdateDataClientActionTypes]: ActionCreatorWithPayload<
-    () => void,
-    UpdateDataClientActionTypes
-  >;
+  [K in IdbActionType]: ActionCreatorWithPayload<() => void, IdbActionType>;
 };
 
 export const updateIdbMiddleware = (subscribers: Subscribers) => () => (next: Dispatch) => {
-  return async (action: UpdateDataClientAction) => {
+  return async (action: IdbAction) => {
     if (action) {
       for (const key of Object.keys(subscribers) as Array<keyof typeof subscribers>) {
         const event = subscribers[key];

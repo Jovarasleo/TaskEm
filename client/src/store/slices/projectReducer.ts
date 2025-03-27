@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getProjectsIdb } from "../../db";
 import { Project } from "../../views/taskManager/model/task";
-import { clientDeleteProjectContainers, clientLoadContainers } from "./containerReducer";
-import { clientDeleteProjectTasks, clientLoadTasks } from "./taskReducer";
+import { clientDeleteProjectContainers, clientLoadLocalContainers } from "./containerReducer";
+import { clientDeleteProjectTasks, clientLoadLocalTasks } from "./taskReducer";
 import { RootState } from "../configureStore";
 
 interface ProjectStoreState {
@@ -25,14 +25,14 @@ const nextProject = (currentIndex: number, projectsCount: number) => {
   return currentIndex - 1;
 };
 
-export const clientLoadProjects = createAsyncThunk(
-  "project/clientLoadProjects",
+export const clientLoadLocalProjects = createAsyncThunk(
+  "project/clientLoadLocalProjects",
   async (_, { dispatch }) => {
     const projects = await getProjectsIdb();
 
     if (projects.length > 0) {
-      dispatch(clientLoadContainers(projects[0].projectId));
-      dispatch(clientLoadTasks(projects[0].projectId));
+      dispatch(clientLoadLocalContainers(projects[0].projectId));
+      dispatch(clientLoadLocalTasks(projects[0].projectId));
     }
 
     return projects;
@@ -71,8 +71,8 @@ export const selectProjectWithRelatedData = createAsyncThunk(
   "project/clientLoadProjectsWithRelatedData",
   async (project: Project, { dispatch }) => {
     dispatch(clientSelectProject(project));
-    dispatch(clientLoadContainers(project.projectId));
-    dispatch(clientLoadTasks(project.projectId));
+    dispatch(clientLoadLocalContainers(project.projectId));
+    dispatch(clientLoadLocalTasks(project.projectId));
   }
 );
 
@@ -109,6 +109,11 @@ const deleteProject = (state: ProjectStoreState, action: { payload: Project; typ
   };
 };
 
+const loadProject = (state: ProjectStoreState, action: { payload: Project[]; type: string }) => ({
+  ...state,
+  data: action.payload,
+});
+
 const projectSlice = createSlice({
   name: "project",
   initialState: {
@@ -119,6 +124,7 @@ const projectSlice = createSlice({
     error: null,
   } as ProjectStoreState,
   reducers: {
+    clientLoadProjects: (state, action) => loadProject(state, action),
     clientSelectProject: (state, action) => selectProject(state, action),
     serverLoadProjects: (state, action) => loadProjects(state, action),
     clientCreateProject: (state, action) => createProject(state, action),
@@ -126,14 +132,15 @@ const projectSlice = createSlice({
     clientEditProject: (state, action) => editProject(state, action),
     serverEditProject: (state, action) => editProject(state, action),
     clientDeleteProject: (state, action) => deleteProject(state, action),
+    serverDeleteProject: (state, action) => deleteProject(state, action),
   },
   extraReducers(builder) {
     builder
-      .addCase(clientLoadProjects.pending, (state) => {
+      .addCase(clientLoadLocalProjects.pending, (state) => {
         state.status = "loading";
         state.loading = true;
       })
-      .addCase(clientLoadProjects.fulfilled, (state, action) => {
+      .addCase(clientLoadLocalProjects.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.data = action.payload;
         state.loading = false;
@@ -141,7 +148,7 @@ const projectSlice = createSlice({
           state.selected = action.payload[0];
         }
       })
-      .addCase(clientLoadProjects.rejected, (state, action) => {
+      .addCase(clientLoadLocalProjects.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message ?? "";
       });
@@ -149,10 +156,14 @@ const projectSlice = createSlice({
 });
 
 export const {
+  clientLoadProjects,
   serverLoadProjects,
   clientCreateProject,
+  serverCreateProject,
   clientDeleteProject,
+  serverDeleteProject,
   clientEditProject,
+  serverEditProject,
   clientSelectProject,
 } = projectSlice.actions;
 

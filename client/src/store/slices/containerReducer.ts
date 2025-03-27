@@ -8,8 +8,8 @@ interface TaskContainerStoreState {
   error: null | string;
 }
 
-export const clientLoadContainers = createAsyncThunk(
-  "container/clientLoadContainers",
+export const clientLoadLocalContainers = createAsyncThunk(
+  "container/clientLoadLocalContainers",
   async (projectId: string) => await getContainersIdb(projectId)
 );
 
@@ -90,16 +90,16 @@ const containerReducer = createSlice({
   },
   extraReducers(builder) {
     builder
-      .addCase(clientLoadContainers.pending, (state) => {
+      .addCase(clientLoadLocalContainers.pending, (state) => {
         state.loading = true;
       })
-      .addCase(clientLoadContainers.fulfilled, (state, action) => {
+      .addCase(clientLoadLocalContainers.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload.sort(
           (a: TaskContainer, b: TaskContainer) => a.position - b.position
         );
       })
-      .addCase(clientLoadContainers.rejected, (state, action) => {
+      .addCase(clientLoadLocalContainers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message ?? "";
       });
