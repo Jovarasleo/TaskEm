@@ -1,17 +1,18 @@
 import { Dispatch, MiddlewareAPI } from "redux";
 import { deleteEvent, EventData, getEvents } from "../../db";
 import { userLoggedIn } from "../slices/authSlice";
-import { getContainers } from "../slices/containerReducer";
-import { getProjects } from "../slices/projectReducer";
-import { getTasks, moveSocketTask } from "../slices/taskReducer";
-import { AppAction, KnownActionTypes, Subscribers } from "./localStorageMiddleware";
+import { ServerAction, UpdateDataClientAction, UpdateDataClientActionTypes } from "../slices/types";
+import { Subscribers } from "./updateIdbMiddleware";
+import { serverLoadTasks, serverMoveTask } from "../slices/taskReducer";
+import { serverLoadContainers } from "../slices/containerReducer";
+import { serverLoadProjects } from "../slices/projectReducer";
 
 const WEB_SOCKET_ENDPOINT = process.env.BACKEND_WS_ADDRESS as string;
 
 const sendUserAction = (
   ws: WebSocket | null,
-  actionType: KnownActionTypes,
-  actionPayload: AppAction["payload"]
+  actionType: UpdateDataClientActionTypes,
+  actionPayload: UpdateDataClientAction["payload"]
 ) => {
   if (ws && ws.readyState === WebSocket.OPEN) {
     const message = {
@@ -43,22 +44,22 @@ const synchroniseData = async (
 export let ws: WebSocket | null = null;
 export const socketMiddleware =
   (subscribers: Subscribers) => (store: MiddlewareAPI<Dispatch>) => (next: Dispatch) => {
-    const handleReceivedSocketEvents = (action: MessageEvent) => {
-      const parsedData = JSON.parse(action.data);
+    const handleReceivedSocketEvents = (event: MessageEvent<string>) => {
+      const parsedData: ServerAction = JSON.parse(event.data);
       const { type, payload } = parsedData;
 
       try {
-        if (type === "tasks/getTasks") {
-          store.dispatch(getTasks(payload));
+        if (type === "task/serverLoadTasks") {
+          store.dispatch(serverLoadTasks(payload));
         }
-        if (type === "container/getContainers") {
-          store.dispatch(getContainers(payload));
+        if (type === "container/serverLoadContainers") {
+          store.dispatch(serverLoadContainers(payload));
         }
-        if (type === "project/getProjects") {
-          store.dispatch(getProjects(payload));
+        if (type === "project/serverLoadProjects") {
+          store.dispatch(serverLoadProjects(payload));
         }
-        if (type === "task/moveTask") {
-          store.dispatch(moveSocketTask(payload));
+        if (type === "task/serverMoveTask") {
+          store.dispatch(serverMoveTask(payload));
         }
       } catch (error) {
         console.error("Error parsing message:", error);
@@ -69,7 +70,7 @@ export const socketMiddleware =
       console.log("WebSocket connected");
       if (ws && ws.readyState === WebSocket.OPEN) {
         await synchroniseData(ws, deleteEvent);
-        store.dispatch(userLoggedIn());
+        store.dispatch(userLoggedIn(true));
       }
     };
 
@@ -92,7 +93,7 @@ export const socketMiddleware =
     ws.addEventListener("open", onWebSocketOpen);
     ws.addEventListener("close", onWebSocketClosed);
 
-    return (action: AppAction) => {
+    return (action: UpdateDataClientAction) => {
       console.log(document.cookie);
       if (!store.getState().auth.loggedIn) {
         console.log({ loggedIn: store.getState().auth.loggedIn });

@@ -2,16 +2,74 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { TaskContainer } from "../../views/taskManager/model/task";
 import { getContainersIdb } from "../../db";
 
-interface InitialContainerState {
+interface TaskContainerStoreState {
   data: TaskContainer[];
   loading: boolean;
   error: null | string;
 }
 
-export const getContainersFromIdb = createAsyncThunk("container/getData", async () => {
-  const data = await getContainersIdb();
-  return data as TaskContainer[];
+export const clientLoadContainers = createAsyncThunk(
+  "container/clientLoadContainers",
+  async () => await getContainersIdb()
+);
+
+const loadContainers = (
+  state: TaskContainerStoreState,
+  action: {
+    payload: TaskContainer[];
+    type: string;
+  }
+) => ({
+  ...state,
+  data: action.payload,
 });
+
+const createContainer = (
+  state: TaskContainerStoreState,
+  action: {
+    payload: TaskContainer;
+    type: string;
+  }
+) => {
+  return {
+    ...state,
+    data: [...state.data, action.payload],
+  };
+};
+
+const deleteContainer = (
+  state: TaskContainerStoreState,
+  action: {
+    payload: TaskContainer;
+    type: string;
+  }
+) => {
+  const filteredData = state.data.filter((container) => {
+    action.payload.containerId !== container.containerId;
+  });
+
+  return {
+    ...state,
+    data: filteredData,
+  };
+};
+
+const deleteProjectContainers = (
+  state: TaskContainerStoreState,
+  action: {
+    payload: { projectId: string };
+    type: string;
+  }
+) => {
+  const filteredData = state.data.filter((container) => {
+    container.projectId === action.payload.projectId;
+  });
+
+  return {
+    ...state,
+    data: filteredData,
+  };
+};
 
 const containerReducer = createSlice({
   name: "container",
@@ -19,65 +77,42 @@ const containerReducer = createSlice({
     data: [],
     loading: false,
     error: "",
-  } as InitialContainerState,
+  } as TaskContainerStoreState,
   reducers: {
-    createContainer: (state, action) => {
-      return {
-        ...state,
-        data: [...state.data, action.payload],
-      };
-    },
-    deleteContainer: (state, action) => {
-      const filteredData = state.data.filter((container) => {
-        action.payload.containerId !== container.containerId;
-      });
-
-      return {
-        ...state,
-        data: filteredData,
-      };
-    },
-    deleteContainersByProject: (state, action) => {
-      const filteredData = state.data.filter((container) => {
-        container.projectId === action.payload.projectId;
-      });
-
-      console.log({ data: state.data, action, filteredData });
-
-      return {
-        ...state,
-        data: filteredData,
-      };
-    },
-    getContainers: (state, action) => {
-      return {
-        ...state,
-        data: [
-          ...state.data,
-          // ...action.payload.sort((a: TaskContainer, b: TaskContainer) => a.position - b.position),
-        ],
-      };
-    },
+    serverLoadContainers: (state, action) => loadContainers(state, action),
+    clientCreateContainer: (state, action) => createContainer(state, action),
+    serverCreateContainer: (state, action) => createContainer(state, action),
+    clientDeleteContainer: (state, action) => deleteContainer(state, action),
+    serverDeleteContainer: (state, action) => deleteContainer(state, action),
+    clientDeleteProjectContainers: (state, action) => deleteProjectContainers(state, action),
+    serverDeleteProjectContainers: (state, action) => deleteProjectContainers(state, action),
   },
   extraReducers(builder) {
     builder
-      .addCase(getContainersFromIdb.pending, (state) => {
+      .addCase(clientLoadContainers.pending, (state) => {
         state.loading = true;
       })
-      .addCase(getContainersFromIdb.fulfilled, (state, action) => {
+      .addCase(clientLoadContainers.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload.sort(
           (a: TaskContainer, b: TaskContainer) => a.position - b.position
         );
       })
-      .addCase(getContainersFromIdb.rejected, (state, action) => {
+      .addCase(clientLoadContainers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message ?? "";
       });
   },
 });
 
-export const { createContainer, deleteContainer, deleteContainersByProject, getContainers } =
-  containerReducer.actions;
+export const {
+  serverLoadContainers,
+  clientCreateContainer,
+  serverCreateContainer,
+  clientDeleteContainer,
+  serverDeleteContainer,
+  clientDeleteProjectContainers,
+  serverDeleteProjectContainers,
+} = containerReducer.actions;
 
 export default containerReducer.reducer;

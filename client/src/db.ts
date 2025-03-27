@@ -24,7 +24,7 @@ export const initDB = (): Promise<boolean> => {
     request = indexedDB.open(dbName, version);
 
     request.onupgradeneeded = (event) => {
-      db = (event.target as IDBOpenDBRequest).result;
+      db = (event.target as IDBRequest).result;
 
       // if the data object store doesn't exist, create it
       if (!db.objectStoreNames.contains(Stores.Projects)) {
@@ -34,15 +34,17 @@ export const initDB = (): Promise<boolean> => {
       }
 
       if (!db.objectStoreNames.contains(Stores.Tasks)) {
-        db.createObjectStore(Stores.Tasks, {
+        const store = db.createObjectStore(Stores.Tasks, {
           autoIncrement: false,
         });
+        store.createIndex("projectIdIndex", "projectId", { unique: false });
       }
 
       if (!db.objectStoreNames.contains(Stores.Containers)) {
-        db.createObjectStore(Stores.Containers, {
+        const store = db.createObjectStore(Stores.Containers, {
           autoIncrement: false,
         });
+        store.createIndex("projectIdIndex", "projectId", { unique: false });
       }
 
       if (!db.objectStoreNames.contains(Stores.Events)) {
@@ -77,7 +79,6 @@ export async function setProject(Project: Project) {
 
     const request = objectStore.put(Project, id);
     request.onsuccess = (event) => {
-      // event.target.result === customer.ssn;
       console.log(event);
     };
   } catch (error) {
@@ -119,12 +120,12 @@ export async function setTask(task: Task) {
 
       const request = objectStore.put(task, id);
       request.onsuccess = (event) => {
-        const result = (event.target as IDBOpenDBRequest).result;
+        const result = (event.target as IDBRequest).result;
         resolve(result); // Resolve the Promise with the data
       };
 
       request.onerror = (event) => {
-        const error = (event.target as IDBOpenDBRequest).error;
+        const error = (event.target as IDBRequest).error;
         reject(error);
       };
     });
@@ -133,26 +134,30 @@ export async function setTask(task: Task) {
   }
 }
 
-export async function getTasksIdb() {
+export async function getTasksIdb(): Promise<Task[]> {
   try {
     await initDB();
     return new Promise((resolve, reject) => {
       const transaction = db.transaction([Stores.Tasks], "readwrite");
       const objectStore = transaction.objectStore(Stores.Tasks);
 
+      //TODO:Utilize indexes to only get data for specific projects
+      // const index = objectStore.index("projectIdIndex");
+
       const request = objectStore.getAll();
       request.onsuccess = (event) => {
-        const result = (event.target as IDBOpenDBRequest).result;
-        resolve(result); // Resolve the Promise with the data
+        const result = (event.target as IDBRequest).result;
+        resolve(result);
       };
 
       request.onerror = (event) => {
-        const error = (event.target as IDBOpenDBRequest).error;
+        const error = (event.target as IDBRequest).error;
         reject(error);
       };
     });
   } catch (error) {
     console.log(error);
+    return [];
   }
 }
 
@@ -178,7 +183,7 @@ export async function deleteTask(task: Task) {
   }
 }
 
-export async function getProjectsIdb() {
+export async function getProjectsIdb(): Promise<Project[]> {
   try {
     await initDB();
 
@@ -188,12 +193,12 @@ export async function getProjectsIdb() {
       const request = objectStore.getAll();
 
       request.onsuccess = (event) => {
-        const result = (event.target as IDBOpenDBRequest).result;
+        const result = (event.target as IDBRequest).result;
         resolve(result);
       };
 
       request.onerror = (event) => {
-        const error = (event.target as IDBOpenDBRequest).error;
+        const error = (event.target as IDBRequest).error;
         reject(error);
       };
     });
@@ -203,7 +208,7 @@ export async function getProjectsIdb() {
   }
 }
 
-export async function getContainersIdb() {
+export async function getContainersIdb(): Promise<TaskContainer[]> {
   try {
     await initDB();
 
@@ -212,13 +217,15 @@ export async function getContainersIdb() {
       const objectStore = transaction.objectStore(Stores.Containers);
       const request = objectStore.getAll();
 
+      //TODO:Utilize indexes to only get data for specific projects
+
       request.onsuccess = (event) => {
-        const result = (event.target as IDBOpenDBRequest).result;
+        const result = (event.target as IDBRequest).result;
         resolve(result); // Resolve the Promise with the data
       };
 
       request.onerror = (event) => {
-        const error = (event.target as IDBOpenDBRequest).error;
+        const error = (event.target as IDBRequest).error;
         reject(error);
       };
     });

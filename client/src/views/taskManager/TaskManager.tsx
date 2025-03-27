@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store/configureStore";
-import { deleteProjectThunk, renameProject } from "../../store/slices/projectReducer";
+import { deleteProjectWithRelatedData, clientEditProject } from "../../store/slices/projectReducer";
 import TasksContainer from "./components/container/TasksContainer";
 import ProjectMenu from "./components/project/ProjectOptions";
 import ProjectTitle from "./components/project/ProjectTitle";
@@ -37,10 +37,12 @@ function TaskManager() {
       <div className={styles.projectHeader}>
         <ProjectTitle
           project={{ ...currentProject }}
-          setName={(projectName) => dispatch(renameProject({ ...currentProject, projectName }))}
+          setName={(projectName) => dispatch(clientEditProject({ ...currentProject, projectName }))}
         />
         {projects.length > 0 && (
-          <ProjectMenu deleteProject={() => dispatch(deleteProjectThunk(currentProject))} />
+          <ProjectMenu
+            deleteProject={() => dispatch(deleteProjectWithRelatedData(currentProject))}
+          />
         )}
       </div>
 

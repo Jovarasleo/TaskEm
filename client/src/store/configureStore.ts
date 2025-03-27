@@ -1,20 +1,25 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { localStorageMiddleware } from "./middleware/localStorageMiddleware";
+import { updateIdbMiddleware } from "./middleware/updateIdbMiddleware";
 import { onLoadMiddleware } from "./middleware/onLoadMiddleware";
 import { socketMiddleware } from "./middleware/socketMiddleware";
 import authReducer from "./slices/authSlice";
 import containerReducer, {
-  createContainer,
-  deleteContainer,
-  deleteContainersByProject,
+  clientCreateContainer,
+  clientDeleteContainer,
+  clientDeleteProjectContainers,
 } from "./slices/containerReducer";
 import projectReducer, {
-  createProject,
-  deleteProject,
-  renameProject,
-  selectProject,
+  clientCreateProject,
+  clientDeleteProject,
+  clientEditProject,
 } from "./slices/projectReducer";
-import taskReducer, { createTask, deleteTask, editTask, moveTask } from "./slices/taskReducer";
+import taskReducer, {
+  clientCreateTask,
+  clientEditTask,
+  clientDeleteTask,
+  clientMoveTask,
+  clientDeleteProjectTasks,
+} from "./slices/taskReducer";
 
 const store = configureStore({
   reducer: {
@@ -26,29 +31,31 @@ const store = configureStore({
   middleware: (gDM) =>
     gDM().concat(
       onLoadMiddleware,
-      localStorageMiddleware({
-        "task/createTask": createTask,
-        "task/editTask": editTask,
-        "task/deleteTask": deleteTask,
-        "task/moveTask": moveTask,
-        "container/createContainer": createContainer,
-        "container/deleteContainer": deleteContainer,
-        "project/createProject": createProject,
-        "project/renameProject": renameProject,
-        "project/deleteProject": deleteProject,
-        "container/deleteContainersByProject": deleteContainersByProject,
+      updateIdbMiddleware({
+        "task/clientCreateTask": clientCreateTask,
+        "task/clientEditTask": clientEditTask,
+        "task/clientDeleteTask": clientDeleteTask,
+        "task/clientMoveTask": clientMoveTask,
+        "task/clientDeleteProjectTasks": clientDeleteProjectTasks,
+        "container/clientCreateContainer": clientCreateContainer,
+        "container/clientDeleteContainer": clientDeleteContainer,
+        "container/clientDeleteProjectContainers": clientDeleteProjectContainers,
+        "project/clientCreateProject": clientCreateProject,
+        "project/clientEditProject": clientEditProject,
+        "project/clientDeleteProject": clientDeleteProject,
       }),
       socketMiddleware({
-        "task/createTask": createTask,
-        "task/editTask": editTask,
-        "task/deleteTask": deleteTask,
-        "task/moveTask": moveTask,
-        "container/createContainer": createContainer,
-        "container/deleteContainer": deleteContainer,
-        "project/selectProject": selectProject,
-        "project/createProject": createProject,
-        "project/renameProject": renameProject,
-        "project/deleteProject": deleteProject,
+        "task/clientCreateTask": clientCreateTask,
+        "task/clientEditTask": clientEditTask,
+        "task/clientDeleteTask": clientDeleteTask,
+        "task/clientMoveTask": clientMoveTask,
+        "task/clientDeleteProjectTasks": clientDeleteProjectTasks,
+        "container/clientCreateContainer": clientCreateContainer,
+        "container/clientDeleteContainer": clientDeleteContainer,
+        "container/clientDeleteProjectContainers": clientDeleteProjectContainers,
+        "project/clientCreateProject": clientCreateProject,
+        "project/clientEditProject": clientEditProject,
+        "project/clientDeleteProject": clientDeleteProject,
       })
     ),
 });
