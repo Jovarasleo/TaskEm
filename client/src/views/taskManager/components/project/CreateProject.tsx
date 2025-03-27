@@ -9,15 +9,12 @@ import styles from "./styles.module.scss";
 import clsx from "clsx";
 import { clientCreateProject } from "../../../../store/slices/projectReducer";
 import { clientCreateContainer } from "../../../../store/slices/containerReducer";
+import { clientResetTasks } from "../../../../store/slices/taskReducer";
 
 function CreateProject() {
   const dispatch: AppDispatch = useDispatch();
   const [projectName, setProjectName] = useState("");
   const [addNew, setAddNew] = useState(false);
-
-  const handleProjectName = (value: string) => {
-    setProjectName(value);
-  };
 
   const setName = (newProjectName: string) => {
     const projectId = uid();
@@ -28,9 +25,10 @@ function CreateProject() {
     }
 
     dispatch(clientCreateProject({ projectId, projectName: trimmedProjectName }));
+    dispatch(clientResetTasks([]));
     defaultContainers(projectId).forEach((container) => dispatch(clientCreateContainer(container)));
 
-    handleProjectName("");
+    setProjectName("");
     setAddNew(false);
   };
 
@@ -44,7 +42,7 @@ function CreateProject() {
           <>
             <input
               type="text"
-              onChange={(e) => handleProjectName(e.target.value)}
+              onChange={(e) => setProjectName(e.target.value)}
               onClick={(e) => e.stopPropagation()}
               value={projectName}
             />

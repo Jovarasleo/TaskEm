@@ -136,6 +136,7 @@ const taskSlice = createSlice({
     error: "",
   } as InitialTaskState,
   reducers: {
+    clientResetTasks: (state, action) => loadTasks(state, action),
     serverLoadTasks: (state, action) => loadTasks(state, action),
     clientCreateTask: (state, action) => createTask(state, action),
     serverCreateTask: (state, action) => createTask(state, action),
@@ -165,6 +166,7 @@ const taskSlice = createSlice({
 });
 
 export const {
+  clientResetTasks,
   serverLoadTasks,
   clientCreateTask,
   serverCreateTask,

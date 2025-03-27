@@ -31,10 +31,11 @@ const createContainer = (
     type: string;
   }
 ) => {
-  return {
-    ...state,
-    data: [...state.data, action.payload],
-  };
+  const newContainers = state.data.filter(
+    (container) => container.projectId === action.payload.projectId
+  );
+
+  return { ...state, data: [...newContainers, action.payload] };
 };
 
 const deleteContainer = (

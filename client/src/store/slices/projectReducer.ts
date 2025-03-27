@@ -3,6 +3,7 @@ import { getProjectsIdb } from "../../db";
 import { Project } from "../../views/taskManager/model/task";
 import { clientDeleteProjectContainers, clientLoadContainers } from "./containerReducer";
 import { clientDeleteProjectTasks, clientLoadTasks } from "./taskReducer";
+import { RootState } from "../configureStore";
 
 interface ProjectStoreState {
   data: Project[] | [];
@@ -24,20 +25,6 @@ const nextProject = (currentIndex: number, projectsCount: number) => {
   return currentIndex - 1;
 };
 
-export const deleteProjectWithRelatedData = createAsyncThunk(
-  "project/deleteProject",
-  async (project: Project, { dispatch }) => {
-    try {
-      dispatch(clientDeleteProjectContainers(project));
-      dispatch(clientDeleteProjectTasks(project));
-      dispatch(clientDeleteProject(project));
-    } catch (error) {
-      console.error("Failed to delete project:", error);
-      throw error;
-    }
-  }
-);
-
 export const clientLoadProjects = createAsyncThunk(
   "project/clientLoadProjects",
   async (_, { dispatch }) => {
@@ -49,6 +36,34 @@ export const clientLoadProjects = createAsyncThunk(
     }
 
     return projects;
+  }
+);
+
+export const deleteProjectWithRelatedData = createAsyncThunk(
+  "project/deleteProject",
+  async (project: Project, { dispatch, getState }) => {
+    try {
+      dispatch(clientDeleteProjectContainers(project));
+      dispatch(clientDeleteProjectTasks(project));
+      dispatch(clientDeleteProject(project));
+
+      const state = getState() as RootState;
+      const projects = state.project.data.filter((p) => p.projectId !== project.projectId);
+
+      // Select the next available project, if any
+      if (projects.length > 0) {
+        const nextProjectIndex = nextProject(
+          state.project.data.findIndex((p) => p.projectId === project.projectId),
+          state.project.data.length
+        );
+        dispatch(selectProjectWithRelatedData(projects[nextProjectIndex]));
+      } else {
+        dispatch(clientSelectProject(null)); // No projects left
+      }
+    } catch (error) {
+      console.error("Failed to delete project:", error);
+      throw error;
+    }
   }
 );
 
@@ -69,39 +84,28 @@ const loadProjects = (state: ProjectStoreState, action: { payload: Project[]; ty
 const createProject = (state: ProjectStoreState, action: { payload: Project; type: string }) => ({
   ...state,
   data: [...state.data, action.payload],
+  selected: action.payload,
 });
 
-const selectProject = (state: ProjectStoreState, action: { payload: Project; type: string }) => {
-  console.log({ action });
+const selectProject = (state: ProjectStoreState, action: { payload: Project; type: string }) => ({
+  ...state,
+  selected: action.payload,
+});
+
+const editProject = (state: ProjectStoreState, action: { payload: Project; type: string }) => {
+  const index = state.data.findIndex((project) => project.projectId === action.payload.projectId);
+
   return {
     ...state,
+    data: [...state.data.slice(0, index), action.payload, ...state.data.slice(index + 1)],
     selected: action.payload,
   };
 };
 
-const editProject = (state: ProjectStoreState, action: { payload: Project; type: string }) => {
-  const project = state.data.find((project) => project.projectId === action.payload.projectId);
-  if (project) {
-    project.projectName = action.payload.projectName;
-
-    return {
-      ...state,
-      selected: project,
-    };
-  }
-
-  return state;
-};
-
 const deleteProject = (state: ProjectStoreState, action: { payload: Project; type: string }) => {
-  const currentProjectIndex = state.data.findIndex(
-    (project) => project.projectId === action.payload.projectId
-  );
-
   return {
     ...state,
     data: state.data.filter((project) => project.projectId !== action.payload.projectId),
-    selected: state.data[nextProject(currentProjectIndex, state.data.length)] ?? null,
   };
 };
 

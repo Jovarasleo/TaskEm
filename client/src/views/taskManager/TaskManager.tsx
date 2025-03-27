@@ -10,9 +10,11 @@ import styles from "./styles.module.scss";
 
 function TaskManager() {
   const dispatch: AppDispatch = useDispatch();
-  const { data: projects, selected: selectedProject } = useSelector(
-    (state: RootState) => state.project
-  );
+  const {
+    data: projects,
+    selected: selectedProject,
+    loading,
+  } = useSelector((state: RootState) => state.project);
   const {
     container: { data: containers },
     task: { data: tasks },
@@ -26,17 +28,21 @@ function TaskManager() {
   const containerTasks = (container: TaskContainer, tasks: Task[]) =>
     tasks.filter((task) => task.containerId === container.containerId);
 
-  if (!projects.length) {
+  if (!projects.length && !loading) {
     return <h3 style={{ color: "white", fontSize: "4rem" }}>No projects yet!</h3>;
   }
 
   return (
     <>
       <div className={styles.projectHeader}>
-        <ProjectTitle
-          project={{ ...currentProject }}
-          setName={(projectName) => dispatch(clientEditProject({ ...currentProject, projectName }))}
-        />
+        {projects.length > 0 && (
+          <ProjectTitle
+            project={{ ...currentProject }}
+            setName={(projectName) =>
+              dispatch(clientEditProject({ ...currentProject, projectName }))
+            }
+          />
+        )}
         {projects.length > 0 && (
           <ProjectMenu
             deleteProject={() => dispatch(deleteProjectWithRelatedData(currentProject))}
