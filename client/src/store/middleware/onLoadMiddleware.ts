@@ -1,8 +1,6 @@
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import { Action, AnyAction, Dispatch, MiddlewareAPI } from "redux";
-import { clientLoadContainers } from "../slices/containerReducer";
-import { clientLoadProjects, clientSelectProject } from "../slices/projectReducer";
-import { clientLoadTasks } from "../slices/taskReducer";
+import { clientLoadProjects } from "../slices/projectReducer";
 
 let firstload = true;
 
@@ -13,9 +11,6 @@ export const onLoadMiddleware =
     if (firstload) {
       firstload = false;
       store.dispatch(clientLoadProjects());
-      store.dispatch(clientLoadContainers());
-      store.dispatch(clientLoadTasks());
-      store.dispatch(clientSelectProject(store.getState().project.data[0]));
     }
 
     next(action);

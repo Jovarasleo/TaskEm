@@ -10,7 +10,7 @@ interface TaskContainerStoreState {
 
 export const clientLoadContainers = createAsyncThunk(
   "container/clientLoadContainers",
-  async () => await getContainersIdb()
+  async (projectId: string) => await getContainersIdb(projectId)
 );
 
 const loadContainers = (

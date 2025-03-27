@@ -3,7 +3,7 @@ import React, { useRef, useState } from "react";
 import { BsPlusCircle } from "react-icons/bs";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
 import { AppDispatch } from "../../../../store/configureStore";
-import { createTask } from "../../../../store/slices/taskReducer";
+import { clientCreateTask } from "../../../../store/slices/taskReducer";
 import { uid } from "../../../../util/uid";
 import { HandleDrag, Task as TaskModel } from "../../model/task";
 import TaskCard from "../task/TaskCard";
@@ -57,7 +57,7 @@ function TasksContainer({
 
     if (input.length) {
       dispatch(
-        createTask({
+        clientCreateTask({
           projectId,
           containerId,
           value: input,

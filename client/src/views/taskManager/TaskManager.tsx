@@ -23,10 +23,6 @@ function TaskManager() {
 
   const containerTasks = (container: TaskContainer, tasks: Task[]) =>
     tasks.filter((task) => task.containerId === container.containerId);
-  const projectTasks = tasks.filter((task) => task.projectId === currentProject?.projectId);
-  const projectContainers = containers.filter(
-    (container) => container.projectId === currentProject?.projectId
-  );
 
   if (!projects.length) {
     return <h3 style={{ color: "white", fontSize: "4rem" }}>No projects yet!</h3>;
@@ -51,12 +47,12 @@ function TaskManager() {
         onPointerLeave={handleDragCancel}
         key={currentProject?.projectId}
       >
-        {projectContainers.map((container) => {
+        {containers.map((container) => {
           return (
             <TasksContainer
               key={container.containerId}
               tasks={containerTasks(container, tasks)}
-              tasksCount={projectTasks.length}
+              tasksCount={tasks.length}
               projectId={currentProject?.projectId}
               containerName={container.containerName}
               containerId={container.containerId}

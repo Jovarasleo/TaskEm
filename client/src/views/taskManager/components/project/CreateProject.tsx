@@ -3,12 +3,12 @@ import { useState } from "react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../../store/configureStore";
-import { createContainer } from "../../../../store/slices/containerReducer";
-import { createProject } from "../../../../store/slices/projectReducer";
 import { uid } from "../../../../util/uid";
 import { defaultContainers } from "../../model/containers";
 import styles from "./styles.module.scss";
 import clsx from "clsx";
+import { clientCreateProject } from "../../../../store/slices/projectReducer";
+import { clientCreateContainer } from "../../../../store/slices/containerReducer";
 
 function CreateProject() {
   const dispatch: AppDispatch = useDispatch();
@@ -27,8 +27,8 @@ function CreateProject() {
       return;
     }
 
-    dispatch(createProject({ projectId, projectName: trimmedProjectName }));
-    defaultContainers(projectId).forEach((container) => dispatch(createContainer(container)));
+    dispatch(clientCreateProject({ projectId, projectName: trimmedProjectName }));
+    defaultContainers(projectId).forEach((container) => dispatch(clientCreateContainer(container)));
 
     handleProjectName("");
     setAddNew(false);

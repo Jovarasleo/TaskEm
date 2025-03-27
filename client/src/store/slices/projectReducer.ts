@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getProjectsIdb } from "../../db";
 import { Project } from "../../views/taskManager/model/task";
-import { clientDeleteProjectContainers } from "./containerReducer";
-import { clientDeleteProjectTasks } from "./taskReducer";
+import { clientDeleteProjectContainers, clientLoadContainers } from "./containerReducer";
+import { clientDeleteProjectTasks, clientLoadTasks } from "./taskReducer";
 
 interface ProjectStoreState {
   data: Project[] | [];
@@ -40,7 +40,25 @@ export const deleteProjectWithRelatedData = createAsyncThunk(
 
 export const clientLoadProjects = createAsyncThunk(
   "project/clientLoadProjects",
-  async () => await getProjectsIdb()
+  async (_, { dispatch }) => {
+    const projects = await getProjectsIdb();
+
+    if (projects.length > 0) {
+      dispatch(clientLoadContainers(projects[0].projectId));
+      dispatch(clientLoadTasks(projects[0].projectId));
+    }
+
+    return projects;
+  }
+);
+
+export const selectProjectWithRelatedData = createAsyncThunk(
+  "project/clientLoadProjectsWithRelatedData",
+  async (project: Project, { dispatch }) => {
+    dispatch(clientSelectProject(project));
+    dispatch(clientLoadContainers(project.projectId));
+    dispatch(clientLoadTasks(project.projectId));
+  }
 );
 
 const loadProjects = (state: ProjectStoreState, action: { payload: Project[]; type: string }) => ({
@@ -53,10 +71,13 @@ const createProject = (state: ProjectStoreState, action: { payload: Project; typ
   data: [...state.data, action.payload],
 });
 
-const selectProject = (state: ProjectStoreState, action: { payload: Project; type: string }) => ({
-  ...state,
-  select: action.payload,
-});
+const selectProject = (state: ProjectStoreState, action: { payload: Project; type: string }) => {
+  console.log({ action });
+  return {
+    ...state,
+    selected: action.payload,
+  };
+};
 
 const editProject = (state: ProjectStoreState, action: { payload: Project; type: string }) => {
   const project = state.data.find((project) => project.projectId === action.payload.projectId);

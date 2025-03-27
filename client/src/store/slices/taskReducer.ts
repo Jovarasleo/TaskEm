@@ -4,7 +4,7 @@ import { Task } from "../../views/taskManager/model/task";
 
 export const clientLoadTasks = createAsyncThunk(
   "task/clientLoadTasks",
-  async () => await getTasksIdb()
+  async (projectId: string) => await getTasksIdb(projectId)
 );
 
 const filteredData = (tasks: Task[]) => {

@@ -134,17 +134,16 @@ export async function setTask(task: Task) {
   }
 }
 
-export async function getTasksIdb(): Promise<Task[]> {
+export async function getTasksIdb(projectId: string): Promise<Task[]> {
   try {
     await initDB();
     return new Promise((resolve, reject) => {
       const transaction = db.transaction([Stores.Tasks], "readwrite");
       const objectStore = transaction.objectStore(Stores.Tasks);
 
-      //TODO:Utilize indexes to only get data for specific projects
-      // const index = objectStore.index("projectIdIndex");
+      const index = objectStore.index("projectIdIndex");
+      const request = index.getAll(projectId);
 
-      const request = objectStore.getAll();
       request.onsuccess = (event) => {
         const result = (event.target as IDBRequest).result;
         resolve(result);
@@ -208,16 +207,16 @@ export async function getProjectsIdb(): Promise<Project[]> {
   }
 }
 
-export async function getContainersIdb(): Promise<TaskContainer[]> {
+export async function getContainersIdb(projectId: string): Promise<TaskContainer[]> {
   try {
     await initDB();
 
     return new Promise((resolve, reject) => {
       const transaction = db.transaction([Stores.Containers], "readwrite");
       const objectStore = transaction.objectStore(Stores.Containers);
-      const request = objectStore.getAll();
 
-      //TODO:Utilize indexes to only get data for specific projects
+      const index = objectStore.index("projectIdIndex");
+      const request = index.getAll(projectId);
 
       request.onsuccess = (event) => {
         const result = (event.target as IDBRequest).result;
