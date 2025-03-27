@@ -13,8 +13,10 @@ function TaskManager() {
   const { data: projects, selected: selectedProject } = useSelector(
     (state: RootState) => state.project
   );
-  const { data: containers } = useSelector((state: RootState) => state.container);
-  const { data: tasks } = useSelector((state: RootState) => state.task);
+  const {
+    container: { data: containers },
+    task: { data: tasks },
+  } = useSelector((state: RootState) => state);
 
   const currentProject = selectedProject ?? projects[0];
 

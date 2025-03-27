@@ -123,7 +123,7 @@ const useDragAndDrop = (dispatch: AppDispatch, tasks: Task[]) => {
 
       const target = ref.current || (e.target as HTMLElement);
       const scrollContainer = target.querySelector("ul");
-      const draggableElements = target.querySelectorAll("[role=taskItem]");
+      const draggableElements = target.querySelectorAll(".task");
 
       const mappedPositions = [...draggableElements]
         .filter((_, index) => {

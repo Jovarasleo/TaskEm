@@ -316,7 +316,6 @@ export async function storeEvents(eventData: any) {
     const transaction = db.transaction([Stores.Events], "readwrite");
     const objectStore = transaction.objectStore(Stores.Events);
 
-    console.log({ eventData });
     const request = objectStore.put(eventData);
 
     request.onerror = (event) => {

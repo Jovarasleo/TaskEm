@@ -94,15 +94,9 @@ export const socketMiddleware =
     ws.addEventListener("close", onWebSocketClosed);
 
     return (action: UpdateDataClientAction) => {
-      console.log(document.cookie);
       if (!store.getState().auth.loggedIn) {
-        console.log({ loggedIn: store.getState().auth.loggedIn });
         return next(action);
       }
-
-      next(userLoggedIn(false));
-
-      console.log({ loggedIn: store.getState().auth.loggedIn });
 
       if (action) {
         for (const key of Object.keys(subscribers) as Array<keyof typeof subscribers>) {

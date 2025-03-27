@@ -101,7 +101,7 @@ function TaskCard({
     <li
       ref={taskItem}
       className={clsx(
-        styles.taskWrapper,
+        styles.task,
         dragging && currentlyDragging === task.taskId ? styles.draggable : ""
       )}
       tabIndex={0}

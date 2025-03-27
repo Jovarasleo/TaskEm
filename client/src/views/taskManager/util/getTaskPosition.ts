@@ -74,11 +74,9 @@ export const getTaskPosition = ({
     return;
   }
 
-  const updatedTask = {
+  return {
     ...currentTask,
     position: Math.floor(newPosition(currentTask.position)),
     containerId: toContainerId,
   };
-
-  return updatedTask;
 };
