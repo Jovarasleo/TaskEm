@@ -18,14 +18,10 @@ export type Subscribers = {
 
 export const updateIdbMiddleware = (subscribers: Subscribers) => () => (next: Dispatch) => {
   return async (action: IdbAction) => {
-    if (!action) {
-      return next(action);
-    }
-
     for (const key of Object.keys(subscribers) as Array<keyof typeof subscribers>) {
       const event = subscribers[key];
 
-      if (event.type !== action.type) {
+      if (event.type == action.type) {
         return next(action);
       }
 
@@ -63,5 +59,6 @@ export const updateIdbMiddleware = (subscribers: Subscribers) => () => (next: Di
           break;
       }
     }
+    next(action);
   };
 };

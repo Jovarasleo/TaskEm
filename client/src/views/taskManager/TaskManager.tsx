@@ -10,20 +10,13 @@ import styles from "./styles.module.scss";
 
 function TaskManager() {
   const dispatch: AppDispatch = useDispatch();
-  const {
-    data: projects,
-    selected: selectedProject,
-    loading,
-  } = useSelector((state: RootState) => state.project);
-  const {
-    container: { data: containers },
-    task: { data: tasks },
-  } = useSelector((state: RootState) => state);
-
-  const currentProject = selectedProject ?? projects[0];
-
+  const { data: containers } = useSelector((state: RootState) => state.container);
+  const { data: tasks } = useSelector((state: RootState) => state.task);
+  const { data: projects, selected, loading } = useSelector((state: RootState) => state.project);
   const { handleDrag, handlePointerDown, handleDragCancel, dragging, currentlyDragging } =
     useDragAndDrop(dispatch, tasks);
+
+  const currentProject = selected ?? projects[0];
 
   const containerTasks = (container: TaskContainer, tasks: Task[]) =>
     tasks.filter((task) => task.containerId === container.containerId);
