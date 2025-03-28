@@ -21,8 +21,8 @@ export const updateIdbMiddleware = (subscribers: Subscribers) => () => (next: Di
     for (const key of Object.keys(subscribers) as Array<keyof typeof subscribers>) {
       const event = subscribers[key];
 
-      if (event.type == action.type) {
-        return next(action);
+      if (event.type !== action.type) {
+        continue;
       }
 
       if (ws?.readyState !== WebSocket.OPEN) {
