@@ -33,7 +33,7 @@ import taskReducer, {
 } from "./slices/taskReducer";
 
 //updateIdbMiddleware takes client and server actions
-//socketMiddleware only subscribes client actions and dispatches server actions
+//socketMiddleware only subscribes to client actions and dispatches server actions
 
 const store = configureStore({
   reducer: {

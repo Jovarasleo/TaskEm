@@ -1,3 +1,4 @@
+import { IdbAction } from "./store/slices/types";
 import { Project, Task, TaskContainer } from "./views/taskManager/model/task";
 
 let request: IDBOpenDBRequest;
@@ -10,6 +11,11 @@ export enum Stores {
   Tasks = "Tasks",
   Containers = "Containers",
   Events = "Events",
+}
+
+export interface EventData {
+  key: IDBValidKey;
+  value: IdbAction;
 }
 
 export const initDB = (): Promise<boolean> => {
@@ -393,7 +399,7 @@ export async function deleteContainer(container: TaskContainer) {
   }
 }
 
-export async function storeEvents(eventData: any) {
+export async function storeEvents(eventData: IdbAction) {
   try {
     await initDB();
 
@@ -409,11 +415,6 @@ export async function storeEvents(eventData: any) {
   } catch (error) {
     console.log("store event fails 2", error);
   }
-}
-
-export interface EventData {
-  key: IDBValidKey;
-  value: any; // Adjust this type based on the expected structure of your events
 }
 
 export async function getEvents(): Promise<EventData[]> {

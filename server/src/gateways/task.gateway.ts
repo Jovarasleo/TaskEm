@@ -25,12 +25,14 @@ export async function setTaskGateway({
   }
 }
 
+interface ITaskSql extends ITask, RowDataPacket {}
+
 export async function getTasksGateway(projectId: string) {
   const sql = "SELECT * FROM tasks WHERE projectId = ?";
   const values = [projectId];
 
   try {
-    const [result] = await db.execute<RowDataPacket[]>(sql, values);
+    const [result] = await db.execute<ITaskSql[]>(sql, values);
 
     return {
       success: true,

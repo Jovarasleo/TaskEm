@@ -1,13 +1,6 @@
 import { ActionCreatorWithPayload, ThunkDispatch } from "@reduxjs/toolkit";
 import { AnyAction, Dispatch, MiddlewareAPI } from "redux";
-import {
-  deleteEvent,
-  EventData,
-  getEvents,
-  syncAllContainers,
-  syncAllProjects,
-  syncAllTasks,
-} from "../../db";
+import { deleteEvent, getEvents, syncAllContainers, syncAllProjects, syncAllTasks } from "../../db";
 import { userLoggedIn } from "../slices/authSlice";
 import { serverCreateTask, serverEditTask, serverMoveTask } from "../slices/taskReducer";
 import { SocketAction, SocketActionType, SocketServerAction } from "../slices/types";
@@ -16,29 +9,25 @@ import { clientLoadLocalProjects } from "../slices/projectReducer";
 export type Subscribers = {
   [K in SocketActionType]: ActionCreatorWithPayload<() => void, SocketActionType>;
 };
+type AppDispatch = ThunkDispatch<Dispatch, unknown, AnyAction>;
 
 const WEB_SOCKET_ENDPOINT = process.env.BACKEND_WS_ADDRESS as string;
 
 const sendUserAction = (
-  ws: WebSocket | null,
+  ws: WebSocket,
   actionType: SocketActionType,
   actionPayload: SocketAction["payload"]
 ) => {
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    const message = {
-      type: actionType,
-      payload: actionPayload,
-    };
+  const message = {
+    type: actionType,
+    payload: actionPayload,
+  };
 
-    const stingifiedMessage = JSON.stringify(message);
-    ws.send(stingifiedMessage);
-  } else {
-    console.error("WebSocket not open. Cannot send message.");
-  }
+  ws.send(JSON.stringify(message));
 };
 
-const synchroniseData = async (ws: WebSocket) => {
-  const allEvents: EventData[] = await getEvents();
+const syncAllData = async (ws: WebSocket) => {
+  const allEvents = await getEvents();
 
   for (const userEvent of allEvents) {
     console.log({ userEvent });
@@ -48,8 +37,6 @@ const synchroniseData = async (ws: WebSocket) => {
 
   ws.send(JSON.stringify({ type: "syncData" }));
 };
-
-type AppDispatch = ThunkDispatch<Dispatch, unknown, AnyAction>;
 
 export let ws: WebSocket | null = null;
 export const socketMiddleware =
@@ -100,7 +87,7 @@ export const socketMiddleware =
     const onWebSocketOpen = async () => {
       console.log("WebSocket connected");
       if (ws && ws.readyState === WebSocket.OPEN) {
-        await synchroniseData(ws);
+        await syncAllData(ws);
         store.dispatch(userLoggedIn(true));
       }
     };
@@ -125,7 +112,7 @@ export const socketMiddleware =
     ws.addEventListener("close", onWebSocketClosed);
 
     return (action: SocketAction) => {
-      if (!store.getState().auth.loggedIn) {
+      if (ws?.readyState !== WebSocket.OPEN) {
         return next(action);
       }
 
