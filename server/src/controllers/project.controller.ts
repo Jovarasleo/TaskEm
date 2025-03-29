@@ -59,13 +59,6 @@ export async function deleteProjectSocketController(requestData: deleteProjectRe
         })
       );
     }
-
-    client.send(
-      JSON.stringify({
-        type: "project/serverDeleteProject",
-        payload: response.data,
-      })
-    );
   } catch (error) {
     console.error(error);
 
@@ -136,8 +129,8 @@ export async function syncUserProjectData(userId: string, client: WebSocket) {
 
     client.send(
       JSON.stringify({
-        type: "task/serverLoadTasks",
-        payload: userTasks,
+        type: "project/serverLoadProjects",
+        payload: userProjects,
       })
     );
 
@@ -150,8 +143,8 @@ export async function syncUserProjectData(userId: string, client: WebSocket) {
 
     client.send(
       JSON.stringify({
-        type: "project/serverLoadProjects",
-        payload: userProjects,
+        type: "task/serverLoadTasks",
+        payload: userTasks,
       })
     );
   } catch (error) {

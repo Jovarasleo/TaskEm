@@ -26,11 +26,11 @@ class ProjectRepository {
   }
 
   async createProject({ projectId, projectName, ownerId }: IProject): Promise<IProject["projectId"] | null> {
-    const createProject = "INSERT INTO projects (projectId, projectName, ownerId) VALUES (?, ?, ?)";
     const projectValues = [projectId, projectName, ownerId];
+    const createProject = "INSERT INTO projects (projectId, projectName, ownerId) VALUES (?, ?, ?)";
 
-    const authorizeAccess = "INSERT INTO projectaccess (accessibleProjectId, userId) VALUES (?, ?);";
     const authorizationValues = [projectId, ownerId];
+    const authorizeAccess = "INSERT INTO projectaccess (accessibleProjectId, userId) VALUES (?, ?);";
 
     const [project] = await db.execute<RowDataPacket[]>(createProject, projectValues);
     const [access] = await db.execute<RowDataPacket[]>(authorizeAccess, authorizationValues);

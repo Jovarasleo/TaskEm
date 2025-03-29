@@ -43,12 +43,12 @@ export const deleteProjectWithRelatedData = createAsyncThunk(
   "project/deleteProject",
   async (project: Project, { dispatch, getState }) => {
     try {
+      const state = getState() as RootState;
+      const projects = state.project.data.filter((p) => p.projectId === project.projectId);
+
       dispatch(clientDeleteProjectContainers(project));
       dispatch(clientDeleteProjectTasks(project));
       dispatch(clientDeleteProject(project));
-
-      const state = getState() as RootState;
-      const projects = state.project.data.filter((p) => p.projectId !== project.projectId);
 
       // Select the next available project, if any
       if (projects.length > 0) {
@@ -56,7 +56,8 @@ export const deleteProjectWithRelatedData = createAsyncThunk(
           state.project.data.findIndex((p) => p.projectId === project.projectId),
           state.project.data.length
         );
-        dispatch(selectProjectWithRelatedData(projects[nextProjectIndex]));
+
+        dispatch(selectProjectWithRelatedData(state.project.data[nextProjectIndex]));
       } else {
         dispatch(clientSelectProject(null)); // No projects left
       }
@@ -70,6 +71,7 @@ export const deleteProjectWithRelatedData = createAsyncThunk(
 export const selectProjectWithRelatedData = createAsyncThunk(
   "project/clientLoadProjectsWithRelatedData",
   async (project: Project, { dispatch }) => {
+    console.log({ nextProject: project });
     dispatch(clientSelectProject(project));
     dispatch(clientLoadLocalContainers(project.projectId));
     dispatch(clientLoadLocalTasks(project.projectId));
