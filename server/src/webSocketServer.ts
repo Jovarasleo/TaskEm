@@ -2,7 +2,7 @@ import { Response } from "express";
 import http from "http";
 import jwt from "jsonwebtoken";
 import { WebSocketServer } from "ws";
-import { deleteContainerSocketController, setContainerSocketHandler } from "./controllers/container.controller.js";
+import { createContainerSocketController } from "./controllers/container.controller.js";
 import { createProjectSocketController, deleteProjectSocketController, syncUserProjectData } from "./controllers/project.controller.js";
 import {
   createTaskSocketController,
@@ -10,13 +10,7 @@ import {
   updateTaskPositionSocketController,
   updateTaskValueSocketController,
 } from "./controllers/task.controller.js";
-
-interface TokenData {
-  id: string;
-  email: string;
-  iat: number;
-  exp: number;
-}
+import { TokenData } from "./server.js";
 
 type WebSocketRequest = http.IncomingMessage & {
   user: TokenData;
@@ -92,10 +86,7 @@ wss.on("connection", function connection(client, request: WebSocketRequest) {
         // TODO: implement project rename
         break;
       case "container/clientCreateContainer":
-        await setContainerSocketHandler(payload);
-        break;
-      case "container/clientDeleteContainer":
-        await deleteContainerSocketController(payload);
+        await createContainerSocketController({ ...payload, userId }, client);
         break;
       case "task/clientCreateTask":
         await createTaskSocketController({ ...payload, userId }, client);

@@ -1,28 +1,17 @@
 import { Request, Response } from "express";
-import {
-  createUserGateway,
-  findUserGateway,
-} from "../gateways/user.gateway.js";
-import { authenticateUserHandler } from "../handlers/authHandler.js";
-import { createUserHandler } from "../handlers/userHandler.js";
-import hashPassword from "../infrastructure/utils/passwordHash.js";
-import generateId from "../infrastructure/utils/uuidGenerator.js";
+import { loginHandler, registrationHandler } from "../domainHandlers/authHandlers.js";
 import { generateToken } from "../infrastructure/utils/jwtGenerator.js";
 
-export const register = async (req: Request, res: Response) => {
+export const createUserController = async (req: Request, res: Response) => {
   try {
     const { username, password, email } = req.body;
-    const response = await createUserHandler(
-      { findUserGateway, createUserGateway },
-      { generateId, hashPassword },
-      { username, password, email }
-    );
 
-    if (response.error || !response.user) {
-      return res.status(400).send({ success: false, error: response?.error });
+    const response = await registrationHandler(username, password, email);
+    if (response.error || !response.success || !response.data) {
+      return res.status(400).send({ success: false, error: response.error });
     }
 
-    const jwtToken = generateToken(response.user);
+    const jwtToken = generateToken(response.data);
 
     res.cookie("token", jwtToken, {
       httpOnly: true,
@@ -32,7 +21,7 @@ export const register = async (req: Request, res: Response) => {
     return res.status(201).send({
       success: true,
       message: `user ${username} has been created`,
-      user: response.user,
+      user: response.data,
     });
   } catch (ex) {
     console.error(ex);
@@ -40,48 +29,38 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
-export const login = async (req: Request, res: Response) => {
+export const loginUserController = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
-    const response = await authenticateUserHandler(
-      { findUserGateway },
-      { email, password }
-    );
+    const response = await loginHandler(email, password);
 
-    if (response.success && response.user) {
-      const jwtToken = generateToken(response.user);
-
-      res.cookie("token", jwtToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-      });
-
-      return res.status(201).send({
-        success: true,
-        user: response.user,
-      });
+    if (!response.success || !response.data) {
+      return res.status(401).send({ success: false, error: ["incorrect credentials"], data: null });
     }
 
-    return res
-      .status(401)
-      .send({ success: false, error: ["incorrect credentials"] });
+    const jwtToken = generateToken(response.data);
+    res.cookie("token", jwtToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    return res.status(201).send({
+      success: true,
+      data: response.data,
+      error: null,
+    });
   } catch (e) {
     console.log(e);
-    res.status(500).send({ success: false, error: ["internal server error"] });
+    res.status(500).send({ success: false, error: ["Internal server error"] });
     return;
   }
 };
 
 export const logout = async (_: Request, res: Response) => {
   try {
-    res
-      .clearCookie("token")
-      .status(200)
-      .send({ success: true, message: "Logged Out" });
+    res.clearCookie("token").status(200).send({ success: true, message: "Logged Out" });
   } catch (e) {
-    return res
-      .status(500)
-      .send({ success: false, error: "internal server error" });
+    return res.status(500).send({ success: false, error: "internal server error" });
   }
 };

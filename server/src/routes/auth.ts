@@ -1,16 +1,13 @@
 import express from "express";
-import { login, logout, register } from "../controllers/auth.controller.js";
-import {
-  generateUrl,
-  googleLogin,
-} from "../controllers/authGoogle.controller.js";
+import { loginUserController, logout, createUserController } from "../controllers/auth.controller.js";
+import { generateGoogleLoginUrlController, googleLoginController } from "../controllers/authGoogle.controller.js";
 
 const router = express.Router();
 
-router.get("/google", generateUrl);
-router.get("/google/callback", googleLogin);
-router.post("/login", login);
+router.get("/google", generateGoogleLoginUrlController);
+router.get("/google/callback", googleLoginController);
+router.post("/login", loginUserController);
 router.post("/logout", logout);
-router.post("/", register);
+router.post("/", createUserController);
 
 export default router;
