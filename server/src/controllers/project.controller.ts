@@ -130,8 +130,8 @@ export async function syncUserProjectData(userId: string, client: WebSocket) {
       const containerResponse = await accessLayer.container.getProjectContainers(project.projectId);
       const taskResponse = await accessLayer.task.getProjectTasks(project.projectId);
 
-      userContainers.concat(containerResponse);
-      userTasks.concat(taskResponse);
+      userContainers.push(...containerResponse);
+      userTasks.push(...taskResponse);
     }
 
     client.send(
@@ -151,7 +151,7 @@ export async function syncUserProjectData(userId: string, client: WebSocket) {
     client.send(
       JSON.stringify({
         type: "project/serverLoadProjects",
-        payload: userTasks,
+        payload: userProjects,
       })
     );
   } catch (error) {

@@ -11,6 +11,7 @@ import {
   updateTaskValueSocketController,
 } from "./controllers/task.controller.js";
 import { TokenData } from "./server.js";
+import { parse } from "cookie";
 
 type WebSocketRequest = http.IncomingMessage & {
   user: TokenData;
@@ -31,14 +32,12 @@ const getUserJwtToken = (headers: string[]) => headers.find((header) => header.i
 
 const wss = new WebSocketServer({ clientTracking: true, noServer: true });
 
-export const initializeWebSocketServer = (
-  server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>,
-  clearCookie: () => Response<string>
-) => {
+export const initializeWebSocketServer = (server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>) => {
   server.on("upgrade", function upgrade(req: WebSocketRequest, socket, head) {
     socket.on("error", (err) => console.error("Socket Error:", err));
 
-    const token = getUserJwtToken(req.rawHeaders);
+    const cookies = parse(req.headers.cookie || "");
+    const token = cookies.token; // Read token from cookies
 
     if (!token) {
       socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
@@ -54,7 +53,6 @@ export const initializeWebSocketServer = (
         wss.emit("connection", ws, req);
       });
     } catch (err) {
-      console.error("JWT Verification Failed:", err);
       socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
       socket.destroy();
     }
@@ -74,6 +72,8 @@ wss.on("connection", function connection(client, request: WebSocketRequest) {
   client.on("message", async (data) => {
     const parsedData = JSON.parse(data.toString());
     const { type, payload } = parsedData;
+
+    console.log({ payload, userId });
 
     switch (type) {
       case "project/clientCreateProject":

@@ -47,7 +47,7 @@ export const googleLoginController = async (req: Request, res: Response) => {
       return res.status(400).send({ success: false, error: "Missing request data", data: null });
     }
 
-    const response = await googleUserRegistrationHandler(data.name, data.id, data.email);
+    const response = await googleUserRegistrationHandler(data.name, data.email, data.id);
     if (!response.success || !response.data) {
       return res.status(500).send({ success: false, error: "Something went wrong data", data: null });
     }

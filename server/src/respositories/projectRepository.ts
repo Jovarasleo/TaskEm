@@ -8,8 +8,7 @@ type IProjectSql = IProject & RowDataPacket;
 
 class ProjectRepository {
   async hasAccessToProject(userId: string, projectId: string) {
-    const sql =
-      "SELECT COUNT(*) AS accessCount FROM projectaccess WHERE accessibleProjectId = ? AND userId = ?";
+    const sql = "SELECT COUNT(*) AS accessCount FROM projectaccess WHERE accessibleProjectId = ? AND userId = ?";
     const values = [projectId, userId];
 
     const [result] = await db.execute<RowDataPacket[]>(sql, values);
@@ -19,47 +18,28 @@ class ProjectRepository {
   }
 
   async getUserProjects(userId: IUser["uuid"]): Promise<IProject[]> {
-    const sql =
-      "SELECT P.* FROM projects P JOIN projectaccess PA ON P.projectId = PA.accessibleProjectId WHERE PA.userId = ?";
+    const sql = "SELECT P.* FROM projects P JOIN projectaccess PA ON P.projectId = PA.accessibleProjectId WHERE PA.userId = ?";
     const values = [userId];
 
     const [projects] = await db.execute<IProjectSql[]>(sql, values);
     return projects;
   }
 
-  async createProject({
-    projectId,
-    projectName,
-    ownerId,
-  }: IProject): Promise<IProject["projectId"] | null> {
-    const createProject =
-      "INSERT INTO projects (projectId, projectName, ownerId) VALUES (?, ?, ?)";
+  async createProject({ projectId, projectName, ownerId }: IProject): Promise<IProject["projectId"] | null> {
+    const createProject = "INSERT INTO projects (projectId, projectName, ownerId) VALUES (?, ?, ?)";
     const projectValues = [projectId, projectName, ownerId];
 
-    const authorizeAccess =
-      "INSERT INTO projectaccess (accessibleProjectId, userId) VALUES (?, ?);";
+    const authorizeAccess = "INSERT INTO projectaccess (accessibleProjectId, userId) VALUES (?, ?);";
     const authorizationValues = [projectId, ownerId];
 
-    const [project] = await db.execute<RowDataPacket[]>(
-      createProject,
-      projectValues
-    );
+    const [project] = await db.execute<RowDataPacket[]>(createProject, projectValues);
+    const [access] = await db.execute<RowDataPacket[]>(authorizeAccess, authorizationValues);
 
-    console.log({ project });
-
-    const [access] = await db.execute<RowDataPacket[]>(
-      authorizeAccess,
-      authorizationValues
-    );
-
-    return project.length && access.length ? projectId : null;
+    return project && access ? projectId : null;
   }
 
-  async deleteProject(
-    projectId: IProject["projectId"]
-  ): Promise<IProject["projectId"] | null> {
-    const deleteProjectAccess =
-      "DELETE FROM projectaccess WHERE accessibleProjectId = ?";
+  async deleteProject(projectId: IProject["projectId"]): Promise<IProject["projectId"] | null> {
+    const deleteProjectAccess = "DELETE FROM projectaccess WHERE accessibleProjectId = ?";
     const deleteProject = "DELETE FROM projects WHERE projectId = ?";
     const values = [projectId];
 
