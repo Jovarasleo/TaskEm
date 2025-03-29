@@ -73,17 +73,17 @@ export const initDB = (): Promise<boolean> => {
   });
 };
 
-export async function setProject(Project: Project) {
+export async function setProject(project: Project) {
   try {
     await initDB();
 
     const transaction = db.transaction([Stores.Projects], "readwrite");
 
     const objectStore = transaction.objectStore(Stores.Projects);
-    const id = Project.projectId;
-    console.log({ Project });
+    const id = project.projectId;
+    console.log({ project });
 
-    const request = objectStore.put(Project, id);
+    const request = objectStore.put(project, id);
     request.onsuccess = (event) => {
       console.log(event);
     };
@@ -97,9 +97,7 @@ export async function setContainer(container: TaskContainer) {
     await initDB();
 
     const transaction = db.transaction([Stores.Containers], "readwrite");
-
     const objectStore = transaction.objectStore(Stores.Containers);
-
     const request = objectStore.put(container, container.containerId);
 
     request.onsuccess = (event) => {

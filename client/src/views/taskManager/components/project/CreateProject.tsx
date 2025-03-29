@@ -1,15 +1,15 @@
 import Button from "@components/button/Button";
+import clsx from "clsx";
 import { useState } from "react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../../store/configureStore";
+import { clientCreateProject } from "../../../../store/slices/projectReducer";
+import { clientLoadTasks } from "../../../../store/slices/taskReducer";
 import { uid } from "../../../../util/uid";
 import { defaultContainers } from "../../model/containers";
 import styles from "./styles.module.scss";
-import clsx from "clsx";
-import { clientCreateProject } from "../../../../store/slices/projectReducer";
-import { clientCreateContainer } from "../../../../store/slices/containerReducer";
-import { clientLoadTasks } from "../../../../store/slices/taskReducer";
+import { clientLoadContainers } from "../../../../store/slices/containerReducer";
 
 function CreateProject() {
   const dispatch: AppDispatch = useDispatch();
@@ -18,15 +18,25 @@ function CreateProject() {
 
   const setName = (newProjectName: string) => {
     const projectId = uid();
-    const trimmedProjectName = newProjectName.trim();
+    const projectName = newProjectName.trim();
 
-    if (!trimmedProjectName.length) {
+    if (!projectName.length) {
       return;
     }
 
-    dispatch(clientCreateProject({ projectId, projectName: trimmedProjectName }));
+    const containers = defaultContainers(projectId);
+
+    dispatch(
+      clientCreateProject({
+        project: {
+          projectId,
+          projectName,
+        },
+        containers,
+      })
+    );
     dispatch(clientLoadTasks([]));
-    defaultContainers(projectId).forEach((container) => dispatch(clientCreateContainer(container)));
+    dispatch(clientLoadContainers(containers));
 
     setProjectName("");
     setAddNew(false);

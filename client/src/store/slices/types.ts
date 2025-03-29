@@ -12,10 +12,9 @@ type IdbClientContainerActionType =
   | "container/clientDeleteContainer"
   | "container/clientDeleteProjectContainers";
 
-type IdbClientProjectActionType =
-  | "project/clientCreateProject"
-  | "project/clientEditProject"
-  | "project/clientDeleteProject";
+type IdbClientProjectActionType = "project/clientEditProject" | "project/clientDeleteProject";
+
+type IdbClientCreateProjectActionType = "project/clientCreateProject";
 
 type IdbServerTaskActionType =
   | "task/serverCreateTask"
@@ -38,6 +37,7 @@ export type IdbActionType =
   | IdbClientTaskActionType
   | IdbClientContainerActionType
   | IdbClientProjectActionType
+  | IdbClientCreateProjectActionType
   | IdbServerTaskActionType
   | IdbServerContainerActionType
   | IdbServerProjectActionType;
@@ -83,7 +83,16 @@ type IdbProjectAction = {
   payload: Project;
 };
 
-export type IdbAction = IdbTaskAction | IdbContainerAction | IdbProjectAction;
+type IdbCreateProjectAction = {
+  type: IdbClientCreateProjectActionType;
+  payload: { project: Project; containers: TaskContainer[] };
+};
+
+export type IdbAction =
+  | IdbTaskAction
+  | IdbContainerAction
+  | IdbProjectAction
+  | IdbCreateProjectAction;
 
 type SocketClientTaskActionType =
   | "task/clientCreateTask"
@@ -100,6 +109,8 @@ type SocketClientProjectActionType =
   | "project/clientEditProject"
   | "project/clientDeleteProject";
 
+type SocketClientCreateProjectActionType = "project/clientCreateProject";
+
 type SocketClientTaskAction = {
   type: SocketClientTaskActionType;
   payload: Task;
@@ -114,15 +125,22 @@ type SocketClientProjectAction = {
   payload: Project;
 };
 
+type SocketClientCreateProjectAction = {
+  type: SocketClientProjectActionType;
+  payload: { project: Project; containers: TaskContainer[] };
+};
+
 export type SocketActionType =
   | SocketClientTaskActionType
   | SocketClientContainerActionType
-  | SocketClientProjectActionType;
+  | SocketClientProjectActionType
+  | SocketClientCreateProjectActionType;
 
 export type SocketAction =
   | SocketClientTaskAction
   | SocketClientContainerAction
-  | SocketClientProjectAction;
+  | SocketClientProjectAction
+  | SocketClientCreateProjectAction;
 
 type SocketServerTaskActionType =
   | "task/serverLoadTasks"

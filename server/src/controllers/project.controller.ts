@@ -4,11 +4,23 @@ import { IContainer } from "../entities/containerEntity.js";
 import { ITask } from "../entities/taskEntity.js";
 import { accessLayer } from "../respositories/accessLayer.js";
 import { IProject } from "../entities/projectEntity.js";
+import { IUser } from "../entities/userEntity.js";
+import { createContainerHandler } from "../domainHandlers/containerHandlers.js";
 
 interface createProjectRequestData {
-  userId: string;
-  projectId: string;
-  projectName: string;
+  project: {
+    projectId: string;
+    projectName: string;
+  };
+  containers: {
+    containerId: IContainer["containerId"];
+    containerName: IContainer["containerName"];
+    position: IContainer["position"];
+    createdAt: IContainer["createdAt"];
+    modifiedAt: IContainer["modifiedAt"];
+    projectId: IContainer["projectId"];
+  }[];
+  userId: IUser["uuid"];
 }
 
 interface deleteProjectRequestData {
@@ -73,23 +85,37 @@ export async function deleteProjectSocketController(requestData: deleteProjectRe
 
 export async function createProjectSocketController(requestData: createProjectRequestData, client: WebSocket) {
   try {
-    const response = await createProjectHandler(requestData.projectId, requestData.projectName, requestData.userId);
+    const projectResponse = await createProjectHandler(requestData.project.projectId, requestData.project.projectName, requestData.userId);
 
-    if (!response.success) {
+    for (const container of requestData.containers) {
+      const containerHandlerResponse = await createContainerHandler(
+        container.containerId,
+        container.containerName,
+        container.position,
+        container.createdAt,
+        container.modifiedAt,
+        container.projectId,
+        requestData.userId
+      );
+
+      if (!containerHandlerResponse.success) {
+        return client.send(
+          JSON.stringify({
+            type: "error/serverError",
+            payload: projectResponse.error,
+          })
+        );
+      }
+    }
+
+    if (!projectResponse.success) {
       return client.send(
         JSON.stringify({
           type: "error/serverError",
-          payload: response.error,
+          payload: projectResponse.error,
         })
       );
     }
-
-    client.send(
-      JSON.stringify({
-        type: "project/serverCreateProject",
-        payload: response.data,
-      })
-    );
   } catch (error) {
     console.error(error);
 

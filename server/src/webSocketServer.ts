@@ -73,6 +73,8 @@ wss.on("connection", function connection(client, request: WebSocketRequest) {
     const parsedData = JSON.parse(data.toString());
     const { type, payload } = parsedData;
 
+    console.log({ payload, type });
+
     switch (type) {
       case "project/clientCreateProject":
         await createProjectSocketController({ ...payload, userId }, client);

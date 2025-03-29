@@ -59,13 +59,3 @@ export async function getProjectContainersHandler(projectId: IProject["projectId
     data: containers,
   };
 }
-
-export async function deleteContainersByProjectHandler(projectId: string) {
-  const deletedContainersProjectId = await accessLayer.container.deleteProjectContainers(projectId);
-
-  return {
-    success: true,
-    error: null,
-    data: deletedContainersProjectId,
-  };
-}

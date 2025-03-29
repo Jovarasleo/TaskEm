@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getProjectsIdb } from "../../db";
-import { Project } from "../../views/taskManager/model/task";
+import { Project, TaskContainer } from "../../views/taskManager/model/task";
 import { clientDeleteProjectContainers, clientLoadLocalContainers } from "./containerReducer";
 import { clientDeleteProjectTasks, clientLoadLocalTasks } from "./taskReducer";
 import { RootState } from "../configureStore";
@@ -83,10 +83,13 @@ const loadProjects = (state: ProjectStoreState, action: { payload: Project[]; ty
   data: action.payload,
 });
 
-const createProject = (state: ProjectStoreState, action: { payload: Project; type: string }) => ({
+const createProject = (
+  state: ProjectStoreState,
+  action: { payload: { project: Project; containers: TaskContainer[] }; type: string }
+) => ({
   ...state,
-  data: [...state.data, action.payload],
-  selected: action.payload,
+  data: [...state.data, action.payload.project],
+  selected: action.payload.project,
 });
 
 const selectProject = (state: ProjectStoreState, action: { payload: Project; type: string }) => ({

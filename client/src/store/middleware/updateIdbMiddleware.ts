@@ -45,6 +45,10 @@ export const updateIdbMiddleware = (subscribers: Subscribers) => () => (next: Di
           deleteContainer(action.payload);
           break;
         case "project/clientCreateProject":
+          console.log(action.payload);
+          setProject(action.payload.project);
+          action.payload.containers.forEach((container) => setContainer(container));
+          break;
         case "project/clientEditProject":
           setProject(action.payload);
           break;

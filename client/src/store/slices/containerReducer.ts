@@ -72,6 +72,16 @@ const deleteProjectContainers = (
   };
 };
 
+const createProjectContainers = (
+  state: TaskContainerStoreState,
+  action: {
+    payload: TaskContainer[];
+    type: string;
+  }
+) => {
+  return { ...state, data: action.payload };
+};
+
 const containerReducer = createSlice({
   name: "container",
   initialState: {
@@ -80,6 +90,8 @@ const containerReducer = createSlice({
     error: "",
   } as TaskContainerStoreState,
   reducers: {
+    clientCreateProjectContainers: (state, action) => createProjectContainers(state, action),
+    clientLoadContainers: (state, action) => loadContainers(state, action),
     serverLoadContainers: (state, action) => loadContainers(state, action),
     clientCreateContainer: (state, action) => createContainer(state, action),
     serverCreateContainer: (state, action) => createContainer(state, action),
@@ -107,6 +119,7 @@ const containerReducer = createSlice({
 });
 
 export const {
+  clientLoadContainers,
   serverLoadContainers,
   clientCreateContainer,
   serverCreateContainer,

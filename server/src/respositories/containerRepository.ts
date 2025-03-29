@@ -6,33 +6,16 @@ import { IProject } from "../entities/projectEntity.js";
 type IContainerSql = IContainer & RowDataPacket;
 
 class ContainerRepository {
-  async createContainer({
-    containerId,
-    containerName,
-    position,
-    createdAt,
-    modifiedAt,
-    projectId,
-  }: IContainer): Promise<string | null> {
-    const sql =
-      "INSERT INTO containers (containerId, containerName, position, createdAt, modifiedAt, projectId) VALUES (?, ?, ?, ?, ?, ?)";
+  async createContainer({ containerId, containerName, position, createdAt, modifiedAt, projectId }: IContainer): Promise<string | null> {
+    const sql = "INSERT INTO containers (containerId, containerName, position, createdAt, modifiedAt, projectId) VALUES (?, ?, ?, ?, ?, ?)";
 
-    const values = [
-      containerId,
-      containerName,
-      position,
-      createdAt,
-      modifiedAt,
-      projectId,
-    ];
+    const values = [containerId, containerName, position, createdAt, modifiedAt, projectId];
 
     const [result] = await db.execute(sql, values);
     return result ? containerId : null;
   }
 
-  async getProjectContainers(
-    projectId: IProject["projectId"]
-  ): Promise<IContainer[]> {
+  async getProjectContainers(projectId: IProject["projectId"]): Promise<IContainer[]> {
     const sql = "SELECT * FROM containers WHERE projectId = ?";
     const values = [projectId];
 
