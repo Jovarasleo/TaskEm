@@ -24,7 +24,7 @@ class TaskRepository {
     return taskInserted ? taskId : null;
   }
 
-  async getProjectTasks(projectId: string): Promise<ITaskSql[]> {
+  async getProjectTasks(projectId: string): Promise<ITask[]> {
     const sql = "SELECT * FROM tasks WHERE projectId = ?";
     const values = [projectId];
 
@@ -32,7 +32,7 @@ class TaskRepository {
     return tasks;
   }
 
-  async getSingleProjectTask(taskId: ITask["taskId"]) {
+  async getSingleProjectTask(taskId: ITask["taskId"]): Promise<ITask | null> {
     const sql = "SELECT * FROM tasks WHERE taskId = ?";
     const values = [taskId];
 

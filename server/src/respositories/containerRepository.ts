@@ -40,7 +40,7 @@ class ContainerRepository {
     return result;
   }
 
-  async deleteContainerGateway(containerId: IContainer["containerId"]) {
+  async deleteContainer(containerId: IContainer["containerId"]) {
     const sql = "DELETE FROM containers WHERE containerId = ?";
     const values = [containerId];
 

@@ -7,6 +7,17 @@ export type IUserFromDb = IUser & RowDataPacket;
 type IProjectSql = IProject & RowDataPacket;
 
 class ProjectRepository {
+  async hasAccessToProject(userId: string, projectId: string) {
+    const sql =
+      "SELECT COUNT(*) AS accessCount FROM projectaccess WHERE accessibleProjectId = ? AND userId = ?";
+    const values = [projectId, userId];
+
+    const [result] = await db.execute<RowDataPacket[]>(sql, values);
+    const accessCount = result[0].accessCount;
+
+    return accessCount > 0;
+  }
+
   async getUserProjects(userId: IUser["uuid"]): Promise<IProject[]> {
     const sql =
       "SELECT P.* FROM projects P JOIN projectaccess PA ON P.projectId = PA.accessibleProjectId WHERE PA.userId = ?";

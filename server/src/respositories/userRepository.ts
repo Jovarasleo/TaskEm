@@ -34,17 +34,6 @@ class UserRepository {
 
     return await this.getUserByEmail(email);
   }
-
-  async isUserAuthorized(userId: string, projectId: string) {
-    const sql =
-      "SELECT COUNT(*) AS accessCount FROM projectaccess WHERE accessibleProjectId = ? AND userId = ?";
-    const values = [projectId, userId];
-
-    const [result] = await db.execute<RowDataPacket[]>(sql, values);
-    const accessCount = result[0].accessCount;
-
-    return accessCount > 0;
-  }
 }
 
 export { UserRepository };
