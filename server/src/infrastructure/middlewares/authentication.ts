@@ -25,7 +25,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
   return res.status(401).send({ success: false, error: "Please provide authorization header" });
 };
 
-export const authenticationSocketMiddleware = (req: Request, res: Response, socket: WebSocket, next: NextFunction) => {
+export const authenticationSocketMiddleware = (req: Request, socket: WebSocket, next: NextFunction) => {
   const token = req.cookies.token;
   try {
     const verifiedUser = verifyToken(token);

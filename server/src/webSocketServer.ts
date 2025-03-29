@@ -1,4 +1,3 @@
-import { Response } from "express";
 import http from "http";
 import jwt from "jsonwebtoken";
 import { WebSocketServer } from "ws";
@@ -27,8 +26,6 @@ interface Event {
     id: string;
   };
 }
-
-const getUserJwtToken = (headers: string[]) => headers.find((header) => header.includes("token="))?.split("token=")[1];
 
 const wss = new WebSocketServer({ clientTracking: true, noServer: true });
 
@@ -61,7 +58,9 @@ export const initializeWebSocketServer = (server: http.Server<typeof http.Incomi
 
 //TODO: implement emitting events to multiple clients
 
-wss.on("connection", function connection(client, request: WebSocketRequest) {
+let lastPromise = Promise.resolve();
+
+wss.on("connection", async function connection(client, request: WebSocketRequest) {
   const userId = request.user.id;
 
   client.on("error", console.error);
@@ -69,44 +68,46 @@ wss.on("connection", function connection(client, request: WebSocketRequest) {
     client.send("syncData");
   });
 
-  client.on("message", async (data) => {
-    const parsedData = JSON.parse(data.toString());
-    const { type, payload } = parsedData;
+  client.on("message", async function message(data) {
+    lastPromise = lastPromise.then(async () => {
+      const parsedData = await JSON.parse(data.toString());
+      const { type, payload } = parsedData;
 
-    console.log({ payload, type });
+      console.log(type);
 
-    switch (type) {
-      case "project/clientCreateProject":
-        await createProjectSocketController({ ...payload, userId }, client);
-        break;
-      case "project/clientDeleteProject":
-        await deleteProjectSocketController({ ...payload, userId }, client);
-        break;
-      case "project/clientEditProject":
-        // TODO: implement project rename
-        break;
-      case "container/clientCreateContainer":
-        await createContainerSocketController({ ...payload, userId }, client);
-        break;
-      case "task/clientCreateTask":
-        await createTaskSocketController({ ...payload, userId }, client);
-        break;
-      case "task/clientDeleteTask":
-        await deleteTaskSocketController({ ...payload, userId }, client);
-        break;
-      case "task/clientMoveTask":
-        await updateTaskPositionSocketController({ ...payload, userId }, client);
-        break;
-      case "task/clientEditTask":
-        await updateTaskValueSocketController({ ...payload, userId }, client);
-        break;
-      case "syncData":
-        await syncUserProjectData(userId, client);
-        break;
+      switch (type) {
+        case "project/clientCreateProject":
+          await createProjectSocketController({ ...payload, userId }, client);
+          return;
+        case "project/clientDeleteProject":
+          await deleteProjectSocketController({ ...payload, userId }, client);
+          return;
+        case "project/clientEditProject":
+          // TODO: implement project rename
+          return;
+        case "container/clientCreateContainer":
+          await createContainerSocketController({ ...payload, userId }, client);
+          return;
+        case "task/clientCreateTask":
+          await createTaskSocketController({ ...payload, userId }, client);
+          return;
+        case "task/clientDeleteTask":
+          await deleteTaskSocketController({ ...payload, userId }, client);
+          return;
+        case "task/clientMoveTask":
+          await updateTaskPositionSocketController({ ...payload, userId }, client);
+          return;
+        case "task/clientEditTask":
+          await updateTaskValueSocketController({ ...payload, userId }, client);
+          return;
+        case "syncData":
+          await syncUserProjectData(userId, client);
+          return;
 
-      default:
-        break;
-    }
+        default:
+          return;
+      }
+    });
   });
 
   client.on("close", () => {

@@ -12,7 +12,7 @@ class TaskRepository {
     const sql = "INSERT INTO tasks (taskId, containerId, position, value, count, projectId) VALUES (?, ?, ?, ?, ?, ?)";
     const values = [taskId, containerId, position, value, count, projectId];
 
-    const taskInserted = await db.execute(sql, values);
+    const [taskInserted] = await db.execute(sql, values);
     return taskInserted ? taskId : null;
   }
 
@@ -29,7 +29,7 @@ class TaskRepository {
     const values = [taskId];
 
     const [tasks] = await db.execute<ITaskSql[]>(sql, values);
-    return tasks.length ? tasks[0] : null;
+    return tasks ? tasks[0] : null;
   }
 
   async updateTaskPosition({
@@ -45,7 +45,7 @@ class TaskRepository {
     const values = [position, containerId, taskId];
 
     const [result] = await db.execute<RowDataPacket[]>(sql, values);
-    return result.length ? taskId : null;
+    return result ? taskId : null;
   }
 
   async updateTaskValue({ taskId, value }: { taskId: ITask["taskId"]; value: ITask["value"] }): Promise<ITask["taskId"] | null> {
@@ -53,7 +53,7 @@ class TaskRepository {
     const values = [value, taskId];
 
     const [result] = await db.execute<RowDataPacket[]>(sql, values);
-    return result.length ? taskId : null;
+    return result ? taskId : null;
   }
 
   async deleteTask(taskId: ITask["taskId"]): Promise<ITask["taskId"] | null> {
@@ -61,7 +61,7 @@ class TaskRepository {
     const values = [taskId];
 
     const [result] = await db.execute<RowDataPacket[]>(sql, values);
-    return result.length ? taskId : null;
+    return result ? taskId : null;
   }
 
   async deleteProjectTasks(projectId: IProject["projectId"]): Promise<IProject["projectId"] | null> {
@@ -69,7 +69,7 @@ class TaskRepository {
     const values = [projectId];
 
     const [result] = await db.execute<RowDataPacket[]>(sql, values);
-    return result.length ? projectId : null;
+    return result ? projectId : null;
   }
 }
 

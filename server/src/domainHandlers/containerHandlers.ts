@@ -12,7 +12,7 @@ export async function createContainerHandler(
   projectId: IContainer["projectId"],
   userId: IUser["uuid"]
 ) {
-  const hasAccess = accessLayer.project.hasAccessToProject(userId, projectId);
+  const hasAccess = await accessLayer.project.hasAccessToProject(userId, projectId);
   if (!hasAccess) {
     return {
       success: false,

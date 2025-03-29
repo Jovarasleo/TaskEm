@@ -8,8 +8,8 @@ type IProjectSql = IProject & RowDataPacket;
 
 class ProjectRepository {
   async hasAccessToProject(userId: string, projectId: string) {
-    const sql = "SELECT COUNT(*) AS accessCount FROM projectaccess WHERE accessibleProjectId = ? AND userId = ?";
     const values = [projectId, userId];
+    const sql = "SELECT COUNT(*) AS accessCount FROM projectaccess WHERE accessibleProjectId = ? AND userId = ?";
 
     const [result] = await db.execute<RowDataPacket[]>(sql, values);
     const accessCount = result[0].accessCount;
@@ -18,8 +18,8 @@ class ProjectRepository {
   }
 
   async getUserProjects(userId: IUser["uuid"]): Promise<IProject[]> {
-    const sql = "SELECT P.* FROM projects P JOIN projectaccess PA ON P.projectId = PA.accessibleProjectId WHERE PA.userId = ?";
     const values = [userId];
+    const sql = "SELECT P.* FROM projects P JOIN projectaccess PA ON P.projectId = PA.accessibleProjectId WHERE PA.userId = ?";
 
     const [projects] = await db.execute<IProjectSql[]>(sql, values);
     return projects;
@@ -39,14 +39,15 @@ class ProjectRepository {
   }
 
   async deleteProject(projectId: IProject["projectId"]): Promise<IProject["projectId"] | null> {
+    const values = [projectId];
+
     const deleteProjectAccess = "DELETE FROM projectaccess WHERE accessibleProjectId = ?";
     const deleteProject = "DELETE FROM projects WHERE projectId = ?";
-    const values = [projectId];
 
     await db.execute(deleteProjectAccess, values);
     const [result] = await db.execute<RowDataPacket[]>(deleteProject, values);
 
-    return result.length ? projectId : null;
+    return result ? projectId : null;
   }
 }
 

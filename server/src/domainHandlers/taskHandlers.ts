@@ -12,7 +12,7 @@ export async function createTaskHandler(
   position: ITask["position"],
   userId: IUser["uuid"]
 ) {
-  const hasAccess = accessLayer.project.hasAccessToProject(userId, projectId);
+  const hasAccess = await accessLayer.project.hasAccessToProject(userId, projectId);
 
   if (!hasAccess) {
     return {
@@ -38,7 +38,7 @@ export async function createTaskHandler(
 }
 
 export async function getProjectTasksHandler(userId: IUser["uuid"], projectId: IProject["projectId"]) {
-  const hasAccess = accessLayer.project.hasAccessToProject(userId, projectId);
+  const hasAccess = await accessLayer.project.hasAccessToProject(userId, projectId);
 
   if (!hasAccess) {
     return {
@@ -68,7 +68,7 @@ export async function updateTaskPositionHandler(
   projectId: ITask["projectId"],
   userId: IUser["uuid"]
 ) {
-  const hasAccess = accessLayer.project.hasAccessToProject(userId, projectId);
+  const hasAccess = await accessLayer.project.hasAccessToProject(userId, projectId);
 
   if (!hasAccess) {
     return {
@@ -101,7 +101,7 @@ export async function updateTaskValueHandler(
   projectId: ITask["projectId"],
   userId: IUser["uuid"]
 ) {
-  const hasAccess = accessLayer.project.hasAccessToProject(userId, projectId);
+  const hasAccess = await accessLayer.project.hasAccessToProject(userId, projectId);
 
   if (!hasAccess) {
     return {
@@ -128,7 +128,7 @@ export async function updateTaskValueHandler(
 }
 
 export async function deleteTaskHandler(projectId: ITask["projectId"], taskId: ITask["taskId"], userId: IUser["uuid"]) {
-  const hasAccess = accessLayer.project.hasAccessToProject(userId, projectId);
+  const hasAccess = await accessLayer.project.hasAccessToProject(userId, projectId);
 
   if (!hasAccess) {
     return {
