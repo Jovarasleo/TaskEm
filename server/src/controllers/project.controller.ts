@@ -15,6 +15,8 @@ import {
 } from "../handlers/projectHandlers.js";
 import { deleteTasksByProjectHandler } from "../handlers/taskHandlers.js";
 import { ISession } from "../server.js";
+import { createProjectHandlerNew } from "../domainHandlers/projectHandlers.js";
+import { WebSocket } from "ws";
 
 export const getProjects = async (req: Request, res: Response) => {
   const { userId } = req.session as ISession;
@@ -35,7 +37,7 @@ export const setProject = async (req: Request, res: Response) => {
     const response = await createProjectHandler(setProjectGateway, {
       projectId,
       projectName,
-      userId,
+      ownerId: userId,
     });
     res.status(200).send(response);
   } catch (error) {
@@ -54,7 +56,7 @@ export const setProjectSocketController = async (
     const response = await createProjectHandler(setProjectGateway, {
       projectId,
       projectName,
-      userId,
+      ownerId: userId,
     });
     return response;
   } catch (error) {
@@ -90,5 +92,49 @@ export const deleteProjectSocketController = async (data: {
     return response;
   } catch (error) {
     console.log({ error });
+  }
+};
+
+interface createProjectRequestData {
+  userId: string;
+  projectId: string;
+  projectName: string;
+}
+
+export const createProjectSocketController = async (
+  requestData: createProjectRequestData,
+  client: WebSocket
+) => {
+  try {
+    const handleRequest = await createProjectHandlerNew(
+      requestData.projectId,
+      requestData.projectName,
+      requestData.userId
+    );
+
+    if (handleRequest.success) {
+      return client.send(
+        JSON.stringify({
+          type: "project/serverCreateProject",
+          payload: handleRequest,
+        })
+      );
+    }
+
+    if (!handleRequest.success) {
+      return client.send(
+        JSON.stringify({
+          type: "error/serverError",
+          payload: { error: "Something went wrong" },
+        })
+      );
+    }
+  } catch (error) {
+    client.send(
+      JSON.stringify({
+        type: "error/serverError",
+        payload: { error: "Internal Server Error" },
+      })
+    );
   }
 };

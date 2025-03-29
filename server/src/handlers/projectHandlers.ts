@@ -4,7 +4,7 @@ import Project, { IProject } from "../entities/projectEntity.js";
 type SetProjectGateway = ({
   projectId,
   projectName,
-  userId,
+  ownerId,
 }: IProject) => Promise<string>;
 
 type GetUserProjectsGateway = (
@@ -19,16 +19,16 @@ type DeleteProjectGateway = (projectId: string) => Promise<{
 
 export async function createProjectHandler(
   setProjectGateway: SetProjectGateway,
-  { projectId, projectName, userId }: IProject
+  { projectId, projectName, ownerId }: IProject
 ) {
-  const project = new Project(projectId, projectName);
+  const project = new Project(projectId, projectName, ownerId);
   const validatedProject = await project.validateProject();
 
   if (validatedProject.error) {
     return { error: validatedProject.error };
   }
 
-  const newProject = await setProjectGateway({ ...validatedProject, userId });
+  const newProject = await setProjectGateway({ ...validatedProject, ownerId });
   return newProject;
 }
 

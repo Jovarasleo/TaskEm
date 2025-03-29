@@ -1,6 +1,6 @@
+import db from "../interface/data.access.js";
 import { RowDataPacket } from "mysql2";
 import { IContainer } from "../entities/containerEntity.js";
-import db from "../interface/data.access.js";
 
 export async function setContainerGateway({
   containerId,

@@ -7,6 +7,7 @@ import {
   setContainerSocketHandler,
 } from "./controllers/container.controller.js";
 import {
+  createProjectSocketController,
   deleteProjectSocketController,
   getProjectsSocketController,
   setProjectSocketController,
@@ -101,7 +102,8 @@ wss.on("connection", function connection(client, request: WebSocketRequest) {
         console.log(type);
         switch (type) {
           case "project/clientCreateProject":
-            await setProjectSocketController(payload, userId);
+            // await setProjectSocketController(payload, userId);
+            await createProjectSocketController({ ...payload, userId }, client);
             break;
           case "project/clientDeleteProject":
             await deleteProjectSocketController(payload);

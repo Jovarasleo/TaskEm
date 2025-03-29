@@ -1,16 +1,18 @@
 export interface IProject {
   projectId: string;
   projectName: string;
-  userId: string;
+  ownerId: string;
 }
 
 class Project {
   readonly projectId: string;
+  readonly ownerId: string;
   projectName: string;
 
-  constructor(projectId: string, projectName: string) {
+  constructor(projectId: string, projectName: string, ownerId: string) {
     this.projectId = projectId;
     this.projectName = projectName;
+    this.ownerId = ownerId;
   }
 
   async validateProject() {

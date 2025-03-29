@@ -17,15 +17,15 @@ export async function getUserProjectsGateway(userId: string) {
 export async function setProjectGateway({
   projectId,
   projectName,
-  userId,
+  ownerId,
 }: IProject) {
   const sql =
     "INSERT INTO projects (projectId, projectName, ownerId) VALUES (?, ?, ?)";
-  const values = [projectId, projectName, userId];
+  const values = [projectId, projectName, ownerId];
 
   const projectAccess =
     "INSERT INTO projectaccess (accessibleProjectId, userId) VALUES (?, ?);";
-  const values2 = [projectId, userId];
+  const values2 = [projectId, ownerId];
 
   try {
     console.log(values);

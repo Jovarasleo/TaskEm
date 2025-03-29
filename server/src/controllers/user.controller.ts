@@ -2,10 +2,12 @@ import { Request, Response } from "express";
 import { getUserDataGateway } from "../gateways/user.gateway.js";
 import { getUserDataHandler } from "../handlers/userHandler.js";
 import { ISession } from "../server.js";
+import { accessLayer } from "../respositories/accessLayer.js";
 
 export const getUserData = async (req: Request, res: Response) => {
   try {
     const { userId } = req.session as ISession;
+    const user = await accessLayer.user.getUserById(userId);
 
     const data = getUserDataHandler(getUserDataGateway, userId);
     const response = await data;
