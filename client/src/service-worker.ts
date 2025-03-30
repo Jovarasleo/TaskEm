@@ -34,7 +34,15 @@ self.addEventListener("fetch", (event: any) => {
     caches
       .match(event.request)
       .then((response) => {
-        return response || fetch(event.request);
+        return (
+          response ||
+          fetch(event.request).then((fetchResponse) => {
+            return caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, fetchResponse.clone()); // Cache dynamically
+              return fetchResponse;
+            });
+          })
+        );
       })
       .catch(() => caches.match("index.html"))
   );

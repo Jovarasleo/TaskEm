@@ -30,7 +30,9 @@ function ready() {
 ready();
 
 async function initServiceWorker() {
-  const swRegistration = await navigator.serviceWorker.register("./sw.js");
+  const swRegistration = await navigator.serviceWorker.register("./sw.js", {
+    scope: "/",
+  });
   const { installing, waiting, active } = swRegistration;
   let svcworker = installing || waiting || active;
 
