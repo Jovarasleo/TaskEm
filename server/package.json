@@ -19,6 +19,7 @@
     "@types/express-session": "^1.17.8",
     "@types/ws": "^8.5.7",
     "bcrypt": "^5.1.0",
+    "cookie": "^1.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",

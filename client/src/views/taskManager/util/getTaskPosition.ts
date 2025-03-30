@@ -29,7 +29,6 @@ export const getTaskPosition = ({
   const moveUp = toIndex < fromIndex;
   const moveDn = toIndex > fromIndex;
 
-  // console.log({ taskAbove, taskBelow, tasksInContainer });
   const sameContainer = toContainerId === fromContainerId;
 
   const newPosition = (position: number) => {
@@ -74,11 +73,9 @@ export const getTaskPosition = ({
     return;
   }
 
-  const updatedTask = {
+  return {
     ...currentTask,
     position: Math.floor(newPosition(currentTask.position)),
     containerId: toContainerId,
   };
-
-  return updatedTask;
 };

@@ -1,140 +1,202 @@
-import {
-  setTaskGateway,
-  getTasksGateway,
-  updateTaskPositionGateway,
-  deleteTaskGateway,
-  getSingleTaskGateway,
-} from "../gateways/task.gateway.js";
-import { Request, Response } from "express";
+import { WebSocket } from "ws";
+import { ITask } from "../entities/taskEntity.js";
 import {
   createTaskHandler,
-  deleteTaskHandler,
+  updateTaskPositionHandler,
   getSingleTaskHandler,
-  getTasksHandler,
-  updateTaskHandler,
-} from "../handlers/taskHandlers.js";
-import Task from "../entities/taskEntity.js";
+  updateTaskValueHandler,
+  deleteTaskHandler,
+} from "../domainHandlers/taskHandlers.js";
+import { IUser } from "../entities/userEntity.js";
 
-export const setTask = async (req: Request, res: Response) => {
-  const { taskId, projectId, containerId, value, count, position } = req.body;
+interface createTaskRequestData {
+  taskId: ITask["taskId"];
+  projectId: ITask["projectId"];
+  containerId: ITask["containerId"];
+  value: ITask["value"];
+  count: ITask["count"];
+  position: ITask["position"];
+  userId: IUser["uuid"];
+}
+
+export async function createTaskSocketController(
+  requestData: createTaskRequestData,
+  client: WebSocket
+) {
+  const { taskId, projectId, containerId, value, count, position, userId } =
+    requestData;
 
   try {
-    const response = await createTaskHandler(setTaskGateway, {
+    const response = await createTaskHandler(
       taskId,
       projectId,
       containerId,
       value,
       count,
       position,
-    });
+      userId
+    );
 
     if (!response.success) {
-      return res.status(400).send(response);
+      return client.send(
+        JSON.stringify({
+          type: "error/serverError",
+          payload: response.error,
+        })
+      );
+    }
+  } catch (error) {
+    console.error(error);
+
+    client.send(
+      JSON.stringify({
+        type: "error/serverError",
+        payload: "Internal Server Error",
+      })
+    );
+  }
+}
+
+interface updateTaskPositionRequestData {
+  taskId: ITask["projectId"];
+  containerId: ITask["containerId"];
+  position: ITask["position"];
+  projectId: ITask["projectId"];
+  userId: IUser["uuid"];
+}
+
+export const updateTaskPositionSocketController = async (
+  requestData: updateTaskPositionRequestData,
+  client: WebSocket
+) => {
+  try {
+    const response = await updateTaskPositionHandler(
+      requestData.taskId,
+      requestData.containerId,
+      requestData.position,
+      requestData.projectId,
+      requestData.userId
+    );
+
+    if (!response.success || !response.data) {
+      return client.send(
+        JSON.stringify({
+          type: "error/serverError",
+          payload: response.error,
+        })
+      );
     }
 
-    res.status(200).send(response);
+    const updatedTask = await getSingleTaskHandler(response.data);
+    if (updatedTask.data) {
+      client.send(
+        JSON.stringify({
+          type: "task/serverMoveTask",
+          payload: updatedTask.data,
+        })
+      );
+    }
   } catch (error) {
-    console.log({ error });
-    res.status(500).send({ error: "Internal Server Error: get projects" });
+    console.error(error);
+
+    client.send(
+      JSON.stringify({
+        type: "error/serverError",
+        payload: "Internal Server Error",
+      })
+    );
   }
 };
 
-export const getTasks = async (req: Request, res: Response) => {
-  const { projectId } = req.body;
+interface UpdateTaskValueRequestData {
+  taskId: ITask["projectId"];
+  value: ITask["value"];
+  projectId: ITask["projectId"];
+  userId: IUser["uuid"];
+}
 
+export const updateTaskValueSocketController = async (
+  requestData: UpdateTaskValueRequestData,
+  client: WebSocket
+) => {
   try {
-    const response = await getTasksHandler(getTasksGateway, projectId);
+    const response = await updateTaskValueHandler(
+      requestData.taskId,
+      requestData.value,
+      requestData.projectId,
+      requestData.userId
+    );
 
-    if (!response.success) {
-      return res.status(400).send(response);
+    if (!response.success || !response.data) {
+      return client.send(
+        JSON.stringify({
+          type: "error/serverError",
+          payload: response.error,
+        })
+      );
     }
 
-    res.status(200).send(response);
+    const updatedTask = await getSingleTaskHandler(response.data);
+    if (updatedTask.data) {
+      client.send(
+        JSON.stringify({
+          type: "task/serverEditTask",
+          payload: updatedTask.data,
+        })
+      );
+    }
   } catch (error) {
-    console.log({ error });
-    res.status(500).send({ error: "Internal Server Error: get projects" });
+    console.error(error);
+
+    client.send(
+      JSON.stringify({
+        type: "error/serverError",
+        payload: "Internal Server Error",
+      })
+    );
   }
 };
 
-export const setTaskSocketController = async (data: Task) => {
-  const { taskId, projectId, containerId, value, count, position } = data;
+interface DeleteTaskRequestData {
+  projectId: ITask["projectId"];
+  taskId: ITask["taskId"];
+  userId: IUser["uuid"];
+}
 
+export const deleteTaskSocketController = async (
+  requestData: DeleteTaskRequestData,
+  client: WebSocket
+) => {
   try {
-    const reponse = await createTaskHandler(setTaskGateway, {
-      taskId,
-      projectId,
-      containerId,
-      value,
-      count,
-      position,
-    });
+    const response = await deleteTaskHandler(
+      requestData.projectId,
+      requestData.taskId,
+      requestData.userId
+    );
 
-    return reponse;
-  } catch (error) {
-    console.log({ error });
-  }
-};
-
-export const getTasksSocketController = async (projectId: string) => {
-  try {
-    const response = await getTasksHandler(getTasksGateway, projectId);
-
-    if (!response.success) {
-      return new Error("can't return tasks");
+    if (!response.success || !response.data) {
+      return client.send(
+        JSON.stringify({
+          type: "error/serverError",
+          payload: response.error,
+        })
+      );
     }
 
-    return response;
+    client.send(
+      JSON.stringify({
+        type: "task/serverDeleteTask",
+        payload: response.data,
+      })
+    );
   } catch (error) {
-    console.log({ error });
-  }
-};
+    console.error(error);
 
-export const getSingleTaskSocketController = async (taskId: string) => {
-  try {
-    const response = await getSingleTaskHandler(getSingleTaskGateway, taskId);
-
-    if (!response.success) {
-      return {
-        error: new Error("can't retrieve task"),
-        success: false,
-        data: null,
-      };
-    }
-
-    return response;
-  } catch (error) {
-    console.log({ error });
-  }
-};
-
-export const updateTaskPositionSocketController = async (data: {
-  taskId: string;
-  containerId: string;
-  position: bigint;
-}) => {
-  const { taskId, containerId, position } = data;
-
-  try {
-    const reponse = await updateTaskHandler(updateTaskPositionGateway, {
-      taskId,
-      containerId,
-      position,
-    });
-
-    return reponse;
-  } catch (error) {
-    console.log({ error });
-  }
-};
-
-export const deleteTaskSocketController = async (data: { taskId: string }) => {
-  const { taskId } = data;
-
-  try {
-    const reponse = await deleteTaskHandler(deleteTaskGateway, taskId);
-
-    return reponse;
-  } catch (error) {
-    console.log({ error });
+    client.send(
+      JSON.stringify({
+        type: "error/serverError",
+        payload: "Internal Server Error",
+      })
+    );
   }
 };

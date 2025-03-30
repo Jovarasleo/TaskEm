@@ -2,7 +2,7 @@ import Button from "@components/button/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "../../../../store/configureStore";
-import { selectProject } from "../../../../store/slices/projectReducer";
+import { selectProjectWithRelatedData } from "../../../../store/slices/projectReducer";
 import { Project } from "../../model/task";
 import styles from "./styles.module.scss";
 
@@ -32,7 +32,7 @@ function ProjectList() {
             }
             onClick={() => {
               navigate("/");
-              dispatch(selectProject(project));
+              dispatch(selectProjectWithRelatedData(project));
             }}
           >
             {project.projectName}

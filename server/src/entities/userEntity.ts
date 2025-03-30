@@ -18,10 +18,7 @@ class User {
     this.uuid = uuid;
   }
 
-  async validateUser(
-    generateId: () => string,
-    hashPassword: (password: string) => Promise<string>
-  ) {
+  async validateUser(generateId: () => string, hashPassword: (password: string) => Promise<string>) {
     let errors = [];
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -34,9 +31,7 @@ class User {
     }
     const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
     if (!this.password || !passwordRegex.test(this.password)) {
-      errors.push(
-        "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number"
-      );
+      errors.push("Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number");
     }
 
     if (errors.length > 0) {

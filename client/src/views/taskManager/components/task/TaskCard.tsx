@@ -7,7 +7,7 @@ import useContainerHeight from "../../hooks/useContainerHeight";
 import { Task } from "../../model/task";
 import Button from "../../../../components/button/Button";
 import { AppDispatch } from "../../../../store/configureStore";
-import { deleteTask, editTask } from "../../../../store/slices/taskReducer";
+import { clientDeleteTask, clientEditTask } from "../../../../store/slices/taskReducer";
 import styles from "./styles.module.scss";
 import { isMobile } from "../../../..";
 
@@ -77,13 +77,13 @@ function TaskCard({
   };
 
   const closeTextBoxes = () => {
-    dispatch(editTask({ ...task, value: input }));
+    dispatch(clientEditTask({ ...task, value: input }));
     setInputField(false);
   };
 
   const handleKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
     if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
-      dispatch(editTask({ ...task, value: input }));
+      dispatch(clientEditTask({ ...task, value: input }));
       setInputField(false);
     }
   };
@@ -99,10 +99,9 @@ function TaskCard({
 
   return (
     <li
-      role="taskItem"
       ref={taskItem}
       className={clsx(
-        styles.taskWrapper,
+        styles.task,
         dragging && currentlyDragging === task.taskId ? styles.draggable : ""
       )}
       tabIndex={0}
@@ -128,9 +127,8 @@ function TaskCard({
         {confirmDeletion ? (
           <>
             <Button
-              type="button"
               className={styles.confirmationButton}
-              onClick={() => dispatch(deleteTask([task]))}
+              onClick={() => dispatch(clientDeleteTask(task))}
             >
               <BsCheckLg />
             </Button>

@@ -1,9 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getProjects, putProject } from "../../db";
-import { Project } from "../../views/taskManager/model/task";
+import { getProjectsIdb } from "../../db";
+import { Project, TaskContainer } from "../../views/taskManager/model/task";
+import { clientDeleteProjectContainers, clientLoadLocalContainers } from "./containerReducer";
+import { clientDeleteProjectTasks, clientLoadLocalTasks } from "./taskReducer";
 import { RootState } from "../configureStore";
 
-interface InitialProjectState {
+interface ProjectStoreState {
   data: Project[] | [];
   selected: Project | null;
   status: "loading" | "succeeded" | "idle" | "failed";
@@ -23,27 +25,94 @@ const nextProject = (currentIndex: number, projectsCount: number) => {
   return currentIndex - 1;
 };
 
-export const updateProjectToIdb = createAsyncThunk(
-  "project/updateData",
+export const clientLoadLocalProjects = createAsyncThunk(
+  "project/clientLoadLocalProjects",
+  async (_, { dispatch }) => {
+    const projects = await getProjectsIdb();
 
-  async (projectId: string, { getState }) => {
-    const currentState = getState() as RootState;
-    const foundProject = currentState.project.data.find(
-      (project) => project.projectId === projectId
-    );
-    if (!foundProject) {
-      return;
+    if (projects.length > 0) {
+      dispatch(clientLoadLocalContainers(projects[0].projectId));
+      dispatch(clientLoadLocalTasks(projects[0].projectId));
     }
 
-    const data = await putProject(foundProject);
-    return data;
+    return projects;
   }
 );
 
-export const getProjectFromIdb = createAsyncThunk("project/getData", async () => {
-  const data = await getProjects();
-  return data as Project[];
+export const deleteProjectWithRelatedData = createAsyncThunk(
+  "project/deleteProject",
+  async (project: Project, { dispatch, getState }) => {
+    try {
+      const state = getState() as RootState;
+      const projects = state.project.data.filter((p) => p.projectId === project.projectId);
+
+      dispatch(clientDeleteProjectContainers(project));
+      dispatch(clientDeleteProjectTasks(project));
+      dispatch(clientDeleteProject(project));
+
+      // Select the next available project, if any
+      if (projects.length > 0) {
+        const nextProjectIndex = nextProject(
+          state.project.data.findIndex((p) => p.projectId === project.projectId),
+          state.project.data.length
+        );
+
+        dispatch(selectProjectWithRelatedData(state.project.data[nextProjectIndex]));
+      } else {
+        dispatch(clientSelectProject(null)); // No projects left
+      }
+    } catch (error) {
+      console.error("Failed to delete project:", error);
+      throw error;
+    }
+  }
+);
+
+export const selectProjectWithRelatedData = createAsyncThunk(
+  "project/clientLoadProjectsWithRelatedData",
+  async (project: Project, { dispatch }) => {
+    console.log({ nextProject: project });
+    dispatch(clientSelectProject(project));
+    dispatch(clientLoadLocalContainers(project.projectId));
+    dispatch(clientLoadLocalTasks(project.projectId));
+  }
+);
+
+const loadProjects = (state: ProjectStoreState, action: { payload: Project[]; type: string }) => ({
+  ...state,
+  data: action.payload,
 });
+
+const createProject = (
+  state: ProjectStoreState,
+  action: { payload: { project: Project; containers: TaskContainer[] }; type: string }
+) => ({
+  ...state,
+  data: [...state.data, action.payload.project],
+  selected: action.payload.project,
+});
+
+const selectProject = (state: ProjectStoreState, action: { payload: Project; type: string }) => ({
+  ...state,
+  selected: action.payload,
+});
+
+const editProject = (state: ProjectStoreState, action: { payload: Project; type: string }) => {
+  const index = state.data.findIndex((project) => project.projectId === action.payload.projectId);
+
+  return {
+    ...state,
+    data: [...state.data.slice(0, index), action.payload, ...state.data.slice(index + 1)],
+    selected: action.payload,
+  };
+};
+
+const deleteProject = (state: ProjectStoreState, action: { payload: Project; type: string }) => {
+  return {
+    ...state,
+    data: state.data.filter((project) => project.projectId !== action.payload.projectId),
+  };
+};
 
 const projectSlice = createSlice({
   name: "project",
@@ -53,47 +122,25 @@ const projectSlice = createSlice({
     loading: false,
     status: "idle",
     error: null,
-  } as InitialProjectState,
+  } as ProjectStoreState,
   reducers: {
-    syncProjects: (state) => {
-      return state;
-    },
-    setProjects: (state, action) => {
-      const projects = action.payload;
-      return { ...state, data: projects };
-    },
-    createProject: (state, action) => {
-      const newProject = action.payload;
-      return { ...state, data: [...state.data, newProject] };
-    },
-    selectProject: (state, action) => {
-      state.selected = action.payload;
-    },
-    renameProject: (state, action) => {
-      const editableProject = state.data.find(
-        (project) => project.projectId === action.payload.projectId
-      );
-      if (editableProject) {
-        editableProject.projectName = action.payload.projectName;
-        state.selected = editableProject;
-      }
-    },
-    deleteProject: (state, action) => {
-      const currentProjectIndex = state.data.findIndex(
-        (project) => project.projectId === action.payload.projectId
-      );
-
-      state.data = state.data.filter((project) => project.projectId !== action.payload.projectId);
-      state.selected = state.data[nextProject(currentProjectIndex, state.data.length)] ?? null;
-    },
+    clientLoadProjects: (state, action) => loadProjects(state, action),
+    clientSelectProject: (state, action) => selectProject(state, action),
+    serverLoadProjects: (state, action) => loadProjects(state, action),
+    clientCreateProject: (state, action) => createProject(state, action),
+    serverCreateProject: (state, action) => createProject(state, action),
+    clientEditProject: (state, action) => editProject(state, action),
+    serverEditProject: (state, action) => editProject(state, action),
+    clientDeleteProject: (state, action) => deleteProject(state, action),
+    serverDeleteProject: (state, action) => deleteProject(state, action),
   },
   extraReducers(builder) {
     builder
-      .addCase(getProjectFromIdb.pending, (state) => {
+      .addCase(clientLoadLocalProjects.pending, (state) => {
         state.status = "loading";
         state.loading = true;
       })
-      .addCase(getProjectFromIdb.fulfilled, (state, action) => {
+      .addCase(clientLoadLocalProjects.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.data = action.payload;
         state.loading = false;
@@ -101,7 +148,7 @@ const projectSlice = createSlice({
           state.selected = action.payload[0];
         }
       })
-      .addCase(getProjectFromIdb.rejected, (state, action) => {
+      .addCase(clientLoadLocalProjects.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message ?? "";
       });
@@ -109,12 +156,15 @@ const projectSlice = createSlice({
 });
 
 export const {
-  setProjects,
-  createProject,
-  selectProject,
-  renameProject,
-  deleteProject,
-  syncProjects,
+  clientLoadProjects,
+  serverLoadProjects,
+  clientCreateProject,
+  serverCreateProject,
+  clientDeleteProject,
+  serverDeleteProject,
+  clientEditProject,
+  serverEditProject,
+  clientSelectProject,
 } = projectSlice.actions;
 
 export default projectSlice.reducer;

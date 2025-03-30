@@ -1,84 +1,221 @@
-import {
-  getUserProjectsGateway,
-  setProjectGateway,
-  deleteProjectGateway,
-} from "../gateways/project.gateway.js";
-import { Request, Response } from "express";
+import { WebSocket } from "ws";
 import {
   createProjectHandler,
   deleteProjectHandler,
-  getProjectsHandler,
-} from "../handlers/projectHandlers.js";
-import { ISession } from "../server.js";
-import Project from "../entities/projectEntity.js";
+  getUserProjectsHandler,
+  updateProjectHandler,
+} from "../domainHandlers/projectHandlers.js";
+import { IContainer } from "../entities/containerEntity.js";
+import { ITask } from "../entities/taskEntity.js";
+import { accessLayer } from "../respositories/accessLayer.js";
+import { IProject } from "../entities/projectEntity.js";
+import { IUser } from "../entities/userEntity.js";
+import { createContainerHandler } from "../domainHandlers/containerHandlers.js";
 
-export const getProjects = async (req: Request, res: Response) => {
-  const { userId } = req.session as ISession;
+interface createProjectRequestData {
+  project: {
+    projectId: string;
+    projectName: string;
+  };
+  containers: {
+    containerId: IContainer["containerId"];
+    containerName: IContainer["containerName"];
+    position: IContainer["position"];
+    createdAt: IContainer["createdAt"];
+    modifiedAt: IContainer["modifiedAt"];
+    projectId: IContainer["projectId"];
+  }[];
+  userId: IUser["uuid"];
+}
 
-  try {
-    const response = await getProjectsHandler(getUserProjectsGateway, userId);
-    res.status(200).send(response);
-  } catch (error) {
-    res.status(500).send({ error: "Internal Server Error: get projects" });
-  }
-};
-
-export const setProject = async (req: Request, res: Response) => {
-  const { projectId, projectName } = req.body;
-  const { userId } = req.session as ISession;
-
-  try {
-    const response = await createProjectHandler(setProjectGateway, {
-      projectId,
-      projectName,
-      userId,
-    });
-    res.status(200).send(response);
-  } catch (error) {
-    console.log({ error });
-    res.status(500).send({ error: "Internal Server Error: get projects" });
-  }
-};
-
-export const setProjectSocketController = async (
-  data: Project,
-  userId: string
-) => {
-  const { projectId, projectName } = data;
-
-  try {
-    const response = await createProjectHandler(setProjectGateway, {
-      projectId,
-      projectName,
-      userId,
-    });
-    return response;
-  } catch (error) {
-    console.log({ error });
-  }
-};
-
-export const getProjectsSocketController = async (userId: string) => {
-  try {
-    const response = await getProjectsHandler(getUserProjectsGateway, userId);
-    return response;
-  } catch (error) {
-    console.log({ error });
-  }
-};
-
-export const deleteProjectSocketController = async (data: {
+interface deleteProjectRequestData {
+  userId: string;
   projectId: string;
-}) => {
-  const { projectId } = data;
+}
+
+export async function getUserProjectsSocketController(userId: string, client: WebSocket) {
   try {
-    const response = await deleteProjectHandler(
-      deleteProjectGateway,
-      projectId
+    const response = await getUserProjectsHandler(userId);
+
+    if (!response.success) {
+      client.send(
+        JSON.stringify({
+          type: "error/serverError",
+          payload: response.error,
+        })
+      );
+    }
+
+    client.send(
+      JSON.stringify({
+        type: "project/serverLoadProjects",
+        payload: response.data,
+      })
+    );
+  } catch (error) {
+    console.error(error);
+
+    client.send(
+      JSON.stringify({
+        type: "error/serverError",
+        payload: "Internal Server Error",
+      })
+    );
+  }
+}
+
+export async function deleteProjectSocketController(requestData: deleteProjectRequestData, client: WebSocket) {
+  try {
+    const response = await deleteProjectHandler(requestData.projectId, requestData.userId);
+
+    if (!response.success) {
+      return client.send(
+        JSON.stringify({
+          type: "error/serverError",
+          payload: response.error,
+        })
+      );
+    }
+  } catch (error) {
+    console.error(error);
+
+    client.send(
+      JSON.stringify({
+        type: "error/serverError",
+        payload: "Internal Server Error",
+      })
+    );
+  }
+}
+
+export async function createProjectSocketController(requestData: createProjectRequestData, client: WebSocket) {
+  try {
+    const projectResponse = await createProjectHandler(requestData.project.projectId, requestData.project.projectName, requestData.userId);
+
+    for (const container of requestData.containers) {
+      const containerHandlerResponse = await createContainerHandler(
+        container.containerId,
+        container.containerName,
+        container.position,
+        container.createdAt,
+        container.modifiedAt,
+        container.projectId,
+        requestData.userId
+      );
+
+      if (!containerHandlerResponse.success) {
+        return client.send(
+          JSON.stringify({
+            type: "error/serverError",
+            payload: projectResponse.error,
+          })
+        );
+      }
+    }
+
+    if (!projectResponse.success) {
+      return client.send(
+        JSON.stringify({
+          type: "error/serverError",
+          payload: projectResponse.error,
+        })
+      );
+    }
+  } catch (error) {
+    console.error(error);
+
+    client.send(
+      JSON.stringify({
+        type: "error/serverError",
+        payload: "Internal Server Error",
+      })
+    );
+  }
+}
+
+interface UpdateProjectRequestData {
+  projectId: string;
+  projectName: string;
+  userId: string;
+}
+
+export async function updateProjectController(requestData: UpdateProjectRequestData, client: WebSocket) {
+  try {
+    const response = await updateProjectHandler(requestData.projectId, requestData.projectName, requestData.userId);
+
+    if (!response.success) {
+      return client.send(
+        JSON.stringify({
+          type: "error/serverError",
+          payload: response.error,
+        })
+      );
+    }
+  } catch (error) {
+    console.error(error);
+
+    client.send(
+      JSON.stringify({
+        type: "error/serverError",
+        payload: "Internal Server Error",
+      })
+    );
+  }
+}
+
+export async function syncUserProjectData(userId: string, client: WebSocket) {
+  try {
+    const response = await getUserProjectsHandler(userId);
+
+    if (!response.success) {
+      client.send(
+        JSON.stringify({
+          type: "error/serverError",
+          payload: response.error,
+        })
+      );
+    }
+
+    const userProjects: IProject[] = response.data;
+    const userContainers: IContainer[] = [];
+    const userTasks: ITask[] = [];
+
+    for (const project of userProjects) {
+      const containerResponse = await accessLayer.container.getProjectContainers(project.projectId);
+      const taskResponse = await accessLayer.task.getProjectTasks(project.projectId);
+
+      userContainers.push(...containerResponse);
+      userTasks.push(...taskResponse);
+    }
+
+    client.send(
+      JSON.stringify({
+        type: "project/serverLoadProjects",
+        payload: userProjects,
+      })
     );
 
-    return response;
+    client.send(
+      JSON.stringify({
+        type: "container/serverLoadContainers",
+        payload: userContainers,
+      })
+    );
+
+    client.send(
+      JSON.stringify({
+        type: "task/serverLoadTasks",
+        payload: userTasks,
+      })
+    );
   } catch (error) {
-    console.log({ error });
+    console.error(error);
+
+    client.send(
+      JSON.stringify({
+        type: "error/serverError",
+        payload: "Internal Server Error",
+      })
+    );
   }
-};
+}

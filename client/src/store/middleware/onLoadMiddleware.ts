@@ -1,18 +1,16 @@
-import { Action, Dispatch, MiddlewareAPI } from "redux";
-import { getDataFromIndexedDB } from "../slices/taskReducer";
-import { getProjectFromIdb, selectProject } from "../slices/projectReducer";
-import { getContainersFromIdb } from "../slices/containerReducer";
+import { ThunkDispatch } from "@reduxjs/toolkit";
+import { Action, AnyAction, Dispatch, MiddlewareAPI } from "redux";
+import { clientLoadLocalProjects } from "../slices/projectReducer";
 
 let firstload = true;
 
+type AppDispatch = ThunkDispatch<Dispatch, unknown, AnyAction>;
+
 export const onLoadMiddleware =
-  (store: MiddlewareAPI<any>) => (next: Dispatch) => (action: Action) => {
+  (store: MiddlewareAPI<AppDispatch>) => (next: Dispatch) => (action: Action) => {
     if (firstload) {
       firstload = false;
-      store.dispatch(getDataFromIndexedDB());
-      store.dispatch(getProjectFromIdb());
-      store.dispatch(getContainersFromIdb());
-      store.dispatch(selectProject(store.getState().project.data[0]));
+      store.dispatch(clientLoadLocalProjects());
     }
 
     next(action);

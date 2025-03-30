@@ -13,7 +13,7 @@ const ProjectTitle = ({ project, setName }: Props) => {
   const currentProjectName = project.projectName;
   const outsideClickRef = useRef<HTMLElement | null>(null);
 
-  const [projectName, setProjectName] = useState(currentProjectName);
+  const [projectName, setProjectName] = useState("");
   const [error, setError] = useState<null | string>("");
   const [editName, setEditName] = useState(false);
 
@@ -36,7 +36,7 @@ const ProjectTitle = ({ project, setName }: Props) => {
 
     setEditName(false);
     setName(trimmedName);
-    setProjectName(trimmedName);
+    setProjectName("");
     setError(null);
   };
 
@@ -59,6 +59,7 @@ const ProjectTitle = ({ project, setName }: Props) => {
             className={styles.editButton}
             onClick={() => {
               setEditName(true);
+              setProjectName(currentProjectName);
             }}
           />
         </h2>

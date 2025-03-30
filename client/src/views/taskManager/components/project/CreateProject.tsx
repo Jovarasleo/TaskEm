@@ -1,36 +1,44 @@
 import Button from "@components/button/Button";
+import clsx from "clsx";
 import { useState } from "react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../../store/configureStore";
-import { createContainer } from "../../../../store/slices/containerReducer";
-import { createProject } from "../../../../store/slices/projectReducer";
+import { clientCreateProject } from "../../../../store/slices/projectReducer";
+import { clientLoadTasks } from "../../../../store/slices/taskReducer";
 import { uid } from "../../../../util/uid";
 import { defaultContainers } from "../../model/containers";
 import styles from "./styles.module.scss";
-import clsx from "clsx";
+import { clientLoadContainers } from "../../../../store/slices/containerReducer";
 
 function CreateProject() {
   const dispatch: AppDispatch = useDispatch();
   const [projectName, setProjectName] = useState("");
   const [addNew, setAddNew] = useState(false);
 
-  const handleProjectName = (value: string) => {
-    setProjectName(value);
-  };
-
   const setName = (newProjectName: string) => {
     const projectId = uid();
-    const trimmedProjectName = newProjectName.trim();
+    const projectName = newProjectName.trim();
 
-    if (!trimmedProjectName.length) {
+    if (!projectName.length) {
       return;
     }
 
-    dispatch(createProject({ projectId, projectName: trimmedProjectName }));
-    dispatch(createContainer(defaultContainers(projectId)));
+    const containers = defaultContainers(projectId);
 
-    handleProjectName("");
+    dispatch(
+      clientCreateProject({
+        project: {
+          projectId,
+          projectName,
+        },
+        containers,
+      })
+    );
+    dispatch(clientLoadTasks([]));
+    dispatch(clientLoadContainers(containers));
+
+    setProjectName("");
     setAddNew(false);
   };
 
@@ -44,7 +52,7 @@ function CreateProject() {
           <>
             <input
               type="text"
-              onChange={(e) => handleProjectName(e.target.value)}
+              onChange={(e) => setProjectName(e.target.value)}
               onClick={(e) => e.stopPropagation()}
               value={projectName}
             />

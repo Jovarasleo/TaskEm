@@ -1,21 +1,20 @@
-import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { NextFunction, Request, Response } from "express";
+import { TokenData } from "../../server";
 
-const verifyToken = (token: string) => {
-  return jwt.verify(token, process.env.TOKEN_SECRET || "");
-};
+const verifyToken = (token: string) => jwt.verify(token, process.env.TOKEN_SECRET || "") as TokenData;
 
-export const auth = (req: Request, res: Response, next: NextFunction) => {
-  if (
-    req.method === "POST" &&
-    (req.originalUrl === "/auth/login" || req.originalUrl === "/auth")
-  ) {
+export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  if (req.method === "POST" && (req.originalUrl === "/auth/login" || req.originalUrl === "/auth")) {
     return next();
   }
 
   const token = req.cookies.token;
+
   try {
     const verifiedUser = verifyToken(token);
+    req.user = verifiedUser;
+
     if (verifiedUser) {
       return next();
     }
@@ -23,17 +22,10 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
     console.log("Invalid token!");
   }
 
-  return res
-    .status(401)
-    .send({ success: false, error: "Please provide authorization header" });
+  return res.status(401).send({ success: false, error: "Please provide authorization header" });
 };
 
-export const authorizeSocket = (
-  req: Request,
-  res: Response,
-  socket: WebSocket,
-  next: NextFunction
-) => {
+export const authenticationSocketMiddleware = (req: Request, socket: WebSocket, next: NextFunction) => {
   const token = req.cookies.token;
   try {
     const verifiedUser = verifyToken(token);

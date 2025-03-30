@@ -2,16 +2,85 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { TaskContainer } from "../../views/taskManager/model/task";
 import { getContainersIdb } from "../../db";
 
-interface InitialContainerState {
-  data: TaskContainer[] | [];
+interface TaskContainerStoreState {
+  data: TaskContainer[];
   loading: boolean;
   error: null | string;
 }
 
-export const getContainersFromIdb = createAsyncThunk("container/getData", async () => {
-  const data = await getContainersIdb();
-  return data as TaskContainer[];
+export const clientLoadLocalContainers = createAsyncThunk(
+  "container/clientLoadLocalContainers",
+  async (projectId: string) => await getContainersIdb(projectId)
+);
+
+const loadContainers = (
+  state: TaskContainerStoreState,
+  action: {
+    payload: TaskContainer[];
+    type: string;
+  }
+) => ({
+  ...state,
+  data: action.payload,
 });
+
+const createContainer = (
+  state: TaskContainerStoreState,
+  action: {
+    payload: TaskContainer;
+    type: string;
+  }
+) => {
+  const newContainers = state.data.filter(
+    (container) => container.projectId === action.payload.projectId
+  );
+
+  return { ...state, data: [...newContainers, action.payload] };
+};
+
+const deleteContainer = (
+  state: TaskContainerStoreState,
+  action: {
+    payload: TaskContainer;
+    type: string;
+  }
+) => {
+  const filteredData = state.data.filter((container) => {
+    action.payload.containerId !== container.containerId;
+  });
+
+  return {
+    ...state,
+    data: filteredData,
+  };
+};
+
+const deleteProjectContainers = (
+  state: TaskContainerStoreState,
+  action: {
+    payload: { projectId: string };
+    type: string;
+  }
+) => {
+  const filteredData = state.data.filter((container) => {
+    container.projectId === action.payload.projectId;
+  });
+
+  return {
+    ...state,
+    data: filteredData,
+  };
+};
+
+const createProjectContainers = (
+  state: TaskContainerStoreState,
+  action: {
+    payload: TaskContainer[];
+    type: string;
+  }
+) => {
+  return { ...state, data: action.payload };
+};
 
 const containerReducer = createSlice({
   name: "container",
@@ -19,57 +88,45 @@ const containerReducer = createSlice({
     data: [],
     loading: false,
     error: "",
-  } as InitialContainerState,
+  } as TaskContainerStoreState,
   reducers: {
-    createContainer: (state, action) => {
-      return {
-        ...state,
-        data: [
-          ...state.data,
-          ...action.payload.sort((a: TaskContainer, b: TaskContainer) => a.position - b.position),
-        ],
-      };
-    },
-
-    deleteContainers: (state, action) => {
-      const filteredData = state.data.filter((container) => {
-        return action.payload.some(
-          (projectContainer: TaskContainer) =>
-            projectContainer.containerId !== container.containerId
-        );
-      });
-
-      return {
-        ...state,
-        data: filteredData,
-      };
-    },
-
-    getContainers: (state, action) => {
-      return {
-        ...state,
-        data: action.payload.sort((a: TaskContainer, b: TaskContainer) => a.position - b.position),
-      };
-    },
+    clientCreateProjectContainers: (state, action) => createProjectContainers(state, action),
+    clientLoadContainers: (state, action) => loadContainers(state, action),
+    serverLoadContainers: (state, action) => loadContainers(state, action),
+    clientCreateContainer: (state, action) => createContainer(state, action),
+    serverCreateContainer: (state, action) => createContainer(state, action),
+    clientDeleteContainer: (state, action) => deleteContainer(state, action),
+    serverDeleteContainer: (state, action) => deleteContainer(state, action),
+    clientDeleteProjectContainers: (state, action) => deleteProjectContainers(state, action),
+    serverDeleteProjectContainers: (state, action) => deleteProjectContainers(state, action),
   },
   extraReducers(builder) {
     builder
-      .addCase(getContainersFromIdb.pending, (state) => {
+      .addCase(clientLoadLocalContainers.pending, (state) => {
         state.loading = true;
       })
-      .addCase(getContainersFromIdb.fulfilled, (state, action) => {
+      .addCase(clientLoadLocalContainers.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload.sort(
           (a: TaskContainer, b: TaskContainer) => a.position - b.position
         );
       })
-      .addCase(getContainersFromIdb.rejected, (state, action) => {
+      .addCase(clientLoadLocalContainers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message ?? "";
       });
   },
 });
 
-export const { createContainer, deleteContainers, getContainers } = containerReducer.actions;
+export const {
+  clientLoadContainers,
+  serverLoadContainers,
+  clientCreateContainer,
+  serverCreateContainer,
+  clientDeleteContainer,
+  serverDeleteContainer,
+  clientDeleteProjectContainers,
+  serverDeleteProjectContainers,
+} = containerReducer.actions;
 
 export default containerReducer.reducer;

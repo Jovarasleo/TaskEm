@@ -2,21 +2,15 @@ import Dropdown from "@components/dropdown/Dropdown";
 
 interface Props {
   deleteProject: () => void;
-  deleteContainers: () => void;
-  deleteTask: () => void;
 }
 
-const ProjectMenu = ({ deleteProject, deleteContainers, deleteTask }: Props) => {
+const ProjectMenu = ({ deleteProject }: Props) => {
   return (
     <Dropdown
       options={[
         {
           title: "delete",
-          onClick: () => {
-            deleteTask();
-            deleteContainers();
-            deleteProject();
-          },
+          onClick: deleteProject,
         },
       ]}
     />

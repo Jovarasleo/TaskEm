@@ -1,11 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getTasks } from "../../db";
+import { getTasksIdb } from "../../db";
 import { Task } from "../../views/taskManager/model/task";
 
-export const getDataFromIndexedDB = createAsyncThunk("task/getData", async () => {
-  const data = (await getTasks()) as Task[];
-  return data;
-});
+export const clientLoadLocalTasks = createAsyncThunk(
+  "task/clientLoadLocalTasks",
+  async (projectId: string) => await getTasksIdb(projectId)
+);
 
 const filteredData = (tasks: Task[]) => {
   return tasks.sort((a, b) => {
@@ -23,10 +23,110 @@ const filteredData = (tasks: Task[]) => {
 };
 
 interface InitialTaskState {
-  data: Task[] | [];
+  data: Task[];
   status: "loading" | "succeeded" | "idle" | "failed";
   error: null | string;
 }
+
+const moveTask = (
+  state: InitialTaskState,
+  action: {
+    payload: Task;
+    type: string;
+  }
+) => {
+  const newTask = action.payload;
+  if (!newTask) {
+    return state;
+  }
+
+  const newTasksArray = state.data.filter((task) => task.taskId !== newTask.taskId);
+
+  return {
+    ...state,
+    data: [...newTasksArray, newTask].sort((a, b) => a.position - b.position),
+  };
+};
+
+const createTask = (
+  state: InitialTaskState,
+  action: {
+    payload: Task;
+    type: string;
+  }
+) => {
+  const { projectId, containerId, value, taskId, count, position } = action.payload;
+
+  return {
+    ...state,
+    data: [
+      ...state.data,
+      {
+        value,
+        taskId,
+        projectId,
+        containerId,
+        position,
+        count,
+      },
+    ].sort((a, b) => a.position - b.position),
+  };
+};
+
+const deleteTask = (
+  state: InitialTaskState,
+  action: {
+    payload: Task;
+    type: string;
+  }
+) => {
+  const filteredData = state.data.filter((task) => task.taskId !== action.payload.taskId);
+
+  return {
+    ...state,
+    data: filteredData,
+  };
+};
+
+const deleteProjectTasks = (
+  state: InitialTaskState,
+  action: {
+    payload: { projectId: string };
+    type: string;
+  }
+) => {
+  const filteredData = state.data.filter((task) => {
+    action.payload.projectId !== task.projectId;
+  });
+
+  return {
+    ...state,
+    data: filteredData,
+  };
+};
+
+const editTask = (state: InitialTaskState, action: { payload: Task; type: string }) => {
+  const { taskId, value } = action.payload;
+  const newState = state.data.map((task) => {
+    if (task.taskId === taskId) {
+      return { ...task, value };
+    }
+
+    return task;
+  });
+
+  return {
+    ...state,
+    data: newState,
+  };
+};
+
+const loadTasks = (state: InitialTaskState, action: { payload: Task[]; type: string }) => {
+  return {
+    ...state,
+    data: action.payload,
+  };
+};
 
 const taskSlice = createSlice({
   name: "task",
@@ -36,103 +136,47 @@ const taskSlice = createSlice({
     error: "",
   } as InitialTaskState,
   reducers: {
-    createTask: (state, action) => {
-      const { projectId, containerId, value, taskId, count, position } = action.payload;
-
-      return {
-        ...state,
-        data: [
-          ...state.data,
-          {
-            value,
-            taskId,
-            projectId,
-            containerId,
-            position,
-            count,
-          },
-        ].sort((a, b) => a.position - b.position),
-      };
-    },
-
-    deleteTask: (state, action) => {
-      const filteredData = state.data.filter((task) => {
-        return action.payload.some((currentTasks: Task) => currentTasks.taskId !== task.taskId);
-      });
-
-      return {
-        ...state,
-        data: filteredData,
-      };
-    },
-
-    editTask: (state, action) => {
-      const { taskId, value } = action.payload;
-      const newState = state.data.map((task) => {
-        if (task.taskId === taskId) {
-          return { ...task, value };
-        }
-
-        return task;
-      });
-
-      return {
-        ...state,
-        data: newState,
-      };
-    },
-
-    moveTask: (state, action) => {
-      const newTask = action.payload;
-      if (!newTask) {
-        return state;
-      }
-
-      const newTasksArray = state.data.filter((task) => task.taskId !== newTask.taskId);
-
-      return {
-        ...state,
-        data: [...newTasksArray, newTask].sort((a, b) => a.position - b.position),
-      };
-    },
-
-    moveSocketTask: (state, action) => {
-      const newTask = action.payload;
-      if (!newTask) {
-        return state;
-      }
-
-      const newTasksArray = state.data.filter((task) => task.taskId !== newTask.taskId);
-
-      return {
-        ...state,
-        data: [...newTasksArray, newTask].sort((a, b) => a.position - b.position),
-      };
-    },
-
-    getSocketTasks: (state, action) => {
-      return {
-        ...state,
-        data: [...action.payload.data].sort((a, b) => a.position - b.position),
-      };
-    },
+    clientLoadTasks: (state, action) => loadTasks(state, action),
+    serverLoadTasks: (state, action) => loadTasks(state, action),
+    clientCreateTask: (state, action) => createTask(state, action),
+    serverCreateTask: (state, action) => createTask(state, action),
+    clientDeleteTask: (state, action) => deleteTask(state, action),
+    serverDeleteTask: (state, action) => deleteTask(state, action),
+    clientDeleteProjectTasks: (state, action) => deleteProjectTasks(state, action),
+    serverDeleteProjectTasks: (state, action) => deleteProjectTasks(state, action),
+    clientEditTask: (state, action) => editTask(state, action),
+    serverEditTask: (state, action) => editTask(state, action),
+    clientMoveTask: (state, action) => moveTask(state, action),
+    serverMoveTask: (state, action) => moveTask(state, action),
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getDataFromIndexedDB.pending, (state) => {
+      .addCase(clientLoadLocalTasks.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(getDataFromIndexedDB.fulfilled, (state, action) => {
+      .addCase(clientLoadLocalTasks.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.data = filteredData(action.payload);
       })
-      .addCase(getDataFromIndexedDB.rejected, (state, action) => {
+      .addCase(clientLoadLocalTasks.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message ?? "";
       });
   },
 });
 
-export const { createTask, deleteTask, editTask, moveTask, getSocketTasks, moveSocketTask } =
-  taskSlice.actions;
+export const {
+  clientLoadTasks,
+  serverLoadTasks,
+  clientCreateTask,
+  serverCreateTask,
+  clientDeleteTask,
+  serverDeleteTask,
+  clientDeleteProjectTasks,
+  serverDeleteProjectTasks,
+  clientEditTask,
+  serverEditTask,
+  clientMoveTask,
+  serverMoveTask,
+} = taskSlice.actions;
 export default taskSlice.reducer;
