@@ -3,7 +3,7 @@ import { Project, Task, TaskContainer } from "./views/taskManager/model/task";
 
 let request: IDBOpenDBRequest;
 let db: IDBDatabase;
-const version = 1;
+const version = 2;
 const dbName = "TaskEm";
 
 export enum Stores {
@@ -20,57 +20,85 @@ export interface EventData {
 
 export const initDB = (): Promise<boolean> => {
   return new Promise((resolve) => {
-    // open the connection
-
     if (db) {
-      // If the database connection already exists, resolve immediately
       return resolve(true);
     }
 
-    request = indexedDB.open(dbName, version);
+    const checkVersionRequest = indexedDB.open(dbName);
 
-    request.onupgradeneeded = (event) => {
-      db = (event.target as IDBRequest).result;
+    checkVersionRequest.onsuccess = (event) => {
+      const existingDB = (event.target as IDBOpenDBRequest).result;
+      const existingVersion = existingDB.version;
+      existingDB.close(); // Close the old connection
 
-      // if the data object store doesn't exist, create it
-      if (!db.objectStoreNames.contains(Stores.Projects)) {
-        db.createObjectStore(Stores.Projects, {
-          autoIncrement: false,
-        });
-      }
-
-      if (!db.objectStoreNames.contains(Stores.Tasks)) {
-        const store = db.createObjectStore(Stores.Tasks, {
-          autoIncrement: false,
-        });
-        store.createIndex("projectIdIndex", "projectId", { unique: false });
-      }
-
-      if (!db.objectStoreNames.contains(Stores.Containers)) {
-        const store = db.createObjectStore(Stores.Containers, {
-          autoIncrement: false,
-        });
-        store.createIndex("projectIdIndex", "projectId", { unique: false });
-      }
-
-      if (!db.objectStoreNames.contains(Stores.Events)) {
-        db.createObjectStore(Stores.Events, {
-          autoIncrement: true,
-        });
+      if (existingVersion !== version) {
+        console.log(
+          `Upgrading database from version ${existingVersion} to ${version}. Resetting DB...`
+        );
+        resetDatabase(resolve);
+      } else {
+        console.log("Database is up-to-date.");
+        openDatabase(resolve);
       }
     };
 
-    request.onsuccess = (event) => {
-      db = (event.target as IDBOpenDBRequest).result;
-      //   version = db.version;
-      console.log("request.onsuccess - initDB", version);
-      resolve(true);
-    };
-
-    request.onerror = () => {
+    checkVersionRequest.onerror = () => {
+      console.error("Error checking database version.");
       resolve(false);
     };
   });
+};
+
+const resetDatabase = (resolve: (value: boolean) => void) => {
+  const deleteRequest = indexedDB.deleteDatabase(dbName);
+
+  deleteRequest.onsuccess = () => {
+    console.log("Database deleted successfully.");
+    openDatabase(resolve);
+  };
+
+  deleteRequest.onerror = () => {
+    console.error("Error deleting database.");
+    resolve(false);
+  };
+};
+
+const openDatabase = (resolve: (value: boolean) => void) => {
+  request = indexedDB.open(dbName, version);
+
+  request.onupgradeneeded = (event) => {
+    const db = (event.target as IDBRequest).result;
+    console.log(`Setting up database schema for version ${version}`);
+
+    if (!db.objectStoreNames.contains(Stores.Projects)) {
+      db.createObjectStore(Stores.Projects, { autoIncrement: false });
+    }
+
+    if (!db.objectStoreNames.contains(Stores.Tasks)) {
+      const store = db.createObjectStore(Stores.Tasks, { autoIncrement: false });
+      store.createIndex("projectIdIndex", "projectId", { unique: false });
+    }
+
+    if (!db.objectStoreNames.contains(Stores.Containers)) {
+      const store = db.createObjectStore(Stores.Containers, { autoIncrement: false });
+      store.createIndex("projectIdIndex", "projectId", { unique: false });
+    }
+
+    if (!db.objectStoreNames.contains(Stores.Events)) {
+      db.createObjectStore(Stores.Events, { autoIncrement: true });
+    }
+  };
+
+  request.onsuccess = (event) => {
+    db = (event.target as IDBOpenDBRequest).result;
+    console.log("Database initialized with version:", db.version);
+    resolve(true);
+  };
+
+  request.onerror = () => {
+    console.error("Database initialization failed.");
+    resolve(false);
+  };
 };
 
 export async function setProject(project: Project) {
