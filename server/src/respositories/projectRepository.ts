@@ -32,10 +32,18 @@ class ProjectRepository {
     const authorizationValues = [projectId, ownerId];
     const authorizeAccess = "INSERT INTO projectaccess (accessibleProjectId, userId) VALUES (?, ?);";
 
-    const [project] = await db.execute<RowDataPacket[]>(createProject, projectValues);
-    const [access] = await db.execute<RowDataPacket[]>(authorizeAccess, authorizationValues);
+    const [project] = await db.execute(createProject, projectValues);
+    const [access] = await db.execute(authorizeAccess, authorizationValues);
 
     return project && access ? projectId : null;
+  }
+
+  async updateProject(projectId: IProject["projectId"], projectName: IProject["projectName"]): Promise<IProject["projectId"] | null> {
+    const values = [projectName, projectId];
+    const sql = "UPDATE projects SET projectName = ? WHERE projectId = ?";
+
+    const [result] = await db.execute(sql, values);
+    return result ? projectId : null;
   }
 
   async deleteProject(projectId: IProject["projectId"]): Promise<IProject["projectId"] | null> {
@@ -45,7 +53,7 @@ class ProjectRepository {
     const deleteProject = "DELETE FROM projects WHERE projectId = ?";
 
     await db.execute(deleteProjectAccess, values);
-    const [result] = await db.execute<RowDataPacket[]>(deleteProject, values);
+    const [result] = await db.execute(deleteProject, values);
 
     return result ? projectId : null;
   }

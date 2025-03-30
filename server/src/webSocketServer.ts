@@ -2,7 +2,12 @@ import http from "http";
 import jwt from "jsonwebtoken";
 import { WebSocketServer } from "ws";
 import { createContainerSocketController } from "./controllers/container.controller.js";
-import { createProjectSocketController, deleteProjectSocketController, syncUserProjectData } from "./controllers/project.controller.js";
+import {
+  createProjectSocketController,
+  deleteProjectSocketController,
+  syncUserProjectData,
+  updateProjectController,
+} from "./controllers/project.controller.js";
 import {
   createTaskSocketController,
   deleteTaskSocketController,
@@ -15,17 +20,6 @@ import { parse } from "cookie";
 type WebSocketRequest = http.IncomingMessage & {
   user: TokenData;
 };
-
-type EventType = "project" | "container" | "task";
-
-interface Event {
-  payload: {};
-  value: {
-    type: EventType;
-    payload: any;
-    id: string;
-  };
-}
 
 const wss = new WebSocketServer({ clientTracking: true, noServer: true });
 
@@ -59,12 +53,11 @@ export const initializeWebSocketServer = (server: http.Server<typeof http.Incomi
 //TODO: implement emitting events to multiple clients
 
 let lastPromise = Promise.resolve();
-
 wss.on("connection", async function connection(client, request: WebSocketRequest) {
   const userId = request.user.id;
 
   client.on("error", console.error);
-  client.on("open", async function syncData() {
+  client.on("open", () => {
     client.send("syncData");
   });
 
@@ -83,7 +76,7 @@ wss.on("connection", async function connection(client, request: WebSocketRequest
           await deleteProjectSocketController({ ...payload, userId }, client);
           return;
         case "project/clientEditProject":
-          // TODO: implement project rename
+          await updateProjectController({ ...payload, userId }, client);
           return;
         case "container/clientCreateContainer":
           await createContainerSocketController({ ...payload, userId }, client);

@@ -32,6 +32,26 @@ export async function getUserProjectsHandler(userId: IUser["uuid"]) {
   };
 }
 
+export async function updateProjectHandler(projectId: IProject["projectId"], projectName: IProject["projectName"], userId: IUser["uuid"]) {
+  const hasAccess = await accessLayer.project.hasAccessToProject(userId, projectId);
+
+  if (!hasAccess) {
+    return {
+      success: false,
+      error: "User has no access to the project",
+      data: null,
+    };
+  }
+
+  await accessLayer.project.updateProject(projectId, projectName);
+
+  return {
+    success: true,
+    error: null,
+    data: projectId,
+  };
+}
+
 export async function deleteProjectHandler(projectId: IProject["projectId"], userId: IUser["uuid"]) {
   const hasAccess = await accessLayer.project.hasAccessToProject(userId, projectId);
 

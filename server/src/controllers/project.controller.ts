@@ -1,5 +1,10 @@
 import { WebSocket } from "ws";
-import { createProjectHandler, deleteProjectHandler, getUserProjectsHandler } from "../domainHandlers/projectHandlers.js";
+import {
+  createProjectHandler,
+  deleteProjectHandler,
+  getUserProjectsHandler,
+  updateProjectHandler,
+} from "../domainHandlers/projectHandlers.js";
 import { IContainer } from "../entities/containerEntity.js";
 import { ITask } from "../entities/taskEntity.js";
 import { accessLayer } from "../respositories/accessLayer.js";
@@ -113,6 +118,36 @@ export async function createProjectSocketController(requestData: createProjectRe
         JSON.stringify({
           type: "error/serverError",
           payload: projectResponse.error,
+        })
+      );
+    }
+  } catch (error) {
+    console.error(error);
+
+    client.send(
+      JSON.stringify({
+        type: "error/serverError",
+        payload: "Internal Server Error",
+      })
+    );
+  }
+}
+
+interface UpdateProjectRequestData {
+  projectId: string;
+  projectName: string;
+  userId: string;
+}
+
+export async function updateProjectController(requestData: UpdateProjectRequestData, client: WebSocket) {
+  try {
+    const response = await updateProjectHandler(requestData.projectId, requestData.projectName, requestData.userId);
+
+    if (!response.success) {
+      return client.send(
+        JSON.stringify({
+          type: "error/serverError",
+          payload: response.error,
         })
       );
     }
