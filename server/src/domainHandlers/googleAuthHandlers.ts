@@ -1,7 +1,7 @@
-import User from "../entities/userEntity";
-import hashPassword from "../infrastructure/utils/passwordHash";
-import generateId from "../infrastructure/utils/uuidGenerator";
-import { accessLayer } from "../respositories/accessLayer";
+import User from "../entities/userEntity.js";
+import hashPassword from "../infrastructure/utils/passwordHash.js";
+import generateId from "../infrastructure/utils/uuidGenerator.js";
+import { accessLayer } from "../respositories/accessLayer.js";
 
 export async function googleUserRegistrationHandler(username: string, email: string, id: string) {
   const foundUser = await accessLayer.user.getUserByEmail(email);

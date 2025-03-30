@@ -1,8 +1,8 @@
-import db from "../interface/data.access";
+import db from "../interface/data.access.js";
 import { IUser } from "../entities/userEntity.js";
 import { RowDataPacket } from "mysql2";
-import { ITask } from "../entities/taskEntity";
-import { IProject } from "../entities/projectEntity";
+import { ITask } from "../entities/taskEntity.js";
+import { IProject } from "../entities/projectEntity.js";
 
 export type IUserFromDb = IUser & RowDataPacket;
 type ITaskSql = ITask & RowDataPacket;

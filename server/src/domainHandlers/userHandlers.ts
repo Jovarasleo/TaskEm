@@ -1,5 +1,5 @@
-import { IUser } from "../entities/userEntity";
-import { accessLayer } from "../respositories/accessLayer";
+import { IUser } from "../entities/userEntity.js";
+import { accessLayer } from "../respositories/accessLayer.js";
 
 export async function getUserDataHandler(userId: IUser["uuid"]) {
   const user = await accessLayer.user.getUserById(userId);

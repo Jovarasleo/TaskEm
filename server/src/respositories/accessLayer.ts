@@ -1,7 +1,7 @@
-import { ContainerRepository } from "./containerRepository";
-import { ProjectRepository } from "./projectRepository";
-import { TaskRepository } from "./taskRespository";
-import { UserRepository } from "./userRepository";
+import { ContainerRepository } from "./containerRepository.js";
+import { ProjectRepository } from "./projectRepository.js";
+import { TaskRepository } from "./taskRespository.js";
+import { UserRepository } from "./userRepository.js";
 
 class AccessLayer {
   public user: UserRepository;

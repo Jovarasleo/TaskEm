@@ -1,7 +1,7 @@
-import User, { IUser } from "../entities/userEntity";
-import hashPassword from "../infrastructure/utils/passwordHash";
-import generateId from "../infrastructure/utils/uuidGenerator";
-import { accessLayer } from "../respositories/accessLayer";
+import User, { IUser } from "../entities/userEntity.js";
+import hashPassword from "../infrastructure/utils/passwordHash.js";
+import generateId from "../infrastructure/utils/uuidGenerator.js";
+import { accessLayer } from "../respositories/accessLayer.js";
 import * as bcrypt from "bcrypt";
 
 export async function registrationHandler(username: string, password: string, email: string) {

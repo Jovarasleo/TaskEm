@@ -1,4 +1,4 @@
-import db from "../interface/data.access";
+import db from "../interface/data.access.js";
 import { IUser } from "../entities/userEntity.js";
 import { RowDataPacket } from "mysql2";
 
