@@ -19,7 +19,7 @@ const Dropdown = ({
   const nodeRef = useRef(null);
   const dropdownRef = useRef(null);
 
-  useOutsideClick(() => setShowOptions(false), dropdownRef);
+  useOutsideClick(() => setShowOptions(false), [dropdownRef]);
 
   const handleDropdown = () => {
     setShowOptions((prevState) => !prevState);

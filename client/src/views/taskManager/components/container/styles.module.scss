@@ -2,7 +2,6 @@
 
 .tasksContainerWrapper {
   border-radius: 1.5rem;
-  box-shadow: 0 0 0.5rem var(--color-black-3);
   background-color: var(--color-white-0);
   padding: 0.5rem 0.5rem;
   position: relative;
@@ -22,7 +21,7 @@
     h3 {
       margin-top: $size-xs;
       color: var(--color-grey-2);
-      font-size: 2.6rem;
+      font-size: x-large;
       user-select: none;
       pointer-events: none;
     }

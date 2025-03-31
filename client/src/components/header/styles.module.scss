@@ -23,8 +23,8 @@
   color: var(--color-white-1);
   transition-duration: 300ms;
   transition-property: transform;
-  transform: translateX(-334px);
-  padding: 2em;
+  transform: translateX(-400px);
+  padding: 2rem 1rem;
 }
 
 .wrapper {
@@ -32,11 +32,11 @@
 }
 
 .animate {
-  transform: translateX(66px);
+  transform: translateX(0px);
 }
 
 .animateExit {
-  transform: translateX(-334px);
+  transform: translateX(-500px);
 }
 
 .titleWrapper {
@@ -45,6 +45,7 @@
 }
 
 .title {
+  margin-left: auto;
   font-size: 2.6em;
   margin-bottom: 1em;
   cursor: pointer;
@@ -53,6 +54,8 @@
 
 .menuButton {
   cursor: pointer;
+  position: relative;
+  z-index: 3;
   margin: 12px;
   width: 42px;
   height: 42px;

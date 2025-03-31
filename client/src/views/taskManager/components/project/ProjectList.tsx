@@ -5,6 +5,7 @@ import { AppDispatch, RootState } from "../../../../store/configureStore";
 import { selectProjectWithRelatedData } from "../../../../store/slices/projectReducer";
 import { Project } from "../../model/task";
 import styles from "./styles.module.scss";
+import clsx from "clsx";
 
 function ProjectList() {
   const dispatch: AppDispatch = useDispatch();
@@ -21,15 +22,15 @@ function ProjectList() {
 
   return (
     <section className={styles.selectProject}>
-      <h3>Select project:</h3>
       {projects.data.map((project: Project) => {
         return (
           <Button
-            key={project.projectId}
             type="select"
-            className={
-              project.projectId === projects?.selected?.projectId ? styles.selectedProject : ""
-            }
+            key={project.projectId}
+            className={clsx(
+              project.projectId === projects?.selected?.projectId && styles.selectedProject,
+              styles.selectProjectBtn
+            )}
             onClick={() => {
               navigate("/");
               dispatch(selectProjectWithRelatedData(project));

@@ -16,7 +16,7 @@ interface Props {
 const Modal = ({ children, width, visible, onConfirm, onCancel }: Props) => {
   const nodeRef = useRef<HTMLDivElement | null>(null);
 
-  useOutsideClick(onCancel, nodeRef);
+  useOutsideClick(onCancel, [nodeRef]);
 
   return (
     <>

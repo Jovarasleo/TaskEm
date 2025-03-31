@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const fs = require("fs");
 
@@ -40,7 +42,7 @@ module.exports = {
         ],
       },
       {
-        test: /\.scss$/,
+        test: /\.(scss)$/,
         use: [
           "style-loader",
           {
@@ -49,8 +51,10 @@ module.exports = {
               modules: {
                 localIdentName: "[local]",
               },
+              importLoaders: 2,
             },
           },
+          "postcss-loader",
           "sass-loader",
         ],
       },

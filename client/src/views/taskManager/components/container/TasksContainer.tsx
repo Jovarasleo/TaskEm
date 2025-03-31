@@ -77,7 +77,7 @@ function TasksContainer({
     }
   };
 
-  useOutsideClick(createNewTask, outsideClickRef);
+  useOutsideClick(createNewTask, [outsideClickRef]);
 
   return (
     <section

@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
@@ -17,7 +19,7 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"],
+        use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader", "sass-loader"],
       },
       {
         test: /\.(jpg|jpeg|png|gif|mp3|svg)$/,
