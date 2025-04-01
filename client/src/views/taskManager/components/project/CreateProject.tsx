@@ -1,28 +1,21 @@
-import Button from "@components/button/Button";
-import clsx from "clsx";
 import { useState } from "react";
-import { AiOutlinePlus } from "react-icons/ai";
+import { MdDashboardCustomize } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../../store/configureStore";
+import { clientLoadContainers } from "../../../../store/slices/containerReducer";
 import { clientCreateProject } from "../../../../store/slices/projectReducer";
 import { clientLoadTasks } from "../../../../store/slices/taskReducer";
 import { uid } from "../../../../util/uid";
 import { defaultContainers } from "../../model/containers";
-import styles from "./styles.module.scss";
-import { clientLoadContainers } from "../../../../store/slices/containerReducer";
 
 function CreateProject() {
   const dispatch: AppDispatch = useDispatch();
   const [projectName, setProjectName] = useState("");
   const [addNew, setAddNew] = useState(false);
 
-  const setName = (newProjectName: string) => {
+  const handleCreate = () => {
     const projectId = uid();
-    const projectName = newProjectName.trim();
-
-    if (!projectName.length) {
-      return;
-    }
+    // const projectName = newProjectName.trim();
 
     const containers = defaultContainers(projectId);
 
@@ -30,7 +23,7 @@ function CreateProject() {
       clientCreateProject({
         project: {
           projectId,
-          projectName,
+          projectName: "bynis 300",
         },
         containers,
       })
@@ -43,34 +36,14 @@ function CreateProject() {
   };
 
   return (
-    <section className={styles.createProject}>
-      <div
-        onClick={() => setAddNew((prev) => !prev)}
-        className={clsx(styles.addNew, addNew && styles.expanded)}
+    <div className="my-4">
+      <button
+        onClick={handleCreate}
+        className="flex justify-center rounded-full items-center ml-auto p-2 bg-neutral-100 group hover:bg-neutral-700 cursor-pointer transition-colors"
       >
-        {addNew ? (
-          <>
-            <input
-              type="text"
-              onChange={(e) => setProjectName(e.target.value)}
-              onClick={(e) => e.stopPropagation()}
-              value={projectName}
-            />
-            <Button
-              onClick={(e) => {
-                e.stopPropagation();
-                setName(projectName);
-              }}
-              className={styles.addProject}
-            >
-              <AiOutlinePlus />
-            </Button>
-          </>
-        ) : (
-          <p>Create New</p>
-        )}
-      </div>
-    </section>
+        <MdDashboardCustomize className="size-7 group-hover:text-[#f98e4c] text-neutral-700 transition-colors" />
+      </button>
+    </div>
   );
 }
 export default CreateProject;

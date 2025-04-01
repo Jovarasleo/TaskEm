@@ -1,25 +1,3 @@
-.selectProject {
-  max-width: 400px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.selectProjectBtn {
-  border-radius: 24px;
-  padding: 8px;
-}
-
-.createProject {
-  display: flex;
-  margin-top: 48px;
-}
-
-.selectedProject {
-  background-color: var(--theme-main);
-  color: var(--color-white-1);
-}
-
 .projectNameWrapper {
   display: flex;
   justify-content: space-between;
@@ -46,60 +24,6 @@
   &:hover {
     color: white;
   }
-}
-
-.addProject {
-  height: 28px;
-  padding: 0;
-  width: 28px;
-  border-radius: 0 50% 50% 0;
-  font-size: 24px;
-  margin-right: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--theme-main);
-  color: white;
-
-  & svg {
-    margin-right: 2px;
-  }
-}
-
-.addNew {
-  border: 1px solid white;
-  border-radius: 34px;
-  text-align: center;
-  font-size: 16px;
-  height: 48px;
-  font-weight: 900;
-  cursor: pointer;
-  margin-left: auto;
-  transition-property: width;
-  transition-timing-function: ease-in-out;
-  transition-duration: 0.5s;
-  width: 140px;
-  display: flex;
-  flex-wrap: nowrap;
-  flex-direction: row;
-  justify-content: center;
-  overflow: hidden;
-  align-items: center;
-
-  & input {
-    box-sizing: border-box;
-    flex: 1;
-    margin: 0 0px 0px 24px;
-    height: 28px;
-    font-size: medium;
-    border: none;
-    padding: 0px 20px;
-    border-radius: 20px 0 0 20px;
-  }
-}
-
-.expanded {
-  width: 100%;
 }
 
 .projectNameInput {

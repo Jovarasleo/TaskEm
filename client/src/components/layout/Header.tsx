@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
-import NavButton from "./NavButton";
-import Sidebar from "./Sidebar";
-import { AccountMenu } from "./AccountMenu";
+import NavButton from "../header/NavButton";
+import Sidebar from "../header/Sidebar";
+import { AccountMenu } from "../header/AccountMenu";
 
 function Header() {
   const [showNav, setShowNav] = useState(false);

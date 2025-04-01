@@ -1,6 +1,6 @@
 import { cleanup, render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import Header from "../components/header/Header";
+import Header from "../components/layout/Header";
 import { TaskProvider } from "../context/taskContext";
 
 afterEach(() => {

@@ -15,16 +15,13 @@
 .navWrapper {
   height: 100vh;
   max-width: 400px;
-  background: linear-gradient(#424242, rgba(86, 86, 86, 0));
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  width: 100%;
+  // background: linear-gradient(#424242, rgba(86, 86, 86, 0));
   color: var(--color-white-1);
+  position: fixed;
+  width: 100%;
   transition-duration: 300ms;
   transition-property: transform;
   transform: translateX(-400px);
-  padding: 2rem 1rem;
 }
 
 .wrapper {

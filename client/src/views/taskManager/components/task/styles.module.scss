@@ -1,27 +1,20 @@
 @import "../../../../styles/variables.scss";
 
 .task {
-  cursor: grab;
-  user-select: none;
   display: flex;
+  position: relative;
   flex-direction: column;
   justify-content: center;
-  position: relative;
-  opacity: 1;
-  width: 100%;
   padding: 8px;
   border-radius: 16px;
   background-color: rgb(212, 212, 212);
   touch-action: none;
-
-  .taskIndex {
-    font-size: 1.6rem;
-  }
+  user-select: none;
+  cursor: grab;
 
   .textarea {
     border-radius: 8px;
     resize: none;
-    font-size: 1.4rem;
     overflow-wrap: break-word;
     border: 0;
     word-break: break-all;
@@ -33,8 +26,6 @@
     border: none;
     border-radius: 8px;
     text-align: left;
-    font-size: 1.4rem;
-    max-height: 8rem;
     word-break: break-all;
     overflow-wrap: break-word;
     background-color: var(--color-white-0);

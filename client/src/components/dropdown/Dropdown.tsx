@@ -1,19 +1,20 @@
-import styles from "./dropdown.module.scss";
-import clsx from "clsx";
-import { CSSTransition } from "react-transition-group";
 import { useRef, useState } from "react";
-import Button from "../button/Button";
+import { CSSTransition } from "react-transition-group";
+import clsx from "clsx";
 import useOutsideClick from "../../hooks/useOutsideClick";
-import { GoGear } from "react-icons/go";
+import styles from "./dropdown.module.scss";
 
-const Dropdown = ({
-  options,
-}: {
-  options: {
-    title: string;
+interface Props {
+  children: React.ReactNode;
+  className?: string;
+  options?: {
+    node: React.ReactNode;
+    key: string;
     onClick: () => void;
   }[];
-}) => {
+}
+
+const Dropdown = ({ children, className, options }: Props) => {
   const [showOptions, setShowOptions] = useState(false);
 
   const nodeRef = useRef(null);
@@ -26,13 +27,10 @@ const Dropdown = ({
   };
 
   return (
-    <div ref={dropdownRef} className={styles.dropdownWrapper}>
-      <Button
-        onClick={() => handleDropdown()}
-        className={clsx(styles.projectSettingsGear, showOptions && styles.activeGear)}
-      >
-        <GoGear />
-      </Button>
+    <div ref={dropdownRef} className="relative flex">
+      <button onClick={() => handleDropdown()} className={clsx(className)}>
+        {children}
+      </button>
       <CSSTransition
         in={showOptions}
         nodeRef={nodeRef}
@@ -43,24 +41,25 @@ const Dropdown = ({
         }}
         unmountOnExit
       >
-        <div ref={nodeRef} className={clsx(styles.dropdown)}>
-          <ul>
-            {options?.map(({ title, onClick }) => {
-              return (
-                <li key={title} className={styles.dropdownElement}>
-                  <Button
+        {options && options.length && (
+          <div ref={nodeRef} className={clsx(styles.dropdown, "bg-white p-1 ")}>
+            <ul className="flex gap-0.5 flex-col">
+              {options.map(({ key, onClick, node }) => (
+                <li key={key}>
+                  <button
                     onClick={() => {
                       onClick();
                       handleDropdown();
                     }}
+                    className="transition-colors text-gray-900 px-3 py-0.5 group cursor-pointer hover:bg-orange-200 w-full rounded-[2px]"
                   >
-                    {title}
-                  </Button>
+                    {node}
+                  </button>
                 </li>
-              );
-            })}
-          </ul>
-        </div>
+              ))}
+            </ul>
+          </div>
+        )}
       </CSSTransition>
     </div>
   );

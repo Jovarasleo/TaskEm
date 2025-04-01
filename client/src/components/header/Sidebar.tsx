@@ -29,14 +29,17 @@ function Sidebar({ visible, menuButtonRef, handleNavigation }: NavbarProps) {
       }}
       unmountOnExit
     >
-      <aside className={clsx(styles.navWrapper)} ref={nodeRef}>
-        <div className={styles.titleWrapper}>
-          <h1 className={styles.title} onClick={() => navigate("/")}>
-            {"Task'Em!"}
-          </h1>
+      <aside
+        className={clsx(styles.navWrapper, "p-[12px] z-1 bg-neutral-900/75  backdrop-blur-xl")}
+        ref={nodeRef}
+      >
+        <div className="flex mb-6 h-[44px]">
+          <button className="ml-auto mr-0 cursor-pointer" onClick={() => navigate("/")}>
+            <h1 className="text-3xl">{"Task'Em!"}</h1>
+          </button>
         </div>
-        <ProjectList />
         <CreateProject />
+        <ProjectList />
       </aside>
     </CSSTransition>
   );
