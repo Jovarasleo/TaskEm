@@ -6,7 +6,7 @@ function useOutsideClick(
 ) {
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
-      const modal = document.querySelector(".modalWrapper");
+      const modal = document.querySelector("#modal-backdrop");
       if (modal && modal.contains(event.target as Node) && !ignoreModal) {
         return;
       }

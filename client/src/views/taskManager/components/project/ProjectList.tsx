@@ -71,12 +71,14 @@ function ProjectList() {
   return (
     <section className={styles.selectProject}>
       {projects.data.map((project: Project) => {
+        const active = project.projectId === projects?.selected?.projectId;
         return (
           <div key={project.projectId} className="flex border-b-1">
             <button
               className={clsx(
-                project.projectId === projects?.selected?.projectId && "text-orange-300",
-                "cursor-pointer w-full hover:text-orange-200 transition-colors py-2 px-1 text-left"
+                active && "text-orange-300",
+                !active && "hover:text-orange-200",
+                "cursor-pointer w-full transition-colors py-2 px-1 text-left"
               )}
               onClick={() => {
                 navigate("/");

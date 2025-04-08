@@ -1,39 +1,5 @@
 @import "../../styles/variables.scss";
 
-@keyframes rotate {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes prixClipFix {
-  0% {
-    clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0);
-  }
-  25% {
-    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0);
-  }
-  50% {
-    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%);
-  }
-  75% {
-    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%);
-  }
-  100% {
-    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0);
-  }
-}
-
-.button {
-  margin: 0;
-  border: none;
-  border-radius: $size-sm;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  gap: $size-sm;
-}
-
 .link {
   background-color: transparent;
   width: max-content;
@@ -55,29 +21,5 @@
     background-color: var(--theme-main);
     color: var(--color-white-1);
     border: 1px solid var(--color-white-1);
-  }
-}
-
-.disabled {
-  cursor: not-allowed;
-  color: var(--color-grey-1);
-  background-color: var(--color-white-2);
-}
-
-.loader {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  position: relative;
-  animation: rotate 1s linear infinite;
-
-  &::before {
-    content: "";
-    box-sizing: border-box;
-    position: absolute;
-    inset: 0px;
-    border-radius: 50%;
-    border: 2px solid var(--color-grey-2);
-    animation: prixClipFix 2s linear infinite;
   }
 }

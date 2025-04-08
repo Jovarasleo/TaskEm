@@ -1,11 +1,10 @@
 import clsx from "clsx";
-import { RefObject, useRef, useState } from "react";
+import { RefObject, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import CreateProject from "../../views/taskManager/components/project/CreateProject";
 import ProjectList from "../../views/taskManager/components/project/ProjectList";
-import Modal from "../modal/Modal";
 
 interface NavbarProps {
   visible: boolean;
@@ -16,7 +15,6 @@ interface NavbarProps {
 function Sidebar({ visible, menuButtonRef, handleNavigation }: NavbarProps) {
   const nodeRef = useRef(null);
   const navigate = useNavigate();
-  const [modalVisible, setModalVisible] = useState(false);
 
   useOutsideClick(() => (visible ? handleNavigation() : {}), [nodeRef, menuButtonRef]);
 
@@ -42,14 +40,8 @@ function Sidebar({ visible, menuButtonRef, handleNavigation }: NavbarProps) {
             <h1 className="text-3xl">{"Task'Em!"}</h1>
           </button>
         </div>
-        <CreateProject onClick={() => setModalVisible((prev) => !prev)} active={modalVisible} />
+        <CreateProject />
         <ProjectList />
-        <Modal
-          width={500}
-          visible={modalVisible}
-          onConfirm={() => console.log("kitty")}
-          onCancel={() => setModalVisible(false)}
-        ></Modal>
       </aside>
     </CSSTransition>
   );

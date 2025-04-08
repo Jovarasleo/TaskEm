@@ -8,6 +8,7 @@ import { AppDispatch, RootState } from "../../store/configureStore";
 import { loginUser } from "../../store/slices/authSlice";
 import styles from "./authenticate.module.scss";
 import { useNavigate } from "react-router-dom";
+import { Input } from "../../components/input/Input";
 
 const schema = object({
   email: string().email().required(),
@@ -82,23 +83,11 @@ function Login() {
     <>
       <form className={styles.loginForm}>
         <div className={styles.loginFormField}>
-          <label htmlFor="email">Email</label>
-          <input
-            className={styles.fieldInput}
-            type="email"
-            placeholder="Type your email"
-            {...register("email")}
-          />
+          <Input id="email" label="Email" {...register("email")} />
           <p className={styles.formError}>{errors.email?.message}</p>
         </div>
         <div className={styles.loginFormField}>
-          <label htmlFor="password">Password</label>
-          <input
-            className={styles.fieldInput}
-            type="password"
-            placeholder="Type your password"
-            {...register("password")}
-          />
+          <Input id="password" label="Password" type="password" {...register("password")} />
           <p className={styles.formError}>{errors.password?.message}</p>
           <Button
             className={styles.forgotPasswordBtn}
@@ -109,7 +98,7 @@ function Login() {
           </Button>
           {error && <p className={styles.formError}>{error}</p>}
         </div>
-        <Button className={styles.formSubmitBtn} loading={loading} onClick={submit}>
+        <Button className="py-2 font-semibold" loading={loading} onClick={submit} type="primary">
           Login
         </Button>
       </form>

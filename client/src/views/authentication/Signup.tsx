@@ -99,7 +99,7 @@ function Signup() {
             </ul>
           )}
         </div>
-        <Button className={styles.formSubmitBtn} loading={loading} onClick={submit}>
+        <Button className="py-2 font-semibold" loading={loading} onClick={submit} type="primary">
           Sign Up
         </Button>
       </form>
