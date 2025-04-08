@@ -21,21 +21,23 @@ function Authenticate({ children }: Props) {
       {children}
 
       <div className="linkToContainer">
-        {location.pathname === "/signup" ? (
-          <div>
-            <p>Already have an account?</p>
-            <Link to="/login" onClick={clearErrors}>
-              Login here
-            </Link>
-          </div>
-        ) : (
-          <div>
-            <p>Don&apos;t have an account?</p>
-            <Link to="/signup" onClick={clearErrors}>
-              Register here
-            </Link>
-          </div>
-        )}
+        <div className="flex items-center flex-col">
+          {location.pathname === "/signup" ? (
+            <>
+              <p>Already have an account?</p>
+              <Link to="/login" onClick={clearErrors} className={styles.linkBtn}>
+                Login here
+              </Link>
+            </>
+          ) : (
+            <>
+              <p>Don&apos;t have an account?</p>
+              <Link to="/signup" onClick={clearErrors} className={styles.linkBtn}>
+                Register here
+              </Link>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

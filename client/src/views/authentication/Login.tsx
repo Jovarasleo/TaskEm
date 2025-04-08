@@ -9,6 +9,7 @@ import { loginUser } from "../../store/slices/authSlice";
 import styles from "./authenticate.module.scss";
 import { useNavigate } from "react-router-dom";
 import { Input } from "../../components/input/Input";
+import clsx from "clsx";
 
 const schema = object({
   email: string().email().required(),
@@ -90,7 +91,7 @@ function Login() {
           <Input id="password" label="Password" type="password" {...register("password")} />
           <p className={styles.formError}>{errors.password?.message}</p>
           <Button
-            className={styles.forgotPasswordBtn}
+            className={clsx(styles.linkBtn, "ml-auto")}
             type="link"
             onClick={(e) => e.preventDefault()}
           >

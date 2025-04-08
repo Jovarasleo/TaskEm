@@ -27,7 +27,7 @@ function Button({
     primary:
       "px-3 py-0.75 border-amber-600 hover:border-amber-700 border border-solid border-2 bg-amber-600 text-white hover:bg-amber-700 transition-300",
     secondary:
-      "px-2 py-0.75 border-amber-600 hover:border-amber-700 border border-solid border-2 text-amber-700 hover:text-amber-800",
+      "px-2 py-0.75 border-amber-600 hover:border-amber-700 border border-solid border-2 text-amber-700 hover:text-amber-800 transition-300",
     link: "",
     select: "",
   };

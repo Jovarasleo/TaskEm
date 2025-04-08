@@ -49,8 +49,7 @@
   list-style-type: none;
 }
 
-.forgotPasswordBtn {
-  margin-left: auto;
+.linkBtn {
   color: var(--color-grey-2);
 
   text-underline-offset: 4px;
@@ -68,20 +67,3 @@
 .googleLoginBtn {
   margin: $size-md 0;
 }
-
-// .formSubmitBtn {
-//   padding: 11px;
-//   font-weight: $font-weight-medium;
-
-//   transition-duration: 0.3s;
-//   transition-property: background;
-
-//   &:not(:disabled) {
-//     background-color: var(--theme-main);
-//     color: var(--color-white-0);
-//   }
-
-//   &:hover:not(:disabled) {
-//     background-color: var(--color-grey-2);
-//   }
-// }
