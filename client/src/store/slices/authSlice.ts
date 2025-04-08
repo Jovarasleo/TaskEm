@@ -119,8 +119,31 @@ export const logoutUser = createAsyncThunk<void, void, RejectValue>(
   }
 );
 
+export const isAuth = createAsyncThunk<boolean, void, RejectValue>(
+  "auth/isAuth",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${ENDPOINT_URL}/auth/isAuth`, {
+        ...REQUEST_INIT,
+        method: "GET",
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        return data.success;
+      } else {
+        const error = Array.isArray(data?.error) ? data.error : ["Unknown error occurred."];
+        return rejectWithValue({ error });
+      }
+    } catch (error) {
+      return rejectWithValue({ error: ["Unknown error occurred."] });
+    }
+  }
+);
+
 const initialState: InitialState = {
-  loading: false,
+  loading: true,
   userData: { username: "", email: "" }, // for user object
   loggedIn: false,
   message: null,
@@ -192,6 +215,21 @@ const authSlice = createSlice({
         state.error = [];
       })
       .addCase(logoutUser.rejected, (state, action) => {
+        state.loading = false;
+        state.message = null;
+        state.error = action.payload?.error ?? [];
+        state.success = false;
+      })
+      .addCase(isAuth.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(isAuth.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.loggedIn = action.payload;
+        state.error = [];
+      })
+      .addCase(isAuth.rejected, (state, action) => {
         state.loading = false;
         state.message = null;
         state.error = action.payload?.error ?? [];

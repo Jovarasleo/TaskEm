@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 import { TokenData } from "../../server";
 
-const verifyToken = (token: string) => jwt.verify(token, process.env.TOKEN_SECRET || "") as TokenData;
+export const verifyToken = (token: string) => jwt.verify(token, process.env.TOKEN_SECRET || "") as TokenData;
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   if (req.method === "POST" && (req.originalUrl === "/auth/login" || req.originalUrl === "/auth")) {

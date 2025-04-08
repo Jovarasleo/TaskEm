@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { loginHandler, registrationHandler } from "../domainHandlers/authHandlers.js";
 import { generateToken } from "../infrastructure/utils/jwtGenerator.js";
+import { verifyToken } from "../infrastructure/middlewares/authentication.js";
 
 export const createUserController = async (req: Request, res: Response) => {
   try {
@@ -50,6 +51,35 @@ export const loginUserController = async (req: Request, res: Response) => {
       data: response.data,
       error: null,
     });
+  } catch (e) {
+    console.log(e);
+    res.status(500).send({ success: false, error: ["Internal server error"] });
+    return;
+  }
+};
+
+export const userAuthenticatedController = async (req: Request, res: Response) => {
+  const token = req.cookies.token;
+  try {
+    if (!token) {
+      return res.status(200).send({
+        success: false,
+        error: null,
+      });
+    }
+
+    const verifiedUser = verifyToken(token);
+    if (verifiedUser) {
+      res.status(200).send({
+        success: true,
+        error: null,
+      });
+    } else {
+      res.status(200).send({
+        success: false,
+        error: null,
+      });
+    }
   } catch (e) {
     console.log(e);
     res.status(500).send({ success: false, error: ["Internal server error"] });
