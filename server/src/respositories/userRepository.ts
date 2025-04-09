@@ -21,7 +21,7 @@ class UserRepository {
     return foundUser.length > 0 ? foundUser[0] : null;
   }
 
-  async createUser({ email, username, password, uuid }: IUser) {
+  async createUser({ uuid, username, password, email }: IUser) {
     const sql = "INSERT INTO users (uuid, username, password, email) VALUES (?, ?, ?, ?)";
     const values = [uuid, username, password, email];
 
