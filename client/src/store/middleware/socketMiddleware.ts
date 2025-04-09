@@ -112,9 +112,15 @@ export const socketMiddleware =
     };
 
     return (action: SocketAction) => {
-      if (action.type === "auth/isAuth/fulfilled" && action.payload) {
-        console.log(action);
+      if (
+        (action.type === "auth/isAuth/fulfilled" && action.payload) ||
+        (action.type === "auth/login/fulfilled" && action.payload.success)
+      ) {
         connectWebSocket();
+      }
+
+      if (action.type === "auth/logout/fulfilled") {
+        ws?.close();
       }
 
       if (ws?.readyState !== WebSocket.OPEN) {

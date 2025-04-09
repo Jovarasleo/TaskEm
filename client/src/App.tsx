@@ -33,6 +33,7 @@ function App(): JSX.Element {
             }
           />
         </Route>
+        <Route path="*" element={<h1>Lost?</h1>} />
       </Routes>
     </BrowserRouter>
   );

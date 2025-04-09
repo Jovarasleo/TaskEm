@@ -22,11 +22,11 @@ interface InitialState {
   loggedIn: boolean;
   message: null | string;
   error: string[];
-  success: boolean;
+  initialLoading: boolean;
 }
 
 interface RegisteredUserDto {
-  success: boolean;
+  initialLoading: boolean;
   message: string;
   user: {
     username: string;
@@ -144,12 +144,12 @@ export const isAuth = createAsyncThunk<boolean, void, RejectValue>(
 );
 
 const initialState: InitialState = {
-  loading: true,
+  loading: false,
   userData: { username: "", email: "" }, // for user object
   loggedIn: false,
   message: null,
   error: [],
-  success: false, // for monitoring the registration process.
+  initialLoading: true,
 };
 
 const authSlice = createSlice({
@@ -178,7 +178,7 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.success;
+        state.initialLoading;
         state.message = action.payload.message;
         state.userData = action.payload.user;
         state.error = [];
@@ -187,14 +187,14 @@ const authSlice = createSlice({
         state.loading = false;
         state.message = null;
         state.error = action.payload?.error ?? [];
-        state.success = false;
+        state.initialLoading = false;
       })
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
+        state.initialLoading = false;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.success = true;
         state.loggedIn = true;
         state.message = action.payload.message;
         state.userData = action.payload.user;
@@ -204,14 +204,13 @@ const authSlice = createSlice({
         state.loading = false;
         state.message = null;
         state.error = action.payload?.error ?? [];
-        state.success = false;
       })
       .addCase(logoutUser.pending, (state) => {
         state.loading = true;
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.loading = false;
-        state.success = true;
+        state.initialLoading = false;
         state.loggedIn = false;
         state.error = [];
       })
@@ -219,14 +218,15 @@ const authSlice = createSlice({
         state.loading = false;
         state.message = null;
         state.error = action.payload?.error ?? [];
-        state.success = false;
+        state.initialLoading = false;
       })
       .addCase(isAuth.pending, (state) => {
         state.loading = true;
+        state.initialLoading = true;
       })
       .addCase(isAuth.fulfilled, (state, action) => {
         state.loading = false;
-        state.success = true;
+        state.initialLoading = false;
         state.loggedIn = action.payload;
         state.error = [];
       })
@@ -234,7 +234,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.message = null;
         state.error = action.payload?.error ?? [];
-        state.success = false;
+        state.initialLoading = false;
       });
   },
 });

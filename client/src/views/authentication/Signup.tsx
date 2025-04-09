@@ -62,11 +62,11 @@ function Signup() {
           <p className={styles.formError}>{errors.username?.message}</p>
         </div>
         <div className={styles.loginFormField}>
-          <Input id="password" label="Password" {...register("password")} />
+          <Input id="password" label="Password" {...register("password")} type="password" />
           <p className={styles.formError}>{errors.password?.message}</p>
         </div>
         <div className={styles.loginFormField}>
-          <Input id="password" label="Password" {...register("confirmPassword")} />
+          <Input id="password" label="Password" {...register("confirmPassword")} type="password" />
           <p className={styles.formError}>{errors.confirmPassword?.message}</p>
           {error.length > 0 && (
             <ul className={clsx(styles.formError, styles.serverErrors)}>

@@ -1,6 +1,6 @@
+import clsx from "clsx";
 import { useRef, useState } from "react";
 import { CSSTransition } from "react-transition-group";
-import clsx from "clsx";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import styles from "./dropdown.module.scss";
 

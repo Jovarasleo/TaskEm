@@ -1,9 +1,10 @@
 import { ReactElement, ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import styles from "./authenticate.module.scss";
 import { AppDispatch } from "../../store/configureStore";
 import { useDispatch } from "react-redux";
 import { clearAuthError } from "../../store/slices/authSlice";
+import styles from "./authenticate.module.scss";
+import clsx from "clsx";
 
 interface Props {
   children: ReactElement | ReactNode;
@@ -16,7 +17,7 @@ function Authenticate({ children }: Props) {
   const clearErrors = () => dispatch(clearAuthError());
 
   return (
-    <div className={styles.formContainer}>
+    <div className={clsx(styles.formContainer, "rounded-2xl")}>
       <h3 className={styles.formTitle}>{location.pathname === "/signup" ? "Register" : "Login"}</h3>
       {children}
 
