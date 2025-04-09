@@ -74,15 +74,13 @@ export const userAuthenticatedController = async (req: Request, res: Response) =
         success: true,
         error: null,
       });
-    } else {
-      res.status(200).send({
-        success: false,
-        error: null,
-      });
     }
   } catch (e) {
     console.log(e);
-    res.status(500).send({ success: false, error: ["Internal server error"] });
+    res
+      .clearCookie("token")
+      .status(403)
+      .send({ success: false, error: ["token expired"] });
     return;
   }
 };

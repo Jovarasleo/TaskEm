@@ -1,6 +1,7 @@
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import { Action, AnyAction, Dispatch, MiddlewareAPI } from "redux";
 import { clientLoadLocalProjects } from "../slices/projectReducer";
+import { isAuth } from "../slices/authSlice";
 
 let firstload = true;
 
@@ -11,6 +12,7 @@ export const onLoadMiddleware =
     if (firstload) {
       firstload = false;
       store.dispatch(clientLoadLocalProjects());
+      store.dispatch(isAuth());
     }
 
     next(action);

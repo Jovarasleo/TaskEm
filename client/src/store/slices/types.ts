@@ -115,6 +115,7 @@ type SocketClientTaskAction = {
   type: SocketClientTaskActionType;
   payload: Task;
 };
+
 type SocketClientContainerAction = {
   type: SocketClientContainerActionType;
   payload: TaskContainer;
@@ -130,6 +131,11 @@ type SocketClientCreateProjectAction = {
   payload: { project: Project; containers: TaskContainer[] };
 };
 
+type SocketConnectAction = {
+  type: "auth/isAuth/fulfilled";
+  payload: boolean;
+};
+
 export type SocketActionType =
   | SocketClientTaskActionType
   | SocketClientContainerActionType
@@ -140,7 +146,8 @@ export type SocketAction =
   | SocketClientTaskAction
   | SocketClientContainerAction
   | SocketClientProjectAction
-  | SocketClientCreateProjectAction;
+  | SocketClientCreateProjectAction
+  | SocketConnectAction;
 
 type SocketServerTaskActionType =
   | "task/serverLoadTasks"

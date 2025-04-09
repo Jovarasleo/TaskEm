@@ -29,7 +29,7 @@ class User {
     if (!this.email || !emailRegex.test(this.email)) {
       errors.push("Invalid email");
     }
-    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
     if (!this.password || !passwordRegex.test(this.password)) {
       errors.push("Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number");
     }

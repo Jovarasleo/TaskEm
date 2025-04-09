@@ -4,23 +4,9 @@ import Login from "./views/authentication/Login";
 import Signup from "./views/authentication/Signup";
 import TaskManager from "./views/taskManager/TaskManager";
 import Authenticate from "./views/authentication/Authenticate";
-import { useEffect } from "react";
-import { AppDispatch } from "./store/configureStore";
-import { useDispatch } from "react-redux";
-import { isAuth } from "./store/slices/authSlice";
 import PublicRoute from "./routes/PublicRoute";
 
 function App(): JSX.Element {
-  const dispatch: AppDispatch = useDispatch();
-
-  useEffect(() => {
-    const checkAuthorization = async () => {
-      await dispatch(isAuth());
-    };
-
-    checkAuthorization();
-  }, [dispatch]);
-
   return (
     <BrowserRouter>
       <Routes>
