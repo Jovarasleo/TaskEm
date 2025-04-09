@@ -22,7 +22,7 @@ export const createUserController = async (req: Request, res: Response) => {
     return res.status(201).send({
       success: true,
       message: `user ${username} has been created`,
-      user: response.data,
+      data: response.data,
     });
   } catch (ex) {
     console.error(ex);

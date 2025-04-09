@@ -109,7 +109,6 @@ export async function setProject(project: Project) {
 
     const objectStore = transaction.objectStore(Stores.Projects);
     const id = project.projectId;
-    console.log({ project });
 
     const request = objectStore.put(project, id);
     request.onsuccess = (event) => {
@@ -334,7 +333,6 @@ export async function syncAllProjects(projects: Project[]) {
       for (const project of projects) {
         const id = project.projectId;
         const addRequest = objectStore.add(project, id);
-        addRequest.onsuccess = () => console.log(`Project ${project.projectId} added.`);
         addRequest.onerror = (event) => console.error("Error adding project", event);
       }
     };
@@ -357,12 +355,9 @@ export async function syncAllTasks(tasks: Task[]) {
     const clearRequest = objectStore.clear();
 
     clearRequest.onsuccess = async () => {
-      console.log("All Tasks deleted successfully.");
-
       for (const task of tasks) {
         const id = task.taskId;
         const addRequest = objectStore.add(task, id);
-        addRequest.onsuccess = () => console.log(`Task ${task.taskId} added.`);
         addRequest.onerror = (event) => console.error("Error adding task", event);
       }
     };
@@ -385,12 +380,9 @@ export async function syncAllContainers(containers: TaskContainer[]) {
     const clearRequest = objectStore.clear();
 
     clearRequest.onsuccess = async () => {
-      console.log("All containers deleted successfully.");
-
       for (const container of containers) {
         const id = container.containerId;
         const addRequest = objectStore.add(container, id);
-        addRequest.onsuccess = () => console.log(`Container ${container.containerId} added.`);
         addRequest.onerror = (event) => console.error("Error adding container", event);
       }
     };

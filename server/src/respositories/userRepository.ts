@@ -22,7 +22,7 @@ class UserRepository {
   }
 
   async createUser({ email, username, password, uuid }: IUser) {
-    const sql = "INSERT INTO users (uuid, name, password, email) VALUES (?, ?, ?, ?)";
+    const sql = "INSERT INTO users (uuid, username, password, email) VALUES (?, ?, ?, ?)";
     const values = [uuid, username, password, email];
 
     const newUser = await db.execute(sql, values);

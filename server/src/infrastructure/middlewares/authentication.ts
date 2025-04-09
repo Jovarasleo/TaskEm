@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 import { TokenData } from "../../server";
+import { parse } from "cookie";
 
 export const verifyToken = (token: string) => jwt.verify(token, process.env.TOKEN_SECRET || "") as TokenData;
 
@@ -9,7 +10,8 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     return next();
   }
 
-  const token = req.cookies.token;
+  const cookies = parse(req.headers.cookie ?? "");
+  const token = cookies.token ?? "";
 
   try {
     const verifiedUser = verifyToken(token);

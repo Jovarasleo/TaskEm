@@ -25,10 +25,18 @@ interface InitialState {
   initialLoading: boolean;
 }
 
+interface UserDataDto {
+  data: {
+    username: string;
+    email: string;
+  };
+  error?: string[];
+}
+
 interface RegisteredUserDto {
   initialLoading: boolean;
   message: string;
-  user: {
+  data: {
     username: string;
     email: string;
   };
@@ -129,10 +137,33 @@ export const isAuth = createAsyncThunk<boolean, void, RejectValue>(
       });
 
       const data = await response.json();
-      console.log({ data });
 
       if (response.ok) {
         return data.success;
+      } else {
+        const error = Array.isArray(data?.error) ? data.error : ["Unknown error occurred."];
+        return rejectWithValue({ error });
+      }
+    } catch (error) {
+      return rejectWithValue({ error: ["Unknown error occurred."] });
+    }
+  }
+);
+
+export const getUserData = createAsyncThunk<UserDataDto, void, RejectValue>(
+  "user/getUserData",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${ENDPOINT_URL}/user`, {
+        ...REQUEST_INIT,
+        method: "GET",
+      });
+
+      const data = await response.json();
+      console.log({ data });
+
+      if (response.ok) {
+        return data;
       } else {
         const error = Array.isArray(data?.error) ? data.error : ["Unknown error occurred."];
         return rejectWithValue({ error });
@@ -180,7 +211,8 @@ const authSlice = createSlice({
         state.loading = false;
         state.initialLoading;
         state.message = action.payload.message;
-        state.userData = action.payload.user;
+        state.userData.email = action.payload.data.email;
+        state.userData.username = action.payload.data.username;
         state.error = [];
       })
       .addCase(registerUser.rejected, (state, action) => {
@@ -188,6 +220,22 @@ const authSlice = createSlice({
         state.message = null;
         state.error = action.payload?.error ?? [];
         state.initialLoading = false;
+      })
+      .addCase(getUserData.pending, (state) => {
+        state.loading = true;
+        state.initialLoading = false;
+      })
+      .addCase(getUserData.fulfilled, (state, action) => {
+        state.loading = false;
+        state.loggedIn = true;
+        state.userData.email = action.payload.data.email;
+        state.userData.username = action.payload.data.username;
+        state.error = [];
+      })
+      .addCase(getUserData.rejected, (state, action) => {
+        state.loading = false;
+        state.message = null;
+        state.error = action.payload?.error ?? [];
       })
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
@@ -197,7 +245,8 @@ const authSlice = createSlice({
         state.loading = false;
         state.loggedIn = true;
         state.message = action.payload.message;
-        state.userData = action.payload.user;
+        state.userData.email = action.payload.data.email;
+        state.userData.username = action.payload.data.username;
         state.error = [];
       })
       .addCase(loginUser.rejected, (state, action) => {
