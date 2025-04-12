@@ -29,20 +29,20 @@ function ready() {
 
 ready();
 
-async function initServiceWorker() {
-  const swRegistration = await navigator.serviceWorker.register("./sw.js", {
-    scope: "/",
-  });
-  const { installing, waiting, active } = swRegistration;
-  let svcworker = installing || waiting || active;
+// async function initServiceWorker() {
+//   const swRegistration = await navigator.serviceWorker.register("./sw.js", {
+//     scope: "/",
+//   });
+//   const { installing, waiting, active } = swRegistration;
+//   let svcworker = installing || waiting || active;
 
-  console.log({ svcworker });
-  navigator.serviceWorker.addEventListener("controllerchange", async function onControllerChange() {
-    svcworker = navigator.serviceWorker.controller;
-  });
-}
+//   console.log({ svcworker });
+//   navigator.serviceWorker.addEventListener("controllerchange", async function onControllerChange() {
+//     svcworker = navigator.serviceWorker.controller;
+//   });
+// }
 
-initServiceWorker().catch(console.error);
+// initServiceWorker().catch(console.error);
 
 root.render(
   <React.StrictMode>
