@@ -55,21 +55,21 @@ function Signup() {
       <form className={styles.loginForm}>
         <div className={styles.loginFormField}>
           <Input id="email" label="Email" {...register("email")} />
-          <p className={styles.formError}>{errors.email?.message}</p>
+          <p className="formError">{errors.email?.message}</p>
         </div>
         <div className={styles.loginFormField}>
           <Input id="username" label="Username" {...register("username")} />
-          <p className={styles.formError}>{errors.username?.message}</p>
+          <p className="formError">{errors.username?.message}</p>
         </div>
         <div className={styles.loginFormField}>
           <Input id="password" label="Password" {...register("password")} type="password" />
-          <p className={styles.formError}>{errors.password?.message}</p>
+          <p className="formError">{errors.password?.message}</p>
         </div>
         <div className={styles.loginFormField}>
           <Input id="password" label="Password" {...register("confirmPassword")} type="password" />
-          <p className={styles.formError}>{errors.confirmPassword?.message}</p>
+          <p className="formError">{errors.confirmPassword?.message}</p>
           {error.length > 0 && (
-            <ul className={clsx(styles.formError, styles.serverErrors)}>
+            <ul className={clsx("formError", styles.serverErrors)}>
               {error.map((er) => (
                 <li key={er}>{er}</li>
               ))}

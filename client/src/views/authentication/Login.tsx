@@ -85,11 +85,11 @@ function Login() {
       <form className={styles.loginForm}>
         <div className={styles.loginFormField}>
           <Input id="email" label="Email" {...register("email")} />
-          <p className={styles.formError}>{errors.email?.message}</p>
+          <p className="formError">{errors.email?.message}</p>
         </div>
         <div className={styles.loginFormField}>
           <Input id="password" label="Password" type="password" {...register("password")} />
-          <p className={styles.formError}>{errors.password?.message}</p>
+          <p className="formError">{errors.password?.message}</p>
           <Button
             className={clsx(styles.linkBtn, "ml-auto")}
             type="link"
@@ -97,7 +97,7 @@ function Login() {
           >
             forgot password?
           </Button>
-          {error && <p className={styles.formError}>{error}</p>}
+          {error && <p className="formError">{error}</p>}
         </div>
         <Button className="py-2 font-semibold" loading={loading} onClick={submit} type="primary">
           Login

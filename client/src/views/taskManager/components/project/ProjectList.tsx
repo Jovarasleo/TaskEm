@@ -14,51 +14,91 @@ import { Project } from "../../model/task";
 import styles from "./styles.module.scss";
 import clsx from "clsx";
 import Dropdown from "../../../../components/dropdown/Dropdown";
+import Modal from "../../../../components/modal/Modal";
+import { Input } from "../../../../components/input/Input";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { object, string } from "yup";
+
+const getOptions = (
+  dispatch: AppDispatch,
+  project: Project,
+  handleEdit: (project: Project) => void
+) => [
+  {
+    node: (
+      <div className="flex items-center gap-2">
+        <span>
+          <FaTrashAlt />
+        </span>
+        Delete
+      </div>
+    ),
+    key: "Delete",
+    onClick: () => dispatch(deleteProjectWithRelatedData(project)),
+  },
+  {
+    node: (
+      <div className="flex items-center gap-2">
+        <span>
+          <MdEdit />
+        </span>
+        Edit
+      </div>
+    ),
+    key: "Edit",
+    onClick: () => handleEdit(project),
+  },
+  {
+    node: (
+      <div className="flex items-center gap-2">
+        <span>
+          <IoPersonAdd />
+        </span>
+        Add user
+      </div>
+    ),
+    key: "Add",
+    onClick: () => console.log("TODO: Add user invitation"),
+  },
+];
+
+const projectEditSchema = object({
+  projectId: string().required(),
+  projectName: string().required(),
+}).required();
 
 function ProjectList() {
   const dispatch: AppDispatch = useDispatch();
+  const [modalVisible, setModalVisible] = useState(false);
   const projects = useSelector((state: RootState) => state.project);
   const navigate = useNavigate();
 
-  const getOptions = (project: Project) => [
-    {
-      node: (
-        <div className="flex items-center gap-2">
-          <span>
-            <FaTrashAlt />
-          </span>
-          Delete
-        </div>
-      ),
-      key: "Delete",
-      onClick: () => dispatch(deleteProjectWithRelatedData(project)),
+  const {
+    reset,
+    register,
+    handleSubmit,
+    formState: { errors, isDirty },
+  } = useForm({
+    resolver: yupResolver(projectEditSchema),
+    defaultValues: {
+      projectId: "",
+      projectName: "",
     },
-    {
-      node: (
-        <div className="flex items-center gap-2">
-          <span>
-            <MdEdit />
-          </span>
-          Edit
-        </div>
-      ),
-      key: "Edit",
-      onClick: () =>
-        dispatch(clientEditProject({ ...project, projectName: "Namu darbai (shared)" })),
-    },
-    {
-      node: (
-        <div className="flex items-center gap-2">
-          <span>
-            <IoPersonAdd />
-          </span>
-          Add user
-        </div>
-      ),
-      key: "Add",
-      onClick: () => console.log("TODO: Add user invitation"),
-    },
-  ];
+  });
+
+  const handleEdit = ({ projectId, projectName }: Project) => {
+    setModalVisible(true);
+    reset({ projectId, projectName });
+  };
+
+  const submit = handleSubmit((formValues) => {
+    dispatch(clientEditProject(formValues));
+
+    reset();
+    setModalVisible(false);
+  });
 
   if (!projects.data.length) {
     return (
@@ -89,13 +129,27 @@ function ProjectList() {
             </button>
             <Dropdown
               className="flex items-center px-4 cursor-pointer group"
-              options={getOptions(project)}
+              options={getOptions(dispatch, project, handleEdit)}
             >
               <BsThreeDots className="group-hover:text-orange-200" />
             </Dropdown>
           </div>
         );
       })}
+      <Modal
+        width={500}
+        title="Edit title"
+        confirmText="Save"
+        visible={modalVisible}
+        onConfirm={submit}
+        confirmDisabled={!isDirty}
+        onCancel={() => setModalVisible(false)}
+      >
+        <div className="flex flex-col gap-4">
+          <Input id="Board title" label="Board title" {...register("projectName")} />
+          <p className="formError">{errors.projectName?.message}</p>
+        </div>
+      </Modal>
     </section>
   );
 }

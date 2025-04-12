@@ -14,9 +14,20 @@ interface Props {
   onCancel: () => void;
   onConfirm?: () => void;
   children?: ReactNode;
+  confirmDisabled?: boolean;
+  confirmText?: string;
 }
 
-const Modal = ({ children, width, visible, onCancel, title, onConfirm }: Props) => {
+const Modal = ({
+  children,
+  width,
+  visible,
+  onCancel,
+  title,
+  onConfirm,
+  confirmDisabled = false,
+  confirmText = "Create",
+}: Props) => {
   const backdropRef = useRef<HTMLDivElement | null>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -69,8 +80,13 @@ const Modal = ({ children, width, visible, onCancel, title, onConfirm }: Props) 
               {children}
               {onConfirm && (
                 <div className="flex mt-8">
-                  <Button className="ml-auto mr-0" onClick={onConfirm} type="primary">
-                    Create
+                  <Button
+                    className="ml-auto mr-0"
+                    type="primary"
+                    onClick={onConfirm}
+                    disabled={confirmDisabled}
+                  >
+                    {confirmText}
                   </Button>
                 </div>
               )}
