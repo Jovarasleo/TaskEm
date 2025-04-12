@@ -1,40 +1,17 @@
 @import "../../../../styles/variables.scss";
 
 .tasksContainerWrapper {
-  border-radius: 1.5rem;
-  box-shadow: 0 0 0.5rem var(--color-black-3);
   background-color: var(--color-white-0);
-  padding: 0.5rem 0.5rem;
   position: relative;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  transform: translateZ(10);
   touch-action: none;
-
-  .newTaskContainer {
-    min-height: 48px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin: 0 $size-sm;
-    h3 {
-      margin-top: $size-xs;
-      color: var(--color-grey-2);
-      font-size: 2.6rem;
-      user-select: none;
-      pointer-events: none;
-    }
-  }
   .textareaWrapper {
     display: flex;
     .input {
       width: 100%;
-      margin: 0 $size-sm;
-      margin-bottom: $size-sm;
       resize: vertical;
-      min-height: 3em;
     }
   }
 }
@@ -44,10 +21,6 @@
 }
 
 .tasksContainer {
-  padding: 1rem 0.5rem 1rem 0.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--color-grey-1) transparent;

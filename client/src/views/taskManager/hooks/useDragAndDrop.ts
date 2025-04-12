@@ -25,7 +25,7 @@ const useDragAndDrop = (dispatch: AppDispatch, tasks: Task[]) => {
       top: `${top}px`,
       left: `${left}px`,
       width: `${width}px`,
-      boxShadow: `0px 0px 6px 2px rgb(84, 84, 84)`,
+      boxShadow: `0px 0px 8px 2px rgb(110, 110, 110)`,
       transition: "transform 250ms",
       pointerEvents: "none",
     };
@@ -98,7 +98,7 @@ const useDragAndDrop = (dispatch: AppDispatch, tasks: Task[]) => {
 
       setTimeout(() => {
         if (cloneElement.current) {
-          cloneElement.current.style.transform = "scale(0.85)";
+          cloneElement.current.style.transform = "scale(0.95)";
         }
       }, 5);
     }

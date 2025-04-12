@@ -1,8 +1,20 @@
 import { useEffect, RefObject } from "react";
-function useOutsideClick(callback: () => void, el: RefObject<HTMLElement | null | undefined>) {
+function useOutsideClick(
+  callback: () => void,
+  refs: RefObject<HTMLElement | null | undefined>[],
+  ignoreModal = false
+) {
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
-      if (el?.current && !el?.current.contains(event.target as Node)) {
+      const modal = document.querySelector("#modal-backdrop");
+      if (modal && modal.contains(event.target as Node) && !ignoreModal) {
+        return;
+      }
+
+      if (
+        refs.every((el) => el?.current) &&
+        refs.every((el) => !el?.current?.contains(event.target as Node))
+      ) {
         callback();
       }
     };
@@ -12,6 +24,6 @@ function useOutsideClick(callback: () => void, el: RefObject<HTMLElement | null 
     return () => {
       document.removeEventListener("mousedown", handleClick, true);
     };
-  }, [el, callback]);
+  }, [refs, callback, ignoreModal]);
 }
 export default useOutsideClick;

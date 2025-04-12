@@ -4,6 +4,7 @@ import Login from "./views/authentication/Login";
 import Signup from "./views/authentication/Signup";
 import TaskManager from "./views/taskManager/TaskManager";
 import Authenticate from "./views/authentication/Authenticate";
+import PublicRoute from "./routes/PublicRoute";
 
 function App(): JSX.Element {
   return (
@@ -14,20 +15,25 @@ function App(): JSX.Element {
           <Route
             path="login"
             element={
-              <Authenticate>
-                <Login />
-              </Authenticate>
+              <PublicRoute>
+                <Authenticate>
+                  <Login />
+                </Authenticate>
+              </PublicRoute>
             }
           />
           <Route
             path="signup"
             element={
-              <Authenticate>
-                <Signup />
-              </Authenticate>
+              <PublicRoute>
+                <Authenticate>
+                  <Signup />
+                </Authenticate>
+              </PublicRoute>
             }
           />
         </Route>
+        <Route path="*" element={<h1>Lost?</h1>} />
       </Routes>
     </BrowserRouter>
   );

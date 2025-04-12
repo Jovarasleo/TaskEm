@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import React, { useRef, useState } from "react";
-import { BsPlusCircle } from "react-icons/bs";
+import { HiOutlinePlusSm } from "react-icons/hi";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
 import { AppDispatch } from "../../../../store/configureStore";
 import { clientCreateTask } from "../../../../store/slices/taskReducer";
@@ -77,44 +77,46 @@ function TasksContainer({
     }
   };
 
-  useOutsideClick(createNewTask, outsideClickRef);
+  useOutsideClick(createNewTask, [outsideClickRef]);
 
   return (
     <section
       key={containerId}
-      className={clsx(styles.tasksContainerWrapper, dragging && styles.containerHover)}
+      className={clsx(
+        styles.tasksContainerWrapper,
+        dragging && styles.containerHover,
+        "p-4 rounded-3xl"
+      )}
       role={containerName}
       onPointerOver={(e) => handleDrag(e, containerRef, containerId)}
       ref={containerRef}
     >
-      <div>
-        <div className={styles.newTaskContainer}>
-          <h3>{containerName}</h3>
-          {todoContainer && (
-            <button
-              role={"create_task"}
-              onClick={() => setAddTask(true)}
-              className={styles.addTaskButton}
-            >
-              <BsPlusCircle />
-            </button>
-          )}
-        </div>
-        {addTask ? (
-          <div className={styles.textareaWrapper}>
-            <textarea
-              autoFocus
-              placeholder="Enter your thoughts here.."
-              className={styles.input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => handleKeypress(e)}
-              value={input}
-              ref={outsideClickRef}
-            />
-          </div>
-        ) : null}
+      <div className="flex relative justify-between items-center mb-1">
+        <h3>{containerName}</h3>
+        {todoContainer && (
+          <button
+            onClick={() => setAddTask(true)}
+            className={styles.addTaskButton}
+            aria-label="create new task"
+          >
+            <HiOutlinePlusSm />
+          </button>
+        )}
       </div>
-      <ul className={clsx(styles.tasksContainer)}>
+      {addTask ? (
+        <div className={styles.textareaWrapper}>
+          <textarea
+            autoFocus
+            placeholder="Enter your thoughts here.."
+            className={styles.input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => handleKeypress(e)}
+            value={input}
+            ref={outsideClickRef}
+          />
+        </div>
+      ) : null}
+      <ul className={clsx(styles.tasksContainer, "flex flex-col gap-2")}>
         {tasks.map((task, index) => {
           return (
             <TaskCard

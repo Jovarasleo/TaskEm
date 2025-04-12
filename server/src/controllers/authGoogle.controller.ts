@@ -49,7 +49,7 @@ export const googleLoginController = async (req: Request, res: Response) => {
 
     const response = await googleUserRegistrationHandler(data.name, data.email, data.id);
     if (!response.success || !response.data) {
-      return res.status(500).send({ success: false, error: "Something went wrong data", data: null });
+      return res.status(500).send({ success: false, error: response.error ?? "Something went wrong data", data: null });
     }
 
     const jwtToken = generateToken(response.data);

@@ -1,10 +1,9 @@
 import { ActionCreatorWithPayload, ThunkDispatch } from "@reduxjs/toolkit";
 import { AnyAction, Dispatch, MiddlewareAPI } from "redux";
 import { deleteEvent, getEvents, syncAllContainers, syncAllProjects, syncAllTasks } from "../../db";
-import { userLoggedIn } from "../slices/authSlice";
+import { clientLoadLocalProjects } from "../slices/projectReducer";
 import { serverCreateTask, serverEditTask, serverMoveTask } from "../slices/taskReducer";
 import { SocketAction, SocketActionType, SocketServerAction } from "../slices/types";
-import { clientLoadLocalProjects } from "../slices/projectReducer";
 
 export type Subscribers = {
   [K in SocketActionType]: ActionCreatorWithPayload<() => void, SocketActionType>;
@@ -88,7 +87,6 @@ export const socketMiddleware =
       console.log("WebSocket connected");
       if (ws && ws.readyState === WebSocket.OPEN) {
         await syncAllData(ws);
-        store.dispatch(userLoggedIn(true));
       }
     };
 
@@ -96,22 +94,35 @@ export const socketMiddleware =
       console.warn("WebSocket closed");
     };
 
-    if (ws) {
-      ws.onerror = ws.onopen = ws.onclose = null;
+    const connectWebSocket = async () => {
+      if (ws) {
+        ws.onerror = ws.onopen = ws.onclose = null;
 
-      ws.removeEventListener("message", handleReceivedSocketEvents);
-      ws.removeEventListener("open", onWebSocketOpen);
-      ws.removeEventListener("close", onWebSocketClosed);
-      ws.close();
-    }
+        ws.removeEventListener("message", handleReceivedSocketEvents);
+        ws.removeEventListener("open", onWebSocketOpen);
+        ws.removeEventListener("close", onWebSocketClosed);
+        ws.close();
+      }
 
-    ws = new WebSocket(WEB_SOCKET_ENDPOINT);
+      ws = new WebSocket(WEB_SOCKET_ENDPOINT);
 
-    ws.addEventListener("message", handleReceivedSocketEvents);
-    ws.addEventListener("open", onWebSocketOpen);
-    ws.addEventListener("close", onWebSocketClosed);
+      ws.addEventListener("message", handleReceivedSocketEvents);
+      ws.addEventListener("open", onWebSocketOpen);
+      ws.addEventListener("close", onWebSocketClosed);
+    };
 
     return (action: SocketAction) => {
+      if (
+        (action.type === "auth/isAuth/fulfilled" && action.payload) ||
+        (action.type === "auth/login/fulfilled" && action.payload.success)
+      ) {
+        connectWebSocket();
+      }
+
+      if (action.type === "auth/logout/fulfilled") {
+        ws?.close();
+      }
+
       if (ws?.readyState !== WebSocket.OPEN) {
         return next(action);
       }
@@ -123,12 +134,8 @@ export const socketMiddleware =
             sendUserAction(ws, action.type, action.payload);
           }
         }
-
-        // if (action.type === "auth/login/fulfilled") {
-        //   socketMiddleware(subscribers)(store)(next);
-        // }
       }
 
-      next(action);
+      return next(action);
     };
   };

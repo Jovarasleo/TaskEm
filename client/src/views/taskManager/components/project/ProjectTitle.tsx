@@ -17,7 +17,7 @@ const ProjectTitle = ({ project, setName }: Props) => {
   const [error, setError] = useState<null | string>("");
   const [editName, setEditName] = useState(false);
 
-  useOutsideClick(() => saveChanges(projectName), outsideClickRef);
+  useOutsideClick(() => saveChanges(projectName), [outsideClickRef]);
 
   const saveChanges = (updatedName: string) => {
     if (!editName) {
@@ -53,10 +53,9 @@ const ProjectTitle = ({ project, setName }: Props) => {
           <FiEdit3 className={styles.editButton} onClick={() => saveChanges(projectName)} />
         </div>
       ) : (
-        <h2 className={styles.projectName}>
+        <h2 className="mb-2">
           {currentProjectName}
           <FiEdit3
-            className={styles.editButton}
             onClick={() => {
               setEditName(true);
               setProjectName(currentProjectName);

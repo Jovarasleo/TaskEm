@@ -22,13 +22,21 @@ interface InitialState {
   loggedIn: boolean;
   message: null | string;
   error: string[];
-  success: boolean;
+  initialLoading: boolean;
+}
+
+interface UserDataDto {
+  data: {
+    username: string;
+    email: string;
+  };
+  error?: string[];
 }
 
 interface RegisteredUserDto {
-  success: boolean;
+  initialLoading: boolean;
   message: string;
-  user: {
+  data: {
     username: string;
     email: string;
   };
@@ -119,13 +127,60 @@ export const logoutUser = createAsyncThunk<void, void, RejectValue>(
   }
 );
 
+export const isAuth = createAsyncThunk<boolean, void, RejectValue>(
+  "auth/isAuth",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${ENDPOINT_URL}/auth/isAuth`, {
+        ...REQUEST_INIT,
+        method: "GET",
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        return data.success;
+      } else {
+        const error = Array.isArray(data?.error) ? data.error : ["Unknown error occurred."];
+        return rejectWithValue({ error });
+      }
+    } catch (error) {
+      return rejectWithValue({ error: ["Unknown error occurred."] });
+    }
+  }
+);
+
+export const getUserData = createAsyncThunk<UserDataDto, void, RejectValue>(
+  "user/getUserData",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${ENDPOINT_URL}/user`, {
+        ...REQUEST_INIT,
+        method: "GET",
+      });
+
+      const data = await response.json();
+      console.log({ data });
+
+      if (response.ok) {
+        return data;
+      } else {
+        const error = Array.isArray(data?.error) ? data.error : ["Unknown error occurred."];
+        return rejectWithValue({ error });
+      }
+    } catch (error) {
+      return rejectWithValue({ error: ["Unknown error occurred."] });
+    }
+  }
+);
+
 const initialState: InitialState = {
   loading: false,
   userData: { username: "", email: "" }, // for user object
   loggedIn: false,
   message: null,
   error: [],
-  success: false, // for monitoring the registration process.
+  initialLoading: true,
 };
 
 const authSlice = createSlice({
@@ -154,40 +209,57 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.success;
+        state.initialLoading;
         state.message = action.payload.message;
-        state.userData = action.payload.user;
+        state.userData.email = action.payload.data.email;
+        state.userData.username = action.payload.data.username;
         state.error = [];
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.message = null;
         state.error = action.payload?.error ?? [];
-        state.success = false;
+        state.initialLoading = false;
+      })
+      .addCase(getUserData.pending, (state) => {
+        state.loading = true;
+        state.initialLoading = false;
+      })
+      .addCase(getUserData.fulfilled, (state, action) => {
+        state.loading = false;
+        state.loggedIn = true;
+        state.userData.email = action.payload.data.email;
+        state.userData.username = action.payload.data.username;
+        state.error = [];
+      })
+      .addCase(getUserData.rejected, (state, action) => {
+        state.loading = false;
+        state.message = null;
+        state.error = action.payload?.error ?? [];
       })
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
+        state.initialLoading = false;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.success = true;
         state.loggedIn = true;
         state.message = action.payload.message;
-        state.userData = action.payload.user;
+        state.userData.email = action.payload.data.email;
+        state.userData.username = action.payload.data.username;
         state.error = [];
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.message = null;
         state.error = action.payload?.error ?? [];
-        state.success = false;
       })
       .addCase(logoutUser.pending, (state) => {
         state.loading = true;
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.loading = false;
-        state.success = true;
+        state.initialLoading = false;
         state.loggedIn = false;
         state.error = [];
       })
@@ -195,7 +267,23 @@ const authSlice = createSlice({
         state.loading = false;
         state.message = null;
         state.error = action.payload?.error ?? [];
-        state.success = false;
+        state.initialLoading = false;
+      })
+      .addCase(isAuth.pending, (state) => {
+        state.loading = true;
+        state.initialLoading = true;
+      })
+      .addCase(isAuth.fulfilled, (state, action) => {
+        state.loading = false;
+        state.initialLoading = false;
+        state.loggedIn = action.payload;
+        state.error = [];
+      })
+      .addCase(isAuth.rejected, (state, action) => {
+        state.loading = false;
+        state.message = null;
+        state.error = action.payload?.error ?? [];
+        state.initialLoading = false;
       });
   },
 });

@@ -10,7 +10,7 @@ export const getUserData = async (req: Request, res: Response) => {
       return res.status(400).send({ success: false, error: response.error });
     }
 
-    return res.status(200).send({ success: true, user: response.data });
+    return res.status(200).send({ success: true, data: response.data });
   } catch (error) {
     res.status(500).send("Internal Server Error");
   }

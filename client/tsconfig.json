@@ -22,6 +22,6 @@
     }
   },
   "exclude": ["node_modules", "**/node_modules/*"],
-  "include": ["./src", "./src/declaration.d.ts"],
+  "include": ["./src", "./src/declaration.d.ts", "postcss.config.js", "tailwind.config.js"],
   "types": ["node", "jest", "@testing-library/jest-dom"]
 }

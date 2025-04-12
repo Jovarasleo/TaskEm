@@ -10,7 +10,7 @@ export async function googleUserRegistrationHandler(username: string, email: str
   }
 
   const user = new User({ username, email, uuid: id });
-  const validatedUser = await user.validateUser(generateId, hashPassword);
+  const validatedUser = await user.validateGoogleUser();
 
   if (validatedUser.error) {
     return { success: false, error: validatedUser.error, data: null };

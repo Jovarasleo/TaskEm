@@ -17,38 +17,28 @@
 }
 
 .modal {
-  transition-duration: 300ms;
+  transition-duration: 200ms;
   border-radius: 10px;
-  background-color: var(--color-grey-3);
   position: fixed;
-  width: 0;
-  height: 0;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  width: 100%;
+  transform: translate(-50%, -50%) scale(0.9);
   overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  opacity: 0;
 
   .modalButtonsWrapper {
     width: 50%;
     display: flex;
     justify-content: space-between;
-
-    .cofirmButton {
-    }
   }
 }
 
 .animateModal {
-  width: 100%;
-  height: auto;
-  padding: 40px 0;
-}
+  opacity: 1;
 
-.modal::backdrop {
-  position: absolute;
-  inset: 0;
-  background-color: var(--color-shadow-grey-3);
+  .modal {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
 }

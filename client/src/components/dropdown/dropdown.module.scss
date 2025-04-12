@@ -3,62 +3,20 @@
   opacity: 0;
   z-index: 1000;
   position: absolute;
-  margin-top: 1rem;
-  right: 1rem;
+  margin-top: 32px;
+  right: 8px;
   overflow: hidden;
-  width: 100%;
-  max-width: 200px;
-  min-width: 160px;
-  box-shadow: rgb(68, 68, 68) 1px 2px 5px 2px;
-  border-radius: 1px;
+  min-width: 140px;
+  border-radius: 4px;
+  box-shadow: rgb(68, 68, 68) 1px 2px 5px 1px;
 
   li {
     list-style-type: none;
-    width: 100%;
-
-    button {
-      width: 100%;
-      padding: 4px 0;
-      border-radius: 0;
-      font-size: 1.5rem;
-      font-weight: 600;
-      letter-spacing: 1px;
-      color: var(--color-grey-3);
-      background-color: rgb(250, 243, 238);
-    }
-
-    button:hover {
-      background-color: rgb(240, 166, 114);
-      color: var(--color-white-1);
-    }
   }
 }
 
 .transition {
   opacity: 1;
-}
-
-.projectSettingsGear {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  background-color: transparent;
-
-  svg {
-    font-size: 36px;
-    color: var(--color-grey-2);
-    transition: all 300ms;
-  }
-}
-.projectSettingsGear:hover svg {
-  color: white;
-}
-
-.activeGear svg {
-  transform: rotate(90deg);
-  fill: white;
 }
 
 .dropdownWrapper {

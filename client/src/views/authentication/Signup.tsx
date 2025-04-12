@@ -8,6 +8,7 @@ import { registerUser } from "../../store/slices/authSlice";
 import styles from "./authenticate.module.scss";
 import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
+import { Input } from "../../components/input/Input";
 
 const schema = object({
   email: string().email().required(),
@@ -53,53 +54,29 @@ function Signup() {
     <>
       <form className={styles.loginForm}>
         <div className={styles.loginFormField}>
-          <label htmlFor="email">Email</label>
-          <input
-            className={styles.fieldInput}
-            type="email"
-            placeholder="Type your email"
-            {...register("email")}
-          />
-          <p className={styles.formError}>{errors.email?.message}</p>
+          <Input id="email" label="Email" {...register("email")} />
+          <p className="formError">{errors.email?.message}</p>
         </div>
         <div className={styles.loginFormField}>
-          <label htmlFor="username">Username</label>
-          <input
-            className={styles.fieldInput}
-            type="username"
-            placeholder="Type your username"
-            {...register("username")}
-          />
-          <p className={styles.formError}>{errors.username?.message}</p>
+          <Input id="username" label="Username" {...register("username")} />
+          <p className="formError">{errors.username?.message}</p>
         </div>
         <div className={styles.loginFormField}>
-          <label htmlFor="password">Password</label>
-          <input
-            className={styles.fieldInput}
-            type="password"
-            placeholder="Type your password"
-            {...register("password")}
-          />
-          <p className={styles.formError}>{errors.password?.message}</p>
+          <Input id="password" label="Password" {...register("password")} type="password" />
+          <p className="formError">{errors.password?.message}</p>
         </div>
         <div className={styles.loginFormField}>
-          <label htmlFor="password">Password</label>
-          <input
-            className={styles.fieldInput}
-            type="password"
-            placeholder="Confirm password"
-            {...register("confirmPassword")}
-          />
-          <p className={styles.formError}>{errors.confirmPassword?.message}</p>
+          <Input id="password" label="Password" {...register("confirmPassword")} type="password" />
+          <p className="formError">{errors.confirmPassword?.message}</p>
           {error.length > 0 && (
-            <ul className={clsx(styles.formError, styles.serverErrors)}>
+            <ul className={clsx("formError", styles.serverErrors)}>
               {error.map((er) => (
                 <li key={er}>{er}</li>
               ))}
             </ul>
           )}
         </div>
-        <Button className={styles.formSubmitBtn} loading={loading} onClick={submit}>
+        <Button className="py-2 font-semibold" loading={loading} onClick={submit} type="primary">
           Sign Up
         </Button>
       </form>

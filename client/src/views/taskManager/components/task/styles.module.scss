@@ -1,27 +1,20 @@
 @import "../../../../styles/variables.scss";
 
 .task {
-  cursor: grab;
-  user-select: none;
   display: flex;
+  position: relative;
   flex-direction: column;
   justify-content: center;
-  position: relative;
-  opacity: 1;
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  box-shadow: 0px 0px 3px 2px var(--color-shadow-grey-1);
-  background-color: white;
+  padding: 8px;
+  border-radius: 16px;
+  background-color: rgb(212, 212, 212);
   touch-action: none;
-
-  .taskIndex {
-    font-size: 1.6rem;
-  }
+  user-select: none;
+  cursor: grab;
 
   .textarea {
+    border-radius: 8px;
     resize: none;
-    font-size: 1.4rem;
     overflow-wrap: break-word;
     border: 0;
     word-break: break-all;
@@ -31,20 +24,18 @@
   .paragraph {
     cursor: pointer;
     border: none;
+    border-radius: 8px;
     text-align: left;
-    font-size: 1.4rem;
-    max-height: 8rem;
     word-break: break-all;
     overflow-wrap: break-word;
-    background-color: var(--color-white-1);
-    box-shadow: 0px 2px 3px 1px var(--color-shadow-grey-3);
+    background-color: var(--color-white-0);
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
   }
 
   .taskDescription {
-    margin-top: 10px;
+    margin-top: 12px;
     padding: 5px;
     overflow: hidden;
     line-height: 1.4;
@@ -52,22 +43,21 @@
 
   .deleteButton {
     background-color: rgb(246, 246, 246);
-    box-shadow: 0 0 2px 2px rgb(112, 112, 112);
     transition-duration: 300ms;
     transition-property: border-radius, width, box-shadow;
-    width: 25px;
-    height: 25px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     position: absolute;
     display: flex;
     align-items: center;
     justify-content: center;
-    right: 5px;
-    top: 5px;
+    right: 8px;
+    top: 8px;
     cursor: pointer;
 
     &:hover {
-      box-shadow: 0 0 3px 2px var(--color-grey-2);
+      box-shadow: 0 0 2px 0px var(--color-grey-2);
     }
 
     svg {
@@ -99,24 +89,6 @@
   }
 }
 
-.current {
-  box-shadow: 0px 0px 4px 3px rgb(179, 85, 26);
-}
-
-.indicator {
-  position: relative;
-  &:before,
-  &:after {
-    left: 0;
-    height: $size-xs;
-    display: block;
-    border-radius: 10px;
-    background-color: var(--theme-main);
-    width: 100%;
-    position: absolute;
-  }
-}
-
 .before {
   position: relative;
   &:before {
@@ -138,7 +110,7 @@
 }
 
 .draggable {
-  box-shadow: inset 0 0 10px 3px rgb(170, 93, 55);
+  background-color: transparent;
   & > * {
     visibility: hidden;
   }

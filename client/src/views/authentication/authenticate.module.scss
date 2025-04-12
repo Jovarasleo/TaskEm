@@ -6,7 +6,6 @@
   margin-inline: auto;
   padding: $size-x2;
   box-shadow: 0 0 4px 1px var(--color-shadow-grey-0);
-  border-radius: $size-sm;
   width: 100%;
 }
 
@@ -40,17 +39,11 @@
   border-bottom: 1px solid grey;
 }
 
-.formError {
-  min-height: $size-md;
-  color: rgb(161, 81, 81);
-}
-
 .serverErrors {
   list-style-type: none;
 }
 
-.forgotPasswordBtn {
-  margin-left: auto;
+.linkBtn {
   color: var(--color-grey-2);
 
   text-underline-offset: 4px;
@@ -67,21 +60,4 @@
 
 .googleLoginBtn {
   margin: $size-md 0;
-}
-
-.formSubmitBtn {
-  padding: 11px;
-  font-weight: $font-weight-medium;
-
-  transition-duration: 0.3s;
-  transition-property: background;
-
-  &:not(:disabled) {
-    background-color: var(--theme-main);
-    color: var(--color-white-0);
-  }
-
-  &:hover:not(:disabled) {
-    background-color: var(--color-grey-2);
-  }
 }

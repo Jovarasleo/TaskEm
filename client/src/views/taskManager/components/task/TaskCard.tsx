@@ -94,8 +94,8 @@ function TaskCard({
   };
 
   useContainerHeight(textAreaRef, input, inputField);
-  useOutsideClick(closeTextBoxes, outsideClickRef);
-  useOutsideClick(() => handleConfirmDeletion(false), deleteButtonRef);
+  useOutsideClick(closeTextBoxes, [outsideClickRef]);
+  useOutsideClick(() => handleConfirmDeletion(false), [deleteButtonRef]);
 
   return (
     <li
