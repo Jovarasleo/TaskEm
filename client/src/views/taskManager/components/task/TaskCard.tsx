@@ -8,7 +8,7 @@ import { Task } from "../../model/task";
 import Button from "../../../../components/button/Button";
 import { AppDispatch } from "../../../../store/configureStore";
 import { clientDeleteTask, clientEditTask } from "../../../../store/slices/taskReducer";
-import styles from "./styles.module.scss";
+import styles from "./styles.module.css";
 import { isMobile } from "../../../..";
 
 interface TaskProps {

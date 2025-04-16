@@ -1,9 +1,14 @@
-/* eslint-disable */
+const { heroui } = require("@heroui/react");
 
-module.exports = {
-  content: ["./src/views/*.{js,jsx,ts,tsx,html}", "./src/components/*.{js,jsx,ts,tsx,html}"],
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./src/**/*.{html,js,jsx,tsx,ts}",
+    "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
+  ],
   theme: {
     extend: {},
   },
-  plugins: [],
+  darkMode: "class",
+  plugins: [heroui()],
 };

@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { AppDispatch } from "../../store/configureStore";
 import { useDispatch } from "react-redux";
 import { clearAuthError } from "../../store/slices/authSlice";
-import styles from "./authenticate.module.scss";
+import styles from "./authenticate.module.css";
 import clsx from "clsx";
 
 interface Props {

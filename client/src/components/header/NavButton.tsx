@@ -1,6 +1,6 @@
 import { ButtonProps } from "../button/Button";
 import clsx from "clsx";
-import styles from "./styles.module.scss";
+import styles from "./styles.module.css";
 import { forwardRef, LegacyRef } from "react";
 
 interface NavButton extends ButtonProps {

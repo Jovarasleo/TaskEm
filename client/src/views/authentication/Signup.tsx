@@ -5,7 +5,7 @@ import { object, string, ref } from "yup";
 import Button from "../../components/button/Button";
 import { AppDispatch, RootState } from "../../store/configureStore";
 import { registerUser } from "../../store/slices/authSlice";
-import styles from "./authenticate.module.scss";
+import styles from "./authenticate.module.css";
 import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
 import { Input } from "../../components/input/Input";

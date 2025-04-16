@@ -11,7 +11,7 @@ import {
   selectProjectWithRelatedData,
 } from "../../../../store/slices/projectReducer";
 import { Project } from "../../model/task";
-import styles from "./styles.module.scss";
+import styles from "./styles.module.css";
 import clsx from "clsx";
 import Dropdown from "../../../../components/dropdown/Dropdown";
 import Modal from "../../../../components/modal/Modal";

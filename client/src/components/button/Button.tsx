@@ -1,6 +1,6 @@
 import { ReactElement, ReactNode, RefObject } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import styles from "./button.module.scss";
+import "./button.module.css";
 import clsx from "clsx";
 
 export interface ButtonProps {
@@ -36,7 +36,6 @@ function Button({
       ref={ref}
       className={clsx(
         "cursor-pointer rounded-lg transition-colors flex items-center justify-center gap-2",
-        type && styles[type],
         type && css[type],
         "disabled:cursor-not-allowed disabled:bg-neutral-400 disabled:border-neutral-400",
         className

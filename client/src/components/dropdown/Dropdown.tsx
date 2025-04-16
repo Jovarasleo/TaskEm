@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { useRef, useState } from "react";
 import { CSSTransition } from "react-transition-group";
 import useOutsideClick from "../../hooks/useOutsideClick";
-import styles from "./dropdown.module.scss";
+import styles from "./dropdown.module.css";
 
 interface Props {
   children: React.ReactNode;

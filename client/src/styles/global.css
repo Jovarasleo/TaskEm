@@ -1,7 +1,4 @@
-@import "./variables.scss";
-
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap");
-@import "tailwindcss";
 
 * {
   box-sizing: border-box;
@@ -60,6 +57,6 @@ main {
 }
 
 .formError {
-  min-height: $size-md;
+  min-height: 12px;
   color: rgb(161, 81, 81);
 }

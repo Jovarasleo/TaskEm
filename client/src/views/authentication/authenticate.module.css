@@ -1,31 +1,29 @@
-@import "../../styles/variables.scss";
-
 .formContainer {
   max-width: 500px;
   background-color: var(--color-white-0);
   margin-inline: auto;
-  padding: $size-x2;
+  padding: 32px;
   box-shadow: 0 0 4px 1px var(--color-shadow-grey-0);
   width: 100%;
 }
 
 .formTitle {
-  margin: $size-sm 0 $size-lg 0;
-  font-size: $size-xl;
+  margin: 4px 0 16px 0;
+  font-size: 24px;
   text-align: center;
 }
 
 .linkToContainer {
   display: flex;
   justify-content: center;
-  margin-top: $size-x2;
-  font-size: $font-nm;
+  margin-top: 48px;
+  font-size: 14px;
 }
 .loginForm {
   display: flex;
   flex-direction: column;
-  gap: $size-lg;
-  font-size: $font-nm;
+  gap: 2rem;
+  font-size: 14px;
 }
 
 .loginFormField {
@@ -34,7 +32,7 @@
 }
 
 .fieldInput {
-  padding: $size-sm;
+  padding: 4px;
   border: none;
   border-bottom: 1px solid grey;
 }
@@ -59,5 +57,5 @@
 }
 
 .googleLoginBtn {
-  margin: $size-md 0;
+  margin: 16px 0;
 }

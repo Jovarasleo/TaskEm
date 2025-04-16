@@ -5,6 +5,7 @@ import { CSSTransition } from "react-transition-group";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import CreateProject from "../../views/taskManager/components/project/CreateProject";
 import ProjectList from "../../views/taskManager/components/project/ProjectList";
+import { Drawer, ModalContent } from "@heroui/react";
 
 interface NavbarProps {
   visible: boolean;
@@ -18,6 +19,18 @@ function Sidebar({ visible, menuButtonRef, handleNavigation }: NavbarProps) {
 
   useOutsideClick(() => (visible ? handleNavigation() : {}), [nodeRef, menuButtonRef]);
 
+  return (
+    <Drawer
+      isDismissable
+      onOpenChange={function Js() {}}
+      isOpen={visible}
+      backdrop="blur"
+      placement="left"
+      className="bg-grey-100"
+    >
+      <ModalContent>ass</ModalContent>
+    </Drawer>
+  );
   return (
     <CSSTransition
       in={visible}

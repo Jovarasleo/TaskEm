@@ -1,4 +1,4 @@
-import styles from "./modal.module.scss";
+import styles from "./modal.module.css";
 import { createPortal } from "react-dom";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import { CSSTransition } from "react-transition-group";

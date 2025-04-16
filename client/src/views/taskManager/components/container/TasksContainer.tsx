@@ -7,7 +7,7 @@ import { clientCreateTask } from "../../../../store/slices/taskReducer";
 import { uid } from "../../../../util/uid";
 import { HandleDrag, Task as TaskModel } from "../../model/task";
 import TaskCard from "../task/TaskCard";
-import styles from "./styles.module.scss";
+import styles from "./styles.module.css";
 
 interface TaskContainer {
   dataTestId?: string;
