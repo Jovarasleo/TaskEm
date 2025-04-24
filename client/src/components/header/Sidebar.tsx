@@ -16,6 +16,7 @@ function Sidebar({ isOpen, onOpenChange }: NavbarProps) {
       isOpen={isOpen}
       backdrop="blur"
       placement="left"
+      portalContainer={document.querySelector("main") ?? document.body}
     >
       <DrawerContent className="p-2">
         <div className="flex mb-6 h-[44px]">

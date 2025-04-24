@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import store from "./store/configureStore";
 import App from "./App";
-import { HeroUIProvider } from "@heroui/react";
 import "./styles/global.css";
 import "./styles/tailwind.css";
 
@@ -49,9 +48,7 @@ ready();
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <HeroUIProvider>
-        <App />
-      </HeroUIProvider>
+      <App />
     </Provider>
   </React.StrictMode>
 );

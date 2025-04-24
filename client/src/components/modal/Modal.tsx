@@ -1,17 +1,19 @@
-import styles from "./modal.module.css";
-import { createPortal } from "react-dom";
-import useOutsideClick from "../../hooks/useOutsideClick";
-import { CSSTransition } from "react-transition-group";
-import { ReactNode, useEffect, useRef } from "react";
-import { IoIosClose } from "react-icons/io";
-import Button from "../button/Button";
-import clsx from "clsx";
+import { ReactNode } from "react";
+
+import {
+  Button,
+  Modal as HeroModal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@heroui/react";
 
 interface Props {
   title?: string;
-  width?: number;
-  visible?: boolean;
-  onCancel: () => void;
+  size?: "md" | "sm" | "lg" | "xl" | "2xl" | "xs" | "3xl" | "4xl" | "5xl" | "full";
+  isOpen?: boolean;
+  onClose: () => void;
   onConfirm?: () => void;
   children?: ReactNode;
   confirmDisabled?: boolean;
@@ -20,82 +22,35 @@ interface Props {
 
 const Modal = ({
   children,
-  width,
-  visible,
-  onCancel,
+  size = "md",
+  isOpen,
+  onClose,
   title,
   onConfirm,
   confirmDisabled = false,
   confirmText = "Create",
 }: Props) => {
-  const backdropRef = useRef<HTMLDivElement | null>(null);
-  const modalRef = useRef<HTMLDivElement | null>(null);
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
-
-  useOutsideClick(onCancel, [modalRef], true);
-
-  useEffect(() => {
-    if (visible && closeButtonRef.current) {
-      closeButtonRef.current?.focus();
-    }
-  }, [visible]);
-
-  //TODO: fix modal looks
   return (
-    <>
-      {createPortal(
-        <CSSTransition
-          in={visible}
-          timeout={200}
-          nodeRef={backdropRef}
-          classNames={{
-            enterActive: styles.animateModal,
-            enterDone: styles.animateModal,
-          }}
-          unmountOnExit
-        >
-          <div
-            id="modal-backdrop"
-            className="z-10001 bg-neutral-900/75 absolute inset-0 opacity-0 transition-opacity transition-duration-200"
-            ref={backdropRef}
-            onKeyDown={(e) => (e.key === "Escape" ? onCancel() : {})}
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-            }}
-          >
-            <div
-              ref={modalRef}
-              style={{ maxWidth: width }}
-              className={clsx(styles.modal, "bg-white p-4 relatie")}
-            >
-              <button
-                ref={closeButtonRef}
-                onClick={onCancel}
-                className="group cursor-pointer float-right"
-              >
-                <IoIosClose className="size-7 group-hover:text-orange-400 transition-colors" />
-              </button>
-              {title && <h4 className="mb-4 text-xl">{title}</h4>}
-              {children}
+    <HeroModal isOpen={isOpen} size={size} onClose={onClose}>
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
+            <ModalBody>{children}</ModalBody>
+            <ModalFooter>
+              <Button color="danger" variant="light" onPress={onClose}>
+                Close
+              </Button>
               {onConfirm && (
-                <div className="flex mt-8">
-                  <Button
-                    className="ml-auto mr-0"
-                    type="primary"
-                    onClick={onConfirm}
-                    disabled={confirmDisabled}
-                  >
-                    {confirmText}
-                  </Button>
-                </div>
+                <Button color="primary" onPress={onConfirm} disabled={confirmDisabled}>
+                  {confirmText}
+                </Button>
               )}
-            </div>
-          </div>
-        </CSSTransition>,
-        document.querySelector("#app") || document.body
-      )}
-    </>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </HeroModal>
   );
 };
 export default Modal;
