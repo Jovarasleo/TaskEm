@@ -102,6 +102,7 @@ function TaskCard({
       ref={taskItem}
       className={clsx(
         styles.task,
+        "task",
         dragging && currentlyDragging === task.taskId ? styles.draggable : ""
       )}
       tabIndex={0}
@@ -114,7 +115,6 @@ function TaskCard({
     >
       <span className={styles.taskIndex}>{`# ${task?.count}`}</span>
       <div
-        role={"delete_task"}
         className={clsx(styles.deleteButton, confirmDeletion && styles.confirmationView)}
         ref={deleteButtonRef}
         tabIndex={0}
