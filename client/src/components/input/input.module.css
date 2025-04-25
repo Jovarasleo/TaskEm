@@ -1,5 +1,5 @@
 .floating {
-  // background-color: rgb(245, 245, 245);
+  background-color: rgb(245, 245, 245);
   transition: background-color 0.2s ease;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
@@ -45,21 +45,6 @@
   left: 1rem;
   position: relative;
 }
-
-// .floatingLabel::after {
-//   bottom: 1rem;
-//   content: "";
-//   height: 0.1rem;
-//   position: absolute;
-//   transition: transform 180ms cubic-bezier(0.4, 0, 0.2, 1),
-//     opacity 180ms cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
-//   left: 0;
-//   top: 100%;
-//   margin-top: -0.1rem;
-//   transform: scale3d(0, 1, 1);
-//   width: 100%;
-//   background-color: rgb(73, 73, 73);
-// }
 
 .floatingInput:focus + .floatingLabel::after {
   transform: scale3d(1, 1, 1);

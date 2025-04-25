@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import styles from "./input.module.scss";
+import styles from "./input.module.css";
 import { forwardRef } from "react";
 
 interface Props {

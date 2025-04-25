@@ -1,24 +1,22 @@
-import { useRef, useState } from "react";
-import NavButton from "../header/NavButton";
 import Sidebar from "../header/Sidebar";
 import { AccountMenu } from "../header/AccountMenu";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/configureStore";
+import { Button, useDisclosure } from "@heroui/react";
+import { CgMenuGridR } from "react-icons/cg";
 
 function Header() {
   const { loading, loggedIn } = useSelector((state: RootState) => state.auth);
-  const [showNav, setShowNav] = useState(false);
   const location = useLocation();
-  const menuButtonRef = useRef(null);
 
-  const handleNavigation = () => {
-    setShowNav((prevState) => !prevState);
-  };
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
     <header className="flex relative">
-      <NavButton ref={menuButtonRef} active={showNav} onClick={() => handleNavigation()} />
+      <Button onPress={onOpen} isIconOnly className="size-16 bg-opacity-0">
+        <CgMenuGridR className="size-16" />
+      </Button>
       {!loading &&
         (loggedIn ? (
           <AccountMenu />
@@ -33,11 +31,7 @@ function Header() {
           )
         ))}
 
-      <Sidebar
-        visible={showNav}
-        menuButtonRef={menuButtonRef}
-        handleNavigation={handleNavigation}
-      />
+      <Sidebar isOpen={isOpen} onOpenChange={onOpenChange} />
     </header>
   );
 }

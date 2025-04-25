@@ -18,8 +18,8 @@ module.exports = {
         ],
       },
       {
-        test: /\.scss$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader", "sass-loader"],
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, "style-loader", "css-loader", "postcss-loader"],
       },
       {
         test: /\.(jpg|jpeg|png|gif|mp3|svg)$/,

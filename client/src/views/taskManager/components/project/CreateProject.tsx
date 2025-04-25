@@ -13,6 +13,7 @@ import { Input } from "../../../../components/input/Input";
 import { useForm } from "react-hook-form";
 import { object, string } from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useDisclosure } from "@heroui/react";
 
 const schema = object({
   title: string().required(),
@@ -20,7 +21,7 @@ const schema = object({
 
 function CreateProject() {
   const dispatch: AppDispatch = useDispatch();
-  const [modalVisible, setModalVisible] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const {
     reset,
@@ -51,34 +52,28 @@ function CreateProject() {
     dispatch(clientLoadContainers(containers));
 
     reset();
-    setModalVisible(false);
+    onClose();
   });
 
   return (
     <>
       <div className="my-4">
         <button
-          onClick={() => setModalVisible((prev) => !prev)}
+          onClick={() => onOpen()}
           className={clsx(
-            modalVisible && "bg-neutral-700",
+            isOpen && "bg-neutral-700",
             "flex justify-center rounded-full items-center ml-auto p-2 bg-neutral-100 group hover:bg-neutral-700 cursor-pointer transition-colors"
           )}
         >
           <MdDashboardCustomize
             className={clsx(
-              modalVisible ? "text-[#f98e4c]" : "text-neutral-700",
+              isOpen ? "text-[#f98e4c]" : "text-neutral-700",
               "size-7 group-hover:text-[#f98e4c] transition-colors"
             )}
           />
         </button>
       </div>
-      <Modal
-        width={500}
-        title="New task board"
-        visible={modalVisible}
-        onConfirm={submit}
-        onCancel={() => setModalVisible(false)}
-      >
+      <Modal title="New task board" isOpen={isOpen} onConfirm={submit} onClose={() => onClose()}>
         <div className="flex flex-col gap-4">
           <Input id="Board title" label="Board title" {...register("title")} />
           <p>{errors.title?.message}</p>

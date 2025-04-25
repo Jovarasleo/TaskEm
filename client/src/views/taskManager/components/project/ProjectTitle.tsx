@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import styles from "./styles.module.scss";
+import styles from "./styles.module.css";
 import { FiEdit3 } from "react-icons/fi";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
 import { Project } from "../../model/task";

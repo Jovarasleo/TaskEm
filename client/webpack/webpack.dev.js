@@ -42,21 +42,8 @@ module.exports = {
         ],
       },
       {
-        test: /\.(scss)$/,
-        use: [
-          "style-loader",
-          {
-            loader: "css-loader",
-            options: {
-              modules: {
-                localIdentName: "[local]",
-              },
-              importLoaders: 2,
-            },
-          },
-          "postcss-loader",
-          "sass-loader",
-        ],
+        test: /\.(css)$/,
+        use: ["style-loader", "css-loader", "postcss-loader"],
       },
     ],
   },

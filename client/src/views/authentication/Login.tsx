@@ -6,7 +6,7 @@ import { object, string } from "yup";
 import Button from "../../components/button/Button";
 import { AppDispatch, RootState } from "../../store/configureStore";
 import { loginUser } from "../../store/slices/authSlice";
-import styles from "./authenticate.module.scss";
+import styles from "./authenticate.module.css";
 import { useNavigate } from "react-router-dom";
 import { Input } from "../../components/input/Input";
 import clsx from "clsx";
