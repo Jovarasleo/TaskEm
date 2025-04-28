@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { useRef, useState } from "react";
 import { CSSTransition } from "react-transition-group";
 import useOutsideClick from "../../hooks/useOutsideClick";
-import styles from "./dropdown.module.css";
+import "./dropdown.css";
 
 interface Props {
   children: React.ReactNode;
@@ -36,13 +36,13 @@ const Dropdown = ({ children, className, options }: Props) => {
         nodeRef={nodeRef}
         timeout={300}
         classNames={{
-          enterActive: styles.transition,
-          enterDone: styles.transition,
+          enterActive: "transition",
+          enterDone: "transition",
         }}
         unmountOnExit
       >
         {options && options.length && (
-          <div ref={nodeRef} className={clsx(styles.dropdown, "bg-white p-1 ")}>
+          <div ref={nodeRef} className="bg-white p-1 dropdown">
             <ul className="flex gap-0.5 flex-col">
               {options.map(({ key, onClick, node }) => (
                 <li key={key}>

@@ -3,7 +3,7 @@ import type { AppDispatch, RootState } from "../../store/configureStore";
 import TasksContainer from "./components/container/TasksContainer";
 import useDragAndDrop from "./hooks/useDragAndDrop";
 import { Task, TaskContainer } from "./model/task";
-import styles from "./styles.module.css";
+import "./taskManager.css";
 
 function TaskManager() {
   const dispatch: AppDispatch = useDispatch();
@@ -24,7 +24,7 @@ function TaskManager() {
 
   return (
     <section
-      className={styles.managerContainer}
+      className="managerContainer"
       onPointerLeave={handleDragCancel}
       key={currentProject?.projectId}
     >

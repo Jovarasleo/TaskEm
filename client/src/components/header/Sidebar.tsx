@@ -20,7 +20,7 @@ function Sidebar({ isOpen, onOpenChange }: NavbarProps) {
     >
       <DrawerContent className="p-2">
         <div className="flex mb-6 h-[44px]">
-          <Link to={"/"}>
+          <Link to="/">
             <h1 className="text-3xl">{"Task'Em!"}</h1>
           </Link>
         </div>

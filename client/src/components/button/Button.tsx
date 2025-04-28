@@ -1,7 +1,7 @@
 import { ReactElement, ReactNode, RefObject } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import "./button.module.css";
 import clsx from "clsx";
+import "./button.css";
 
 export interface ButtonProps {
   type?: "link" | "select" | "primary" | "secondary";

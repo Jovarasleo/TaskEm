@@ -8,8 +8,8 @@ import { Task } from "../../model/task";
 import Button from "../../../../components/button/Button";
 import { AppDispatch } from "../../../../store/configureStore";
 import { clientDeleteTask, clientEditTask } from "../../../../store/slices/taskReducer";
-import styles from "./styles.module.css";
 import { isMobile } from "../../../..";
+import "./taskCard.css";
 
 interface TaskProps {
   dataTestId?: string;
@@ -100,11 +100,7 @@ function TaskCard({
   return (
     <li
       ref={taskItem}
-      className={clsx(
-        styles.task,
-        "task",
-        dragging && currentlyDragging === task.taskId ? styles.draggable : ""
-      )}
+      className={clsx("task", dragging && currentlyDragging === task.taskId ? "draggable" : "")}
       tabIndex={0}
       onPointerDown={(e) => {
         const pointerDownTime = Date.now();
@@ -113,9 +109,9 @@ function TaskCard({
       onPointerUp={() => clearTimeout(timeoutId)}
       data-testid={dataTestId}
     >
-      <span className={styles.taskIndex}>{`# ${task?.count}`}</span>
+      <span className="taskIndex">{`# ${task?.count}`}</span>
       <div
-        className={clsx(styles.deleteButton, confirmDeletion && styles.confirmationView)}
+        className={clsx("deleteButton", confirmDeletion && "confirmationView")}
         ref={deleteButtonRef}
         tabIndex={0}
         onPointerDown={(e) => e.stopPropagation()}
@@ -126,16 +122,10 @@ function TaskCard({
       >
         {confirmDeletion ? (
           <>
-            <Button
-              className={styles.confirmationButton}
-              onClick={() => dispatch(clientDeleteTask(task))}
-            >
+            <Button className="confirmationButton" onClick={() => dispatch(clientDeleteTask(task))}>
               <BsCheckLg />
             </Button>
-            <Button
-              className={styles.confirmationButton}
-              onClick={() => handleConfirmDeletion(false)}
-            >
+            <Button className="confirmationButton" onClick={() => handleConfirmDeletion(false)}>
               <BsXLg />
             </Button>
           </>
@@ -147,7 +137,7 @@ function TaskCard({
         <textarea
           autoFocus
           spellCheck={false}
-          className={clsx(styles.textarea, styles.taskDescription)}
+          className="textarea taskDescription"
           rows={1}
           onChange={(e) => setInput(e.target.value)}
           onPointerDown={(e) => e.stopPropagation()}
@@ -163,7 +153,7 @@ function TaskCard({
       ) : (
         <p
           role="paragraph"
-          className={clsx(styles.paragraph, styles.taskDescription)}
+          className="paragraph taskDescription"
           onClick={(e) => handleDescriptionClick(e)}
           onPointerDown={(e) => e.stopPropagation()}
         >
