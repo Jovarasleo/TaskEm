@@ -1,7 +1,7 @@
+import { forwardRef, LegacyRef } from "react";
 import { ButtonProps } from "../button/Button";
 import clsx from "clsx";
-import styles from "./styles.module.css";
-import { forwardRef, LegacyRef } from "react";
+import "./header.css";
 
 interface NavButton extends ButtonProps {
   active: boolean;
@@ -14,7 +14,7 @@ const NavButton = forwardRef(function NavButton(
   return (
     <button
       ref={ref}
-      className={clsx(styles.menuButton, active && styles.active, className)}
+      className={clsx("menuButton", active && "active", className)}
       aria-label="Toggle sidebar"
       onClick={onClick}
     >

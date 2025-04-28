@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import Modal from "../../../../components/modal/Modal";
-import { useState } from "react";
 import { MdDashboardCustomize } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../../store/configureStore";

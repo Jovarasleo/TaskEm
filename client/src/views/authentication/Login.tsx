@@ -6,10 +6,9 @@ import { object, string } from "yup";
 import Button from "../../components/button/Button";
 import { AppDispatch, RootState } from "../../store/configureStore";
 import { loginUser } from "../../store/slices/authSlice";
-import styles from "./authenticate.module.css";
 import { useNavigate } from "react-router-dom";
 import { Input } from "../../components/input/Input";
-import clsx from "clsx";
+import "./authenticate.css";
 
 const schema = object({
   email: string().email().required(),
@@ -82,19 +81,15 @@ function Login() {
 
   return (
     <>
-      <form className={styles.loginForm}>
-        <div className={styles.loginFormField}>
+      <form className="loginForm">
+        <div className="loginFormField">
           <Input id="email" label="Email" {...register("email")} />
           <p className="formError">{errors.email?.message}</p>
         </div>
-        <div className={styles.loginFormField}>
+        <div className="loginFormField">
           <Input id="password" label="Password" type="password" {...register("password")} />
           <p className="formError">{errors.password?.message}</p>
-          <Button
-            className={clsx(styles.linkBtn, "ml-auto")}
-            type="link"
-            onClick={(e) => e.preventDefault()}
-          >
+          <Button className="linkBtn ml-auto" type="link" onClick={(e) => e.preventDefault()}>
             forgot password?
           </Button>
           {error && <p className="formError">{error}</p>}
@@ -104,7 +99,7 @@ function Login() {
         </Button>
       </form>
 
-      <div id="google-login-btn" className={styles.googleLoginBtn}></div>
+      <div id="google-login-btn" className="googleLoginBtn"></div>
     </>
   );
 }

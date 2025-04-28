@@ -7,7 +7,7 @@ import { clientCreateTask } from "../../../../store/slices/taskReducer";
 import { uid } from "../../../../util/uid";
 import { HandleDrag, Task as TaskModel } from "../../model/task";
 import TaskCard from "../task/TaskCard";
-import styles from "./styles.module.css";
+import "./tasksContainer.css";
 import { useDroppable } from "@dnd-kit/core";
 import {
   rectSortingStrategy,
@@ -103,11 +103,7 @@ function TasksContainer({
     >
       <section
         role={containerName}
-        className={clsx(
-          styles.tasksContainerWrapper,
-          dragging && styles.containerHover,
-          "p-4 rounded-3xl"
-        )}
+        className={clsx("tasksContainerWrapper", dragging && "containerHover", "p-4 rounded-3xl")}
       >
         <div className="flex relative justify-between items-center mb-1">
           <h3>{containerName}</h3>

@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { CSSTransition } from "react-transition-group";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import { AppDispatch, RootState } from "../../store/configureStore";
-import clsx from "clsx";
 import { logoutUser } from "../../store/slices/authSlice";
+import clsx from "clsx";
 
 export function AccountMenu() {
   const { userData } = useSelector((state: RootState) => state.auth);

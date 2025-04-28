@@ -5,10 +5,9 @@ import { object, string, ref } from "yup";
 import Button from "../../components/button/Button";
 import { AppDispatch, RootState } from "../../store/configureStore";
 import { registerUser } from "../../store/slices/authSlice";
-import styles from "./authenticate.module.css";
-import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
 import { Input } from "../../components/input/Input";
+import "./authenticate.css";
 
 const schema = object({
   email: string().email().required(),
@@ -52,24 +51,24 @@ function Signup() {
 
   return (
     <>
-      <form className={styles.loginForm}>
-        <div className={styles.loginFormField}>
+      <form className="loginForm">
+        <div className="loginFormField">
           <Input id="email" label="Email" {...register("email")} />
           <p className="formError">{errors.email?.message}</p>
         </div>
-        <div className={styles.loginFormField}>
+        <div className="loginFormField">
           <Input id="username" label="Username" {...register("username")} />
           <p className="formError">{errors.username?.message}</p>
         </div>
-        <div className={styles.loginFormField}>
+        <div className="loginFormField">
           <Input id="password" label="Password" {...register("password")} type="password" />
           <p className="formError">{errors.password?.message}</p>
         </div>
-        <div className={styles.loginFormField}>
+        <div className="loginFormField">
           <Input id="password" label="Password" {...register("confirmPassword")} type="password" />
           <p className="formError">{errors.confirmPassword?.message}</p>
           {error.length > 0 && (
-            <ul className={clsx("formError", styles.serverErrors)}>
+            <ul className="formError serverErrors">
               {error.map((er) => (
                 <li key={er}>{er}</li>
               ))}
@@ -81,7 +80,7 @@ function Signup() {
         </Button>
       </form>
 
-      <div id="google-login-btn" className={styles.googleLoginBtn}></div>
+      <div id="google-login-btn" className="googleLoginBtn"></div>
     </>
   );
 }

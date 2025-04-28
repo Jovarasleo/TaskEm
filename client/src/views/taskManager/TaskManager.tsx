@@ -17,7 +17,7 @@ import TaskCard from "./components/task/TaskCard";
 import { useDnd } from "./hooks/useDnd";
 import useDragAndDrop from "./hooks/useDragAndDrop";
 import { Task, TaskContainer } from "./model/task";
-import styles from "./styles.module.css";
+import "./taskManager.css";
 import { useCallback } from "react";
 
 function TaskManager() {
@@ -60,7 +60,7 @@ function TaskManager() {
     >
       <section
         key={currentProject?.projectId}
-        className={styles.managerContainer}
+        className="managerContainer"
         onPointerLeave={handleDragCancel}
       >
         {containers.map((container) => {
