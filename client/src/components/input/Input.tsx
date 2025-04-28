@@ -1,6 +1,6 @@
 import clsx from "clsx";
-import styles from "./input.module.css";
 import { forwardRef } from "react";
+import "./input.css";
 
 interface Props {
   id: string;
@@ -14,23 +14,19 @@ export const Input = forwardRef<HTMLInputElement, Props>(function Input(
   ref
 ) {
   return (
-    <div className={clsx(styles.floating, "flex flex-col gap-0.5")}>
+    <div className="flex flex-col gap-0.5 floating">
       <input
         id={id}
         type={type}
         ref={ref}
-        className={clsx(
-          className,
-          styles.floatingInput,
-          "border-b-1 border-neutral-400 px-3 py-0.75 "
-        )}
+        className={clsx(className, "border-b-1 border-neutral-400 px-3 py-0.75 floatingInput")}
         placeholder={label}
         {...rest}
       />
       <label
         htmlFor={id}
         data-content={label}
-        className={clsx(styles.floatingLabel, "text-neutral-600 text-sm font-semibold top-0")}
+        className="text-neutral-600 text-sm font-semibold top-0 floatingLabel"
       >
         <span className="hidden">{label}</span>
       </label>

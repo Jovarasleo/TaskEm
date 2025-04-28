@@ -11,7 +11,6 @@ import {
   selectProjectWithRelatedData,
 } from "../../../../store/slices/projectReducer";
 import { Project } from "../../model/task";
-import styles from "./styles.module.css";
 import clsx from "clsx";
 import Dropdown from "../../../../components/dropdown/Dropdown";
 import Modal from "../../../../components/modal/Modal";
@@ -20,6 +19,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { object, string } from "yup";
+import "./project.css";
 
 const getOptions = (
   dispatch: AppDispatch,
@@ -102,14 +102,14 @@ function ProjectList() {
 
   if (!projects.data.length) {
     return (
-      <section className={styles.selectProject}>
+      <section className="selectProject">
         <h3>No task boards yet!</h3>
       </section>
     );
   }
 
   return (
-    <section className={styles.selectProject}>
+    <section className="selectProject">
       {projects.data.map((project: Project) => {
         const active = project.projectId === projects?.selected?.projectId;
         return (
@@ -137,7 +137,6 @@ function ProjectList() {
         );
       })}
       <Modal
-        width={500}
         title="Edit title"
         confirmText="Save"
         visible={modalVisible}

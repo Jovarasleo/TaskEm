@@ -1,8 +1,8 @@
 import { useState, useRef } from "react";
-import styles from "./styles.module.css";
 import { FiEdit3 } from "react-icons/fi";
 import useOutsideClick from "../../../../hooks/useOutsideClick";
 import { Project } from "../../model/task";
+import "./project.css";
 
 interface Props {
   project: Project;
@@ -41,16 +41,16 @@ const ProjectTitle = ({ project, setName }: Props) => {
   };
 
   return (
-    <span className={styles.projectNameWrapper} ref={outsideClickRef}>
+    <span className="projectNameWrapper" ref={outsideClickRef}>
       {editName ? (
-        <div className={styles.projectName}>
+        <div className="projectName">
           <input
             value={projectName}
-            className={styles.projectNameInput}
+            className="projectNameInput"
             onChange={(e) => setProjectName(e.target.value)}
             onKeyDown={(e) => (e.key === "Enter" ? saveChanges(projectName) : null)}
           />
-          <FiEdit3 className={styles.editButton} onClick={() => saveChanges(projectName)} />
+          <FiEdit3 className="editButton" onClick={() => saveChanges(projectName)} />
         </div>
       ) : (
         <h2 className="mb-2">

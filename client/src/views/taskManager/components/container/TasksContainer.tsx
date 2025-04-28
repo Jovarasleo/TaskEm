@@ -7,7 +7,7 @@ import { clientCreateTask } from "../../../../store/slices/taskReducer";
 import { uid } from "../../../../util/uid";
 import { HandleDrag, Task as TaskModel } from "../../model/task";
 import TaskCard from "../task/TaskCard";
-import styles from "./styles.module.css";
+import "./tasksContainer.css";
 
 interface TaskContainer {
   dataTestId?: string;
@@ -82,11 +82,7 @@ function TasksContainer({
   return (
     <section
       key={containerId}
-      className={clsx(
-        styles.tasksContainerWrapper,
-        dragging && styles.containerHover,
-        "p-4 rounded-3xl"
-      )}
+      className={clsx("tasksContainerWrapper", dragging && "containerHover", "p-4 rounded-3xl")}
       role={containerName}
       onPointerOver={(e) => handleDrag(e, containerRef, containerId)}
       ref={containerRef}
@@ -96,7 +92,7 @@ function TasksContainer({
         {todoContainer && (
           <button
             onClick={() => setAddTask(true)}
-            className={styles.addTaskButton}
+            className="addTaskButton"
             aria-label="create new task"
           >
             <HiOutlinePlusSm />
@@ -104,11 +100,11 @@ function TasksContainer({
         )}
       </div>
       {addTask ? (
-        <div className={styles.textareaWrapper}>
+        <div className="textareaWrapper">
           <textarea
             autoFocus
             placeholder="Enter your thoughts here.."
-            className={styles.input}
+            className="input"
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => handleKeypress(e)}
             value={input}
@@ -116,7 +112,7 @@ function TasksContainer({
           />
         </div>
       ) : null}
-      <ul className={clsx(styles.tasksContainer, "flex flex-col gap-2")}>
+      <ul className="tasksContainer flex flex-col gap-2">
         {tasks.map((task, index) => {
           return (
             <TaskCard
