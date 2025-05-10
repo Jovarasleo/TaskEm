@@ -1,25 +1,92 @@
-import { DragEndEvent, DragOverEvent, DragStartEvent } from "@dnd-kit/core";
+import { DragCancelEvent, DragEndEvent, DragOverEvent, DragStartEvent } from "@dnd-kit/core";
 import type { AppDispatch } from "../../../store/configureStore";
 import { Task, TaskContainer } from "../model/task";
-import { arrayMove } from "@dnd-kit/sortable";
 import { useState } from "react";
 import { clientMoveTask } from "../../../store/slices/taskReducer";
+import { getTaskPosition } from "../util/getTaskPosition";
 
-export const useDnd = (dispatch: AppDispatch, tasks: Task[], containers: TaskContainer[]) => {
+export const useDnd = (
+  dispatch: AppDispatch,
+  tasks: Task[],
+  containers: TaskContainer[],
+  setTemporaryTasks: (tasks: Task[]) => void
+) => {
   const [activeTask, setActiveTask] = useState<Task | undefined>();
 
-  function handleDragEnd(event: DragEndEvent) {
+  function handleDragCancel(event: DragCancelEvent) {
     const { active, over } = event;
 
-    if (active.id !== over?.id) {
-      const ids = tasks.map((task) => task.taskId);
-      const oldIndex = ids.indexOf(active.id);
-      const newIndex = ids.indexOf(over.id);
+    // if (active.id !== over?.id) {
+    //   const ids = tasks.map((task) => task.taskId);
+    //   const oldIndex = ids.indexOf(active.id);
+    //   const newIndex = ids.indexOf(over.id);
 
-      return arrayMove(tasks, oldIndex, newIndex);
+    //   return arrayMove(tasks, oldIndex, newIndex);
+    // }
+
+    console.log({ active, over, event });
+
+    // const updatedTask = getTaskPosition({
+    //   state: tasks,
+    //   toContainerId: container,
+    //   fromContainerId: dragItemPosition.current?.container,
+    //   toIndex: index,
+    //   fromIndex: dragItemPosition.current?.index,
+    //   taskId: savedTaskId.current,
+    // });
+
+    // if (!updatedTask) {
+    //   return;
+    // }
+
+    // dispatch(clientMoveTask(updatedTask));
+    setActiveTask(undefined);
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    setActiveTask(undefined);
+    const { active, over } = event;
+
+    const taskId = active.id;
+    const container = containers.find((container) => container.containerId === over?.id);
+    const containerId = over?.data.current?.sortable.containerId ?? container?.containerId;
+
+    if (!over || !containerId) {
+      return;
     }
 
-    setActiveTask(undefined);
+    const currentTask = tasks.find((task) => task.taskId === taskId);
+
+    const ids = tasks
+      ?.filter((task) => task.containerId === containerId)
+      .map((task) => task.taskId);
+
+    const oldIndex = ids.indexOf(taskId);
+    const nextIndex = ids.indexOf(over.id);
+    const newIndex = nextIndex < 0 ? ids.length : nextIndex;
+
+    if (oldIndex === newIndex) {
+      return;
+    }
+
+    const updatedTask = getTaskPosition({
+      state: tasks,
+      toContainerId: containerId,
+      fromContainerId: currentTask?.containerId as string,
+      toIndex: newIndex,
+      fromIndex: oldIndex,
+      taskId: currentTask?.taskId as string,
+    });
+
+    console.log({ oldIndex, newIndex });
+    if (!updatedTask) return;
+    setTemporaryTasks((prevState) => {
+      const newTasksArray = prevState.filter((task: Task) => task.taskId !== updatedTask.taskId);
+
+      return [...newTasksArray, updatedTask].sort((a, b) => a.position - b.position);
+    });
+
+    dispatch(clientMoveTask(updatedTask));
   }
 
   function handleDragStart(event: DragStartEvent) {
@@ -32,28 +99,56 @@ export const useDnd = (dispatch: AppDispatch, tasks: Task[], containers: TaskCon
   function handleDragOver(event: DragOverEvent) {
     const { active, over } = event;
 
-    const activeContainer = containers.find((container) => container.containerId === active?.id);
-    const overContainer = containers.find((container) => container.containerId === over?.id);
-    // console.log({ activeContainer: active?.id, overContainer: over?.id });
+    const taskId = active.id;
+    const container = containers.find((container) => container.containerId === over?.id);
+    const containerId = over?.data.current?.sortable.containerId ?? container?.containerId;
 
-    const overTask = tasks.find((task) => task.taskId === over?.id);
+    if (!over || !containerId) {
+      return;
+    }
 
-    // if (overTask) {
-    //   dispatch(clientMoveTask({ ...activeTask, containerId: overTask.containerId }));
-    // }
+    const currentTask = tasks.find((task) => task.taskId === taskId);
 
-    // if (activeContainer?.containerId === overContainer?.containerId) {
-    //   return;
-    // }
+    const ids = tasks
+      ?.filter((task) => task.containerId === containerId)
+      .map((task) => task.taskId);
 
-    // if (activeContainer !== overContainer) {
-    //   console.log("dispatch called containers");
-    //   dispatch(clientMoveTask({ ...activeTask, containerId: over.id }));
-    // }
+    const oldIndex = ids.indexOf(taskId);
+    const nextIndex = ids.indexOf(over.id);
+    const newIndex = nextIndex < 0 ? ids.length : nextIndex;
+
+    if (containerId === currentTask?.containerId && oldIndex === newIndex) {
+      console.log("if block");
+      return;
+    }
+
+    console.log({ containerId, oldIndex, newIndex });
+
+    console.log("after if block");
+
+    const updatedTask = getTaskPosition({
+      state: tasks,
+      toContainerId: containerId,
+      fromContainerId: currentTask?.containerId as string,
+      toIndex: newIndex,
+      fromIndex: oldIndex,
+      taskId: currentTask?.taskId as string,
+    });
+
+    if (!updatedTask) {
+      return;
+    }
+
+    setTemporaryTasks((prevState: Task[]) => {
+      const newTasksArray = prevState.filter((task: Task) => task.taskId !== updatedTask.taskId);
+
+      return [...newTasksArray, updatedTask].sort((a, b) => a.position - b.position);
+    });
   }
 
   return {
     activeTask,
+    handleDragCancel,
     handleDragStart,
     handleDragOver,
     handleDragEnd,

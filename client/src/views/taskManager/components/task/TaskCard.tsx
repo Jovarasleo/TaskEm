@@ -1,49 +1,26 @@
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { clsx } from "clsx";
-import { FocusEvent, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { BsCheckLg, BsXLg } from "react-icons/bs";
-import useOutsideClick from "../../../../hooks/useOutsideClick";
-import useContainerHeight from "../../hooks/useContainerHeight";
-import { Task } from "../../model/task";
 import Button from "../../../../components/button/Button";
 import { AppDispatch } from "../../../../store/configureStore";
-import { clientDeleteTask, clientEditTask } from "../../../../store/slices/taskReducer";
-import { isMobile } from "../../../..";
-import { useDraggable } from "@dnd-kit/core";
-import { CSS } from "@dnd-kit/utilities";
-import { useSortable } from "@dnd-kit/sortable";
+import { clientDeleteTask } from "../../../../store/slices/taskReducer";
+import { Task } from "../../model/task";
 import "./taskCard.css";
 
 interface TaskProps {
   dataTestId?: string;
   task: Task;
-  index: number;
-  container: string;
-  dragging: boolean;
-  currentlyDragging: string;
+  taskId: string;
   dispatch: AppDispatch;
-  handlePointerDown: (
-    e: React.PointerEvent<HTMLLIElement>,
-    taskItem: HTMLLIElement | null,
-    container: string,
-    index: number,
-    taskId: string
-  ) => void;
 }
 
-const HOLD_THRESHOLD = isMobile ? 150 : 0;
+// const HOLD_THRESHOLD = isMobile ? 150 : 0;
 
-function TaskCard({
-  dataTestId,
-  task,
-  index,
-  container,
-  dragging,
-  currentlyDragging,
-  dispatch,
-  handlePointerDown,
-}: TaskProps) {
-  const { value, taskId } = task;
+function TaskCard({ dataTestId, task, dispatch, taskId }: TaskProps) {
+  const { value } = task;
   const [inputField, setInputField] = useState(false);
   const [input, setInput] = useState(value || "");
   const [confirmDeletion, setConfirmDeletion] = useState(false);
@@ -66,29 +43,38 @@ function TaskCard({
     setInputField(true);
   };
 
-  const closeTextBoxes = () => {
-    dispatch(clientEditTask({ ...task, value: input }));
-    setInputField(false);
-  };
+  // const closeTextBoxes = () => {
+  //   dispatch(clientEditTask({ ...task, value: input }));
+  //   setInputField(false);
+  // };
 
-  const handleKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
-    if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
-      dispatch(clientEditTask({ ...task, value: input }));
-      setInputField(false);
-    }
-  };
+  // const handleKeypress = (e: React.KeyboardEvent<HTMLElement>) => {
+  //   if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
+  //     dispatch(clientEditTask({ ...task, value: input }));
+  //     setInputField(false);
+  //   }
+  // };
 
-  const moveCursorToEnd = (e: FocusEvent) => {
-    const target = e.target as HTMLTextAreaElement;
-    target.selectionStart = target.value.length;
-  };
+  // const moveCursorToEnd = (e: FocusEvent) => {
+  //   const target = e.target as HTMLTextAreaElement;
+  //   target.selectionStart = target.value.length;
+  // };
 
   // useContainerHeight(textAreaRef, input, inputField);
   // useOutsideClick(closeTextBoxes, [outsideClickRef]);
   // useOutsideClick(() => handleConfirmDeletion(false), [deleteButtonRef]);
 
+  // const animateLayoutChanges: AnimateLayoutChanges = (args) => {
+  //   const { isDragging, wasDragging } = args;
+  //   return isDragging || wasDragging;
+  // };
+
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
-    id: task.taskId,
+    id: taskId,
+    // transition: {
+    //   duration: 500,
+    //   easing: "cubic-bezier(0.25, 1, 0.5, 1)",
+    // },
   });
 
   const style = {
@@ -98,14 +84,16 @@ function TaskCard({
 
   return (
     <li
+      key={taskId}
+      id={taskId}
+      data-testid={dataTestId}
       ref={setNodeRef}
-      className={clsx("task", dragging && currentlyDragging === task.taskId ? "draggable" : "")}
+      className="bg-gray-200 p-4"
       style={style}
       {...listeners}
       {...attributes}
-      data-testid={dataTestId}
     >
-      <span className="taskIndex">{`# ${task?.count}`}</span>
+      <span className="taskIndex">{`# ${task.count}`}</span>
       <div
         className={clsx("deleteButton", confirmDeletion && "confirmationView")}
         ref={deleteButtonRef}

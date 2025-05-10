@@ -37,14 +37,17 @@ export const getTaskPosition = ({
     }
     //first task in container
     if (!taskAbove && taskAtIndex) {
+      console.log("first");
       return taskAtIndex - 1000;
     }
     //insert in between
     if (sameContainer && moveUp && taskAbove && taskAtIndex) {
+      console.log("between");
       return (taskAtIndex + taskAbove) / 2;
     }
     //insert in between
     if (sameContainer && moveDn && taskAtIndex && taskBelow) {
+      console.log("in between ");
       return (taskAtIndex + taskBelow) / 2;
     }
     //last task in another container

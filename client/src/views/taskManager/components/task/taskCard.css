@@ -6,9 +6,6 @@
   padding: 8px;
   border-radius: 16px;
   background-color: rgb(212, 212, 212);
-  touch-action: none;
-  user-select: none;
-  cursor: grab;
 
   .textarea {
     border-radius: 8px;
@@ -100,16 +97,5 @@
   &:after {
     content: "";
     bottom: -4px;
-  }
-}
-
-.removePointer {
-  pointer-events: none;
-}
-
-.draggable {
-  background-color: transparent;
-  & > * {
-    visibility: hidden;
   }
 }

@@ -1,19 +1,13 @@
-import clsx from "clsx";
+import { useDroppable } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import React, { useMemo, useRef, useState } from "react";
 import { HiOutlinePlusSm } from "react-icons/hi";
-import useOutsideClick from "../../../../hooks/useOutsideClick";
 import { AppDispatch } from "../../../../store/configureStore";
 import { clientCreateTask } from "../../../../store/slices/taskReducer";
 import { uid } from "../../../../util/uid";
-import { HandleDrag, Task as TaskModel } from "../../model/task";
+import { Task as TaskModel } from "../../model/task";
 import TaskCard from "../task/TaskCard";
 import "./tasksContainer.css";
-import { useDroppable } from "@dnd-kit/core";
-import {
-  rectSortingStrategy,
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 
 interface TaskContainer {
   dataTestId?: string;
@@ -22,17 +16,7 @@ interface TaskContainer {
   tasksCount: number;
   containerId: string;
   containerName: string;
-  dragging: boolean;
-  currentlyDragging: string;
   dispatch: AppDispatch;
-  handleDrag: HandleDrag;
-  handlePointerDown: (
-    e: React.PointerEvent<HTMLLIElement>,
-    taskItem: HTMLLIElement | null,
-    container: string,
-    index: number,
-    taskId: string
-  ) => void;
 }
 
 function TasksContainer({
@@ -41,22 +25,14 @@ function TasksContainer({
   tasksCount,
   containerId,
   containerName,
-  dragging,
-  currentlyDragging,
   dispatch,
-  handleDrag,
-  handlePointerDown,
 }: TaskContainer) {
-  const containerRef = useRef<HTMLDivElement>(null);
   const outsideClickRef = useRef<HTMLTextAreaElement>(null);
-  const taskIds = tasks.map((task) => task.taskId);
+  const itemIds = useMemo(() => tasks.map((task) => task.taskId), [tasks]);
+  const memoTasks = useMemo(() => tasks, [tasks]);
 
   const { setNodeRef } = useDroppable({
     id: containerId,
-    data: {
-      type: "container",
-      children: taskIds,
-    },
   });
 
   const [addTask, setAddTask] = useState(false);
@@ -92,62 +68,48 @@ function TasksContainer({
     }
   };
 
-  useOutsideClick(createNewTask, [outsideClickRef]);
-
   return (
-    <SortableContext
-      key={containerId}
-      id={containerId}
-      items={taskIds}
-      strategy={verticalListSortingStrategy}
-    >
-      <section
-        role={containerName}
-        className={clsx("tasksContainerWrapper", dragging && "containerHover", "p-4 rounded-3xl")}
-      >
-        <div className="flex relative justify-between items-center mb-1">
-          <h3>{containerName}</h3>
-          {todoContainer && (
-            <button
-              onClick={() => setAddTask(true)}
-              className={styles.addTaskButton}
-              aria-label="create new task"
-            >
-              <HiOutlinePlusSm />
-            </button>
-          )}
+    <section className="tasksContainerWrapper p-4 rounded-3xl">
+      <div className="flex relative justify-between items-center mb-1">
+        <h3>{containerName}</h3>
+        {todoContainer && (
+          <button
+            onClick={() => setAddTask(true)}
+            className="addTaskButton"
+            aria-label="create new task"
+          >
+            <HiOutlinePlusSm />
+          </button>
+        )}
+      </div>
+      {addTask ? (
+        <div className="textareaWrapper">
+          <textarea
+            autoFocus
+            placeholder="Enter your thoughts here.."
+            className="input"
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => handleKeypress(e)}
+            value={input}
+            ref={outsideClickRef}
+          />
         </div>
-        {addTask ? (
-          <div className={styles.textareaWrapper}>
-            <textarea
-              autoFocus
-              placeholder="Enter your thoughts here.."
-              className={styles.input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => handleKeypress(e)}
-              value={input}
-              ref={outsideClickRef}
-            />
-          </div>
-        ) : null}
-        <ul ref={setNodeRef} className={clsx(styles.tasksContainer, "flex flex-col gap-2 h-full")}>
-          {tasks.map((task, index) => {
+      ) : null}
+      <SortableContext id={containerId} items={itemIds} strategy={verticalListSortingStrategy}>
+        <ul
+          className="flex flex-col gap-2 h-full tasksContainer"
+          role={containerName}
+          id={containerId}
+          ref={setNodeRef}
+        >
+          {memoTasks.map((task) => {
             return (
-              <TaskCard
-                key={task.taskId}
-                task={task}
-                index={index}
-                dragging={dragging}
-                container={containerId}
-                currentlyDragging={currentlyDragging}
-                dispatch={dispatch}
-                handlePointerDown={handlePointerDown}
-              />
+              <TaskCard key={task.taskId} task={task} taskId={task.taskId} dispatch={dispatch} />
             );
           })}
         </ul>
-      </section>
-    </SortableContext>
+      </SortableContext>
+    </section>
   );
 }
 export default TasksContainer;
